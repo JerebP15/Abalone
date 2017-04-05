@@ -16,7 +16,7 @@ import tkinter    # za uporabniški vmesnik
 ## Uporabniški vmesnik
 
 class Gui():
-    # S to oznako so označeni vsi grafični elementi v self.plosca, ki se
+    # S to oznako so označeni vsi grafični elementi v self.okno, ki se
     # pobrišejo, ko se začne nova igra (torej, križci in krožci)
     TAG_FIGURA = 'figura' #?
 
@@ -30,8 +30,6 @@ class Gui():
     def __init__(self, master):
         # Če uporabnik zapre okno naj se poklice self.zapri_okno
         master.protocol("WM_DELETE_WINDOW", lambda: self.zapri_okno(master))
-
-        #self.matrika = self.ustvari_matriko()
 
         # Glavni menu
         menu = tkinter.Menu(master)
@@ -47,22 +45,22 @@ class Gui():
         tkinter.Label(master, textvariable=self.napis).grid(row=0, column=0)
 
         # Igralno območje
-        self.plosca = tkinter.Canvas(master, width=11*Gui.VELIKOST_POLJA, height=11*Gui.VELIKOST_POLJA)
-        self.plosca.grid(row=1, column=0)
+        self.okno = tkinter.Canvas(master, width=11*Gui.VELIKOST_POLJA, height=11*Gui.VELIKOST_POLJA)
+        self.okno.grid(row=1, column=0)
 
         # Črte na igralnem polju
         #self.narisi_crte()
-        self.matrika = self.narisi_plosco()
+        self.plosca = self.narisi_plosco()
         self.izbrani = []
 
-        # Naročimo se na dogodek Button-1 na self.plosca,
-        self.plosca.bind("<Button-1>", self.plosca_klik)
+        # Naročimo se na dogodek Button-1 na self.okno,
+        self.okno.bind("<Button-1>", self.okno_klik)
 
         # Prični igro
         self.zacni_igro()
 
     def narisi_plosco(self):
-        self.plosca.delete(Gui.TAG_FIGURA)
+        self.okno.delete(Gui.TAG_FIGURA)
         d = Gui.VELIKOST_POLJA
         matrika = []
         for x in range(9):
@@ -81,16 +79,16 @@ class Gui():
                 else:
                     barva = None
                 if barva is not None:
-                    id = self.plosca.create_oval((i - j*0.5)*d + 2*d, (3**0.5)*0.5*j*d, (i - j*0.5)*d + 3*d, (3**0.5)*0.5*j*d + d, fill=barva)
+                    id = self.okno.create_oval((i - j*0.5)*d + 2*d, (3**0.5)*0.5*j*d, (i - j*0.5)*d + 3*d, (3**0.5)*0.5*j*d + d, fill=barva)
                     matrika[i][j] = Polje(id, i, j, barva)             
         return matrika
 
-    def plosca_klik(self, event):
+    def okno_klik(self, event):
         """Obdelaj klik na ploščo."""
         # Tistemu, ki je na potezi, povemo, da je uporabnik kliknil na ploščo.
         i,j = self.poisci_polje(event)
         if self.preveri_polje((i,j)):   # Pomožna funkcija
-            self.izbrani.append(self.matrika[i][j])     # Seznam izbranih (za zgodovino?)
+            self.izbrani.append(self.plosca[i][j])     # Seznam izbranih (za zgodovino?)
             self.pobarvaj_krogec((i,j))
             print("Klik na ({0}, {1}), polje ({2}, {3})".format(event.x, event.y, i, j))
 
@@ -99,7 +97,7 @@ class Gui():
         d = Gui.VELIKOST_POLJA
         for i in range(9):
             for j in range(9):
-                if self.matrika[i][j] is None:
+                if self.plosca[i][j] is None:
                     continue        # Poskusi naslednji i,j
                 sredisce_x = (i - j*0.5)*d + 2.5*d
                 sredisce_y = (3**0.5)*0.5*j*d + 0.5*d
@@ -113,16 +111,16 @@ class Gui():
         d = Gui.VELIKOST_POLJA
         (i, j) = p
         if i in range(9) and j in range(9):
-            self.plosca.itemconfig(self.matrika[i][j].id, fill='red')       # itemconfig izgleda uporabno.
-            self.matrika[i][j].barva = 'red'
-            print(self.matrika[i][j])
+            self.okno.itemconfig(self.plosca[i][j].id, fill='red')       # itemconfig izgleda uporabno.
+            self.plosca[i][j].barva = 'red'
+            print(self.plosca[i][j])
 
     def preveri_polje(self, p):
         """Pogleda, ali ta krogec lahko izberemo."""
         # !!! Deluje samo, če izbiramo po vrsti. !!!
         (i,j) = p
-        if i is not None and j is not None and self.matrika[i][j].barva != 'white':     # Zagotovimo, da smo na plošči in da nismo izbrali praznega polja.
-            polje = self.matrika[i][j]
+        if i is not None and j is not None and self.plosca[i][j].barva != 'white':     # Zagotovimo, da smo na plošči in da nismo izbrali praznega polja.
+            polje = self.plosca[i][j]
             if len(self.izbrani) == 0:      # Prvo izbrano polje je lahko katerokoli.
                 return True
             elif len(self.izbrani) == 3:      # Izbrana so lahko največ tri polja.
@@ -130,6 +128,7 @@ class Gui():
             else:
                 (I, J, B) = (self.izbrani[0].x, self.izbrani[0].y, self.izbrani[0].barva)     # Koordinate in barva prvega izbranega krogca
                 k = len(self.izbrani)
+                #TODO loči možnosti za 2. in 3. izbrani krogec
                 if p in [(I,J+k),(I,J-k),(I+k,J),(I-k,J),(I-k,J-k),(I+k,J+k)] and polje.barva != B: # "Sosedni" krogci druge barve - za 1 ali 2 oddaljeni od prvega izbranega.
                     return True
         else:
@@ -139,7 +138,7 @@ class Gui():
         """Nastavi stanje igre na zacetek igre.
            Za igralca uporabi dana igralca."""
         # Pobrišemo vse figure s polja
-        self.plosca.delete(Gui.TAG_FIGURA)
+        self.okno.delete(Gui.TAG_FIGURA)
 
     def koncaj_igro(self):
         """Nastavi stanje igre na konec igre."""
@@ -152,27 +151,27 @@ class Gui():
 
     def narisi_crte(self):
         """Nariši črte v igralnem polju"""
-        self.plosca.delete(Gui.TAG_OKVIR)
+        self.okno.delete(Gui.TAG_OKVIR)
         d = Gui.VELIKOST_POLJA
-        self.plosca.create_line(2.5*d, 0.1*d, 9*d, 0.1*d, tag=Gui.TAG_OKVIR)
-        self.plosca.create_line(2.5*d, 1*d, 9*d, 1*d, tag=Gui.TAG_OKVIR)
-        self.plosca.create_line(0*d, 5.5*d, 2.5*d, 1*d, tag=Gui.TAG_OKVIR)
-        self.plosca.create_line(9*d, 1*d, 11*d, 5.5*d, tag=Gui.TAG_OKVIR)
+        self.okno.create_line(2.5*d, 0.1*d, 9*d, 0.1*d, tag=Gui.TAG_OKVIR)
+        self.okno.create_line(2.5*d, 1*d, 9*d, 1*d, tag=Gui.TAG_OKVIR)
+        self.okno.create_line(0*d, 5.5*d, 2.5*d, 1*d, tag=Gui.TAG_OKVIR)
+        self.okno.create_line(9*d, 1*d, 11*d, 5.5*d, tag=Gui.TAG_OKVIR)
 
     def narisi_X(self, p):
         """Nariši križec v polje (i, j)."""
         x = p[0] * 100
         y = p[1] * 100
         sirina = 3
-        self.plosca.create_line(x+5, y+5, x+95, y+95, width=sirina, tag=Gui.TAG_FIGURA)
-        self.plosca.create_line(x+95, y+5, x+5, y+95, width=sirina, tag=Gui.TAG_FIGURA)
+        self.okno.create_line(x+5, y+5, x+95, y+95, width=sirina, tag=Gui.TAG_FIGURA)
+        self.okno.create_line(x+95, y+5, x+5, y+95, width=sirina, tag=Gui.TAG_FIGURA)
 
     def narisi_O(self, p):
         """Nariši krožec v polje (i, j)."""
         x = p[0] * 100
         y = p[1] * 100
         sirina = 3
-        self.plosca.create_oval(x+5, y+5, x+95, y+95, width=sirina,tag=Gui.TAG_FIGURA)
+        self.okno.create_oval(x+5, y+5, x+95, y+95, width=sirina,tag=Gui.TAG_FIGURA)
 
 
 
@@ -201,14 +200,15 @@ class Gui():
 
 class Polje:
 
-    def __init__(self, id, x, y, barva=None):
+    def __init__(self, id, x, y, barva=None, oznacen=False):
         self.id = id
         self.x = x
         self.y = y
         self.barva = barva
+        self.oznacen = oznacen
 
     def __repr__(self):
-        return 'Polje({0}, ({1}, {2}), {3})'.format(self.id, self.x, self.y, self.barva)
+        return 'Polje({0}, ({1}, {2}), {3}, {4})'.format(self.id, self.x, self.y, self.barva, self.oznacen)
     
 
 ######################################################################
