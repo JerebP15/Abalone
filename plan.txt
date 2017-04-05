@@ -8,5 +8,3 @@ minimax
 undo
 možnost izbire barve
 težavnost igre
-
-tjaša
