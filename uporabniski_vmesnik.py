@@ -1,6 +1,18 @@
 import tkinter    # za uporabniški vmesnik
 
 ######################################################################
+
+
+# Za premikanje krogcev je potrebno naredit še:
+#   ko naslednjič klikneš in vlečeš, se premaknejo
+#   ali je moteče, da je treba krogce izbirat po vrsti?
+
+
+# Nujno UNDO. Ali je dovolj, da se v zgodovino shrani samo matrika? Ali potrebujemo tudi seznam izbranih polj? Ta polja so rdeča, tako da se to mogoče vidi že iz matrike?
+
+
+
+
 ## Uporabniški vmesnik
 
 class Gui():
@@ -14,11 +26,12 @@ class Gui():
     # Velikost polja
     VELIKOST_POLJA = 50
 
+
     def __init__(self, master):
         # Če uporabnik zapre okno naj se poklice self.zapri_okno
         master.protocol("WM_DELETE_WINDOW", lambda: self.zapri_okno(master))
 
-        self.matrika = self.ustvari_matriko()
+        #self.matrika = self.ustvari_matriko()
 
         # Glavni menu
         menu = tkinter.Menu(master)
@@ -38,8 +51,9 @@ class Gui():
         self.plosca.grid(row=1, column=0)
 
         # Črte na igralnem polju
-        self.narisi_crte()
-        self.narisi_krogce()
+        #self.narisi_crte()
+        self.matrika = self.narisi_plosco()
+        self.izbrani = []
 
         # Naročimo se na dogodek Button-1 na self.plosca,
         self.plosca.bind("<Button-1>", self.plosca_klik)
@@ -47,22 +61,79 @@ class Gui():
         # Prični igro
         self.zacni_igro()
 
-    def ustvari_matriko(self):
-        #Ustvari 9x9 matriko
+    def narisi_plosco(self):
+        self.plosca.delete(Gui.TAG_FIGURA)
+        d = Gui.VELIKOST_POLJA
         matrika = []
         for x in range(9):
-            seznam = []
-            for y in range(9):
-                seznam.append(0)
-            matrika.append(seznam)
-        for i in range(9):
-            for j in range(9):
-                if (i,j) in [(0,5),(0,6),(0,7),(0,8),(1,6),(1,7),(1,8),(2,7),(2,8),(3,8)]:
-                    matrika[i][j] = None
-                elif (j,i) in [(0,5),(0,6),(0,7),(0,8),(1,6),(1,7),(1,8),(2,7),(2,8),(3,8)]:
-                    matrika[i][j] = None
+               seznam = []
+               for y in range(9):
+                   seznam.append(None)
+               matrika.append(seznam)
+        for i in range(len(matrika)):
+            for j in range(len(matrika[i])):
+                if (i,j) in [(0,0),(0,1),(1,0),(1,1),(2,0),(2,1),(2,2),(3,0),(3,1),(3,2),(4,0),(4,1),(4,2),(5,1)]:
+                    barva = 'yellow'
+                elif (i,j) in [(3,7),(4,6),(4,7),(4,8),(5,6),(5,7),(5,8),(6,6),(6,7),(6,8),(7,7),(7,8),(8,7),(8,8)]:
+                    barva ='black'
+                elif (i,j) not in [(5,0),(6,0),(7,0),(8,0),(6,1),(7,1),(8,1),(7,2),(8,2),(8,3)] and (j,i) not in [(5,0),(6,0),(7,0),(8,0),(6,1),(7,1),(8,1),(7,2),(8,2),(8,3)]:
+                    barva = 'white'
+                else:
+                    barva = None
+                if barva is not None:
+                    id = self.plosca.create_oval((i - j*0.5)*d + 2*d, (3**0.5)*0.5*j*d, (i - j*0.5)*d + 3*d, (3**0.5)*0.5*j*d + d, fill=barva)
+                    matrika[i][j] = Polje(id, i, j, barva)             
         return matrika
 
+    def plosca_klik(self, event):
+        """Obdelaj klik na ploščo."""
+        # Tistemu, ki je na potezi, povemo, da je uporabnik kliknil na ploščo.
+        i,j = self.poisci_polje(event)
+        if self.preveri_polje((i,j)):   # Pomožna funkcija
+            self.izbrani.append(self.matrika[i][j])     # Seznam izbranih (za zgodovino?)
+            self.pobarvaj_krogec((i,j))
+            print("Klik na ({0}, {1}), polje ({2}, {3})".format(event.x, event.y, i, j))
+
+    def poisci_polje(self, event):
+        """Vrne polje, na katero smo kliknili."""
+        d = Gui.VELIKOST_POLJA
+        for i in range(9):
+            for j in range(9):
+                if self.matrika[i][j] is None:
+                    continue        # Poskusi naslednji i,j
+                sredisce_x = (i - j*0.5)*d + 2.5*d
+                sredisce_y = (3**0.5)*0.5*j*d + 0.5*d
+                r = ((event.x - sredisce_x)**2 + (event.y - sredisce_y)**2)**0.5
+                if r <= d/2:
+                    return i,j
+        return None, None
+
+    def pobarvaj_krogec(self, p):
+        """Izbrani krogec pobarva rdeče."""
+        d = Gui.VELIKOST_POLJA
+        (i, j) = p
+        if i in range(9) and j in range(9):
+            self.plosca.itemconfig(self.matrika[i][j].id, fill='red')       # itemconfig izgleda uporabno.
+            self.matrika[i][j].barva = 'red'
+            print(self.matrika[i][j])
+
+    def preveri_polje(self, p):
+        """Pogleda, ali ta krogec lahko izberemo."""
+        # !!! Deluje samo, če izbiramo po vrsti. !!!
+        (i,j) = p
+        if i is not None and j is not None and self.matrika[i][j].barva != 'white':     # Zagotovimo, da smo na plošči in da nismo izbrali praznega polja.
+            polje = self.matrika[i][j]
+            if len(self.izbrani) == 0:      # Prvo izbrano polje je lahko katerokoli.
+                return True
+            elif len(self.izbrani) == 3:      # Izbrana so lahko največ tri polja.
+                return False
+            else:
+                (I, J, B) = (self.izbrani[0].x, self.izbrani[0].y, self.izbrani[0].barva)     # Koordinate in barva prvega izbranega krogca
+                k = len(self.izbrani)
+                if p in [(I,J+k),(I,J-k),(I+k,J),(I-k,J),(I-k,J-k),(I+k,J+k)] and polje.barva != B: # "Sosedni" krogci druge barve - za 1 ali 2 oddaljeni od prvega izbranega.
+                    return True
+        else:
+            return False
 
     def zacni_igro(self):
         """Nastavi stanje igre na zacetek igre.
@@ -88,13 +159,6 @@ class Gui():
         self.plosca.create_line(0*d, 5.5*d, 2.5*d, 1*d, tag=Gui.TAG_OKVIR)
         self.plosca.create_line(9*d, 1*d, 11*d, 5.5*d, tag=Gui.TAG_OKVIR)
 
-    def narisi_krogce(self):
-        self.plosca.delete(Gui.TAG_FIGURA)
-        for i in range(len(self.matrika)):
-            for j in self.matrika[i]:
-                if matrika[i][j] is not None:
-                    self.plosca.create_oval()
-
     def narisi_X(self, p):
         """Nariši križec v polje (i, j)."""
         x = p[0] * 100
@@ -110,23 +174,42 @@ class Gui():
         sirina = 3
         self.plosca.create_oval(x+5, y+5, x+95, y+95, width=sirina,tag=Gui.TAG_FIGURA)
 
-    def plosca_klik(self, event):
-        """Obdelaj klik na ploščo."""
-        # Tistemu, ki je na potezi, povemo, da je uporabnik kliknil na ploščo.
-        # Podamo mu potezo p.
-        i = event.x // 100
-        j = event.y // 100
-        print ("Klik na ({0}, {1}), polje ({2}, {3})".format(event.x, event.y, i, j))
-        self.povleci_potezo((i,j))
 
-    def povleci_potezo(self, p):
-        """Povleci potezo p, če je veljavna. Če ni veljavna, ne naredi nič."""
-        (i, j) = p
-        # Da vidimo, ali se prav riše, včasih narišemo X in včasih O
-        if (i + j) % 2 == 0:
-            self.narisi_X(p)
-        else:
-            self.narisi_O(p)
+
+
+
+    def ustvari_matriko(self):
+        #Ustvari 9x9 matriko
+        matrika = []
+        for x in range(9):
+            seznam = []
+            for y in range(9):
+                seznam.append(0)
+            matrika.append(seznam)
+        for i in range(9):              # Ustreza x-kooordinati, torej pove (poševni) stolpec.
+            for j in range(9):          # Ustreza y-kooordinati, torej pove vrstico (od zgoraj dol).
+                if (i,j) in [(5,0),(6,0),(7,0),(8,0),(6,1),(7,1),(8,1),(7,2),(8,2),(8,3)]:  
+                    matrika[i][j] = None    # Ta polja ne obstajajo
+                elif (j,i) in [(5,0),(6,0),(7,0),(8,0),(6,1),(7,1),(8,1),(7,2),(8,2),(8,3)]:
+                    matrika[i][j] = None    # Ta polja ne obstajajo
+                elif (i,j) in [(0,0),(0,1),(1,0),(1,1),(2,0),(2,1),(2,2),(3,0),(3,1),(3,2),(4,0),(4,1),(4,2),(5,0),(5,1)]:
+                    matrika[i][j] = 'B'     # Začetna postavitev belega.
+                elif (i,j) in [(3,7),(4,6),(4,7),(4,8),(5,6),(5,7),(5,8),(6,6),(6,7),(6,8),(7,7),(7,8),(8,7),(8,8)]:
+                    matrika[i][j] = 'C'     # Začetna postavitev črnega.
+        #print(matrika)
+        return matrika
+
+class Polje:
+
+    def __init__(self, id, x, y, barva=None):
+        self.id = id
+        self.x = x
+        self.y = y
+        self.barva = barva
+
+    def __repr__(self):
+        return 'Polje({0}, ({1}, {2}), {3})'.format(self.id, self.x, self.y, self.barva)
+    
 
 ######################################################################
 ## Glavni program
@@ -141,7 +224,7 @@ class Gui():
 if __name__ == "__main__":
     # Naredimo glavno okno in nastavimo ime
     root = tkinter.Tk()
-    root.title("Tri v vrsto")
+    root.title("Abalone - Bajc in Jereb")
 
     # Naredimo objekt razreda Gui in ga spravimo v spremenljivko,
     # sicer bo Python mislil, da je objekt neuporabljen in ga bo pobrisal
