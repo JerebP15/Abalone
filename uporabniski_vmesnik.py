@@ -87,9 +87,13 @@ class Gui():
         """Obdelaj klik na ploščo."""
         # Tistemu, ki je na potezi, povemo, da je uporabnik kliknil na ploščo.
         i,j = self.poisci_polje(event)
-        if self.preveri_polje((i,j)):   # Pomožna funkcija
-            self.izbrani.append(self.plosca[i][j])     # Seznam izbranih (za zgodovino?)
-            self.pobarvaj_krogec((i,j))
+        if i is not None and j is not None and self.plosca[i][j] in self.izbrani:
+            self.izbrani.remove(self.plosca[i][j])
+            self.odznaci_krogec((i,j))
+        elif self.preveri_polje((i,j)): # Pomožna funkcija
+            if self.plosca[i][j] not in self.izbrani:
+                self.izbrani.append(self.plosca[i][j])
+                self.oznaci_krogec((i,j))
             print("Klik na ({0}, {1}), polje ({2}, {3})".format(event.x, event.y, i, j))
 
     def poisci_polje(self, event):
@@ -104,20 +108,25 @@ class Gui():
                 r = ((event.x - sredisce_x)**2 + (event.y - sredisce_y)**2)**0.5
                 if r <= d/2:
                     return i,j
-        return None, None
+        return (None, None)
 
-    def pobarvaj_krogec(self, p):
+    def oznaci_krogec(self, p):
         """Izbrani krogec pobarva rdeče."""
-        d = Gui.VELIKOST_POLJA
         (i, j) = p
-        if i in range(9) and j in range(9):
-            self.okno.itemconfig(self.plosca[i][j].id, fill='red')       # itemconfig izgleda uporabno.
-            self.plosca[i][j].barva = 'red'
-            print(self.plosca[i][j])
+        self.okno.itemconfig(self.plosca[i][j].id, fill='red')       # itemconfig izgleda uporabno.
+        self.plosca[i][j].oznacen = True
+        print(self.plosca[i][j])
+            
+    def odznaci_krogec(self, p):
+        """Obratno kot označi krogec."""
+        (i, j) = p
+        #TODO Potrebno še preprečiti da se odznači srednji krogec            
+        self.okno.itemconfig(self.plosca[i][j].id, fill=self.plosca[i][j].barva)       # itemconfig izgleda uporabno.
+        self.plosca[i][j].oznacen = False
+        print(self.plosca[i][j])
 
     def preveri_polje(self, p):
         """Pogleda, ali ta krogec lahko izberemo."""
-        # !!! Deluje samo, če izbiramo po vrsti. !!!
         (i,j) = p
         if i is not None and j is not None and self.plosca[i][j].barva != 'white':     # Zagotovimo, da smo na plošči in da nismo izbrali praznega polja.
             polje = self.plosca[i][j]
@@ -126,11 +135,21 @@ class Gui():
             elif len(self.izbrani) == 3:      # Izbrana so lahko največ tri polja.
                 return False
             else:
-                (I, J, B) = (self.izbrani[0].x, self.izbrani[0].y, self.izbrani[0].barva)     # Koordinate in barva prvega izbranega krogca
-                k = len(self.izbrani)
-                #TODO loči možnosti za 2. in 3. izbrani krogec
-                if p in [(I,J+k),(I,J-k),(I+k,J),(I-k,J),(I-k,J-k),(I+k,J+k)] and polje.barva != B: # "Sosedni" krogci druge barve - za 1 ali 2 oddaljeni od prvega izbranega.
-                    return True
+                (I1, J1, B1) = (self.izbrani[0].x, self.izbrani[0].y, self.izbrani[0].barva)
+                if len(self.izbrani) == 1:
+                    if p in [(I1,J1+1),(I1,J1-1),(I1+1,J1),(I1-1,J1),(I1-1,J1-1),(I1+1,J1+1)] and polje.barva == B1:
+                        return True
+                elif len(self.izbrani) == 2:
+                    (I2, J2, B2) = (self.izbrani[1].x, self.izbrani[1].y, self.izbrani[1].barva)
+                    if I1 == I2:
+                        if p in [(I1, min(J1, J2) - 1),(I1, max(J1, J2) + 1)]:
+                            return True
+                    elif J1 == J2:
+                        if p in [(min(I1, I2) - 1 ,J1),(max(I1, I2) + 1,J1)]:
+                            return True
+                    elif abs(I1 - I2) == 1 and abs(J1 - J2) == 1:
+                        if p in [(min(I1, I2) - 1, min(J1, J2) - 1),(max(I1, I2) + 1, max(J1, J2) + 1)]:
+                            return True
         else:
             return False
 
@@ -157,46 +176,6 @@ class Gui():
         self.okno.create_line(2.5*d, 1*d, 9*d, 1*d, tag=Gui.TAG_OKVIR)
         self.okno.create_line(0*d, 5.5*d, 2.5*d, 1*d, tag=Gui.TAG_OKVIR)
         self.okno.create_line(9*d, 1*d, 11*d, 5.5*d, tag=Gui.TAG_OKVIR)
-
-    def narisi_X(self, p):
-        """Nariši križec v polje (i, j)."""
-        x = p[0] * 100
-        y = p[1] * 100
-        sirina = 3
-        self.okno.create_line(x+5, y+5, x+95, y+95, width=sirina, tag=Gui.TAG_FIGURA)
-        self.okno.create_line(x+95, y+5, x+5, y+95, width=sirina, tag=Gui.TAG_FIGURA)
-
-    def narisi_O(self, p):
-        """Nariši krožec v polje (i, j)."""
-        x = p[0] * 100
-        y = p[1] * 100
-        sirina = 3
-        self.okno.create_oval(x+5, y+5, x+95, y+95, width=sirina,tag=Gui.TAG_FIGURA)
-
-
-
-
-
-    def ustvari_matriko(self):
-        #Ustvari 9x9 matriko
-        matrika = []
-        for x in range(9):
-            seznam = []
-            for y in range(9):
-                seznam.append(0)
-            matrika.append(seznam)
-        for i in range(9):              # Ustreza x-kooordinati, torej pove (poševni) stolpec.
-            for j in range(9):          # Ustreza y-kooordinati, torej pove vrstico (od zgoraj dol).
-                if (i,j) in [(5,0),(6,0),(7,0),(8,0),(6,1),(7,1),(8,1),(7,2),(8,2),(8,3)]:  
-                    matrika[i][j] = None    # Ta polja ne obstajajo
-                elif (j,i) in [(5,0),(6,0),(7,0),(8,0),(6,1),(7,1),(8,1),(7,2),(8,2),(8,3)]:
-                    matrika[i][j] = None    # Ta polja ne obstajajo
-                elif (i,j) in [(0,0),(0,1),(1,0),(1,1),(2,0),(2,1),(2,2),(3,0),(3,1),(3,2),(4,0),(4,1),(4,2),(5,0),(5,1)]:
-                    matrika[i][j] = 'B'     # Začetna postavitev belega.
-                elif (i,j) in [(3,7),(4,6),(4,7),(4,8),(5,6),(5,7),(5,8),(6,6),(6,7),(6,8),(7,7),(7,8),(8,7),(8,8)]:
-                    matrika[i][j] = 'C'     # Začetna postavitev črnega.
-        #print(matrika)
-        return matrika
 
 class Polje:
 
