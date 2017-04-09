@@ -5,7 +5,7 @@ import tkinter    # za uporabniški vmesnik
 
 # Za premikanje krogcev je potrebno naredit še:
 #   ko naslednjič klikneš in vlečeš, se premaknejo
-#   ali je moteče, da je treba krogce izbirat po vrsti?
+
 
 
 # Nujno UNDO. Ali je dovolj, da se v zgodovino shrani samo matrika? Ali potrebujemo tudi seznam izbranih polj? Ta polja so rdeča, tako da se to mogoče vidi že iz matrike?
@@ -142,13 +142,24 @@ class Gui():
                 elif len(self.izbrani) == 2:
                     (I2, J2, B2) = (self.izbrani[1].x, self.izbrani[1].y, self.izbrani[1].barva)
                     if I1 == I2:
-                        if p in [(I1, min(J1, J2) - 1),(I1, max(J1, J2) + 1)]:
+                        if abs(J1 - J2) == 2:
+                            if i == I1 and j == (J1 + J2)/2:
+                                return True
+                        elif p in [(I1, min(J1, J2) - 1),(I1, max(J1, J2) + 1)]:
                             return True
                     elif J1 == J2:
-                        if p in [(min(I1, I2) - 1 ,J1),(max(I1, I2) + 1,J1)]:
+                        if abs(I1 - I2) == 2:
+                            if j == J1 and i == (I1 + I2)/2:
+                                return True
+                        elif p in [(min(I1, I2) - 1 ,J1),(max(I1, I2) + 1,J1)]:
                             return True
-                    elif abs(I1 - I2) == 1 and abs(J1 - J2) == 1:
+                    elif abs(I1 - I2) == 1 and abs(J1 - J2) == 1: # Torej sta sosednja (na diagonali).
+                        #if i == (I1 + I2)/2 and j == (J1 + J2)/2:
+                        #    return True
                         if p in [(min(I1, I2) - 1, min(J1, J2) - 1),(max(I1, I2) + 1, max(J1, J2) + 1)]:
+                            return True
+                    elif abs(I1 - I2) == 2 and abs(J1 - J2) == 2: # Med označenima je eno prosto polje (na diagonali).
+                        if i == (I1 + I2)/2 and j == (J1 + J2)/2:
                             return True
         else:
             return False
