@@ -1,5 +1,13 @@
 import tkinter    # za uporabniški vmesnik
 
+#iz self.izbrani naredi nov seznam parov (x,y)
+#zapeljem se po tem seznamu in v matriki ta polja(označene krogce) odznači in pobarvaj belo
+#iz prejšnega seznama naredi nov seznam parov ki bo imel premaknjene koordinate
+#zapeljem se po tem seznamu in v matriki ta polja primerno pobarvaj
+#dodaj tudi možnost premikanja po diagonali
+
+#RAZVRSTITEV DELOV KODE V PRIMERNO DATOTEKO!!!!
+
 ######################################################################
 
 
@@ -25,6 +33,12 @@ class Gui():
 
     # Velikost polja
     VELIKOST_POLJA = 50
+
+    #Barve krogcev
+    barva_praznih = "white"
+    barva_igralca_1 = "yellow"
+    barva_igralca_2 = "black"
+    
 
 
     def __init__(self, master):
@@ -73,11 +87,11 @@ class Gui():
         for i in range(len(matrika)):
             for j in range(len(matrika[i])):
                 if (i,j) in [(0,0),(0,1),(1,0),(1,1),(2,0),(2,1),(2,2),(3,0),(3,1),(3,2),(4,0),(4,1),(4,2),(5,1)]:
-                    barva = 'yellow'
+                    barva = Gui.barva_igralca_1
                 elif (i,j) in [(3,7),(4,6),(4,7),(4,8),(5,6),(5,7),(5,8),(6,6),(6,7),(6,8),(7,7),(7,8),(8,7),(8,8)]:
-                    barva ='black'
+                    barva = Gui.barva_igralca_2
                 elif (i,j) not in [(5,0),(6,0),(7,0),(8,0),(6,1),(7,1),(8,1),(7,2),(8,2),(8,3)] and (j,i) not in [(5,0),(6,0),(7,0),(8,0),(6,1),(7,1),(8,1),(7,2),(8,2),(8,3)]:
-                    barva = 'white'
+                    barva = Gui.barva_praznih
                 else:
                     barva = None
                 if barva is not None:
@@ -139,7 +153,7 @@ class Gui():
     def preveri_polje(self, p):
         """Pogleda, ali ta krogec lahko izberemo."""
         (i,j) = p
-        if i is not None and j is not None and self.plosca[i][j].barva != 'white':     # Zagotovimo, da smo na plošči in da nismo izbrali praznega polja.
+        if i is not None and j is not None and self.plosca[i][j].barva != Gui.barva_praznih:     # Zagotovimo, da smo na plošči in da nismo izbrali praznega polja.
             polje = self.plosca[i][j]
             if len(self.izbrani) == 0:      # Prvo izbrano polje je lahko katerokoli.
                 return True
@@ -179,44 +193,44 @@ class Gui():
         """Pogleda, ali označene krogce lahko premaknemo na željeno polje."""
         (i,j) = p
         if i is not None and j is not None:     # Zagotovimo, da smo na plošči.
-            if self.plosca[i][j].barva == self.izbrani.barva:
+            if self.plosca[i][j].barva == self.izbrani[0].barva:
                 print("Ni mogoče premakniti izbranih krogcev na svoje polje!")
                 return False
             elif len(self.izbrani) == 1:
-                return self.plosca[i][j].barva == "white"
+                return self.plosca[i][j].barva == Gui.barva_praznih
             elif len(self.izbrani) == 2:
                 (I1, J1) = (self.izbrani[0].x, self.izbrani[0].y)
                 (I2, J2) = (self.izbrani[1].x, self.izbrani[1].y)
                 orientacija = self.orientacija_izbranih()
                 if orientacija == "x":
                     if (i,j) in [(I1, max(J1, J2) + 1),(I1, min(J1, J2) - 1)]:
-                        if self.plosca[i][j].barva == "white":
+                        if self.plosca[i][j].barva == Gui.barva_praznih:
                             return True
-                        elif self.plosca[i][j].barva == "black":
+                        elif self.plosca[i][j].barva == Gui.Gui.barva_igralca_2:
                             if j == max(J1, J2) + 1:
-                                return self.plosca[i][j+1].barva == "white"
+                                return self.plosca[i][j+1].barva == Gui.barva_praznih
                             elif j == min(J1, J2) - 1:
-                                return self.plosca[i][j-1].barva == "white"
+                                return self.plosca[i][j-1].barva == Gui.barva_praznih
                     return False
                 elif orientacija == "y":
                     if (i,j) in [(max(I1, I2) + 1, J1),(min(I1, I2) - 1, J1)]:
-                        if self.plosca[i][j].barva == "white":
+                        if self.plosca[i][j].barva == Gui.barva_praznih:
                             return True
-                        elif self.plosca[i][j].barva == "black":
+                        elif self.plosca[i][j].barva == Gui.Gui.barva_igralca_2:
                             if i == max(I1, I2) + 1:
-                                return self.plosca[i+1][j].barva == "white"
+                                return self.plosca[i+1][j].barva == Gui.barva_praznih
                             elif i == min(I1, I2) - 1:
-                                return self.plosca[i-1][j].barva == "white"
+                                return self.plosca[i-1][j].barva == Gui.barva_praznih
                     return False
                 elif orientacija == "diagonala":
                     if (i,j) in [(max(I1, I2) + 1, max(J1, J2) + 1),(min(I1, I2) - 1, min(J1, J2) - 1)]:
-                        if self.plosca[i][j].barva == "white":
+                        if self.plosca[i][j].barva == Gui.barva_praznih:
                             return True
-                        elif self.plosca[i][j].barva == "black":
+                        elif self.plosca[i][j].barva == Gui.Gui.barva_igralca_2:
                             if i == max(I1, I2) + 1 and j == max(J1, J2) + 1:
-                                return self.plosca[i+1][j+1].barva == "white"
+                                return self.plosca[i+1][j+1].barva == Gui.barva_praznih
                             elif i == min(I1, I2) - 1 and j == min(J1, J2) - 1:
-                                return self.plosca[i-1][j-1].barva == "white"
+                                return self.plosca[i-1][j-1].barva == Gui.barva_praznih
                     return False
             elif len(self.izbrani) == 3:
                 (I1, J1) = (self.izbrani[0].x, self.izbrani[0].y)
@@ -225,40 +239,40 @@ class Gui():
                 orientacija = self.orientacija_izbranih()
                 if orientacija == "x":
                     if (i,j) in [(I1, max(J1, J2, J3) +1),(I1, min(J1, J2, J3) - 1)]:
-                        if self.plosca[i][j].barva == "white":
+                        if self.plosca[i][j].barva == Gui.barva_praznih:
                             return True
-                        elif self.plosca[i][j].barva == "black":
+                        elif self.plosca[i][j].barva == Gui.Gui.barva_igralca_2:
                             if j == max(J1, J2, J3) + 1:
-                                return self.plosca[i][j+1].barva == "white" or (self.plosca[i][j+1].barva == "black" and self.plosca[i][j+2].barva != "yellow" and self.plosca[i][j+2].barva != "black")
+                                return self.plosca[i][j+1].barva == Gui.barva_praznih or (self.plosca[i][j+1].barva == Gui.Gui.barva_igralca_2 and self.plosca[i][j+2].barva != Gui.Gui.barva_igralca_1 and self.plosca[i][j+2].barva != Gui.Gui.barva_igralca_2)
                             elif j == min(J1, J2, J3) - 1:
-                                return self.plosca[i][j-1].barva == "white" or (self.plosca[i][j-1].barva == "black" and self.plosca[i][j-2].barva != "yellow" and self.plosca[i][j-2].barva != "black")
+                                return self.plosca[i][j-1].barva == Gui.barva_praznih or (self.plosca[i][j-1].barva == Gui.Gui.barva_igralca_2 and self.plosca[i][j-2].barva != Gui.barva_igralca_1 and self.plosca[i][j-2].barva != Gui.barva_igralca_2)
                     return False
                 elif orientacija == "y":
                     if (i,j) in [(max(I1, I2, I3) + 1, J1),(min(I1, I2, I3) - 1, J1)]:
-                        if self.plosca[i][j].barva == "white":
+                        if self.plosca[i][j].barva == Gui.barva_praznih:
                             return True
-                        elif self.plosca[i][j].barva == "black":
+                        elif self.plosca[i][j].barva == Gui.barva_igralca_2:
                             if i == max(I1, I2, I3) + 1:
-                                return self.plosca[i+1][j].barva == "white" or (self.plosca[i+1][j].barva == "black" and self.plosca[i+2][j].barva != "yellow" and self.plosca[i+2][j].barva != "black")
+                                return self.plosca[i+1][j].barva == Gui.barva_praznih or (self.plosca[i+1][j].barva == Gui.barva_igralca_2 and self.plosca[i+2][j].barva != Gui.barva_igralca_1 and self.plosca[i+2][j].barva != Gui.barva_igralca_2)
                             elif i == min(I1, I2, I3) - 1:
-                                return self.plosca[i-1][j].barva == "white" or (self.plosca[i-1][j].barva == "black" and self.plosca[i-2][j].barva != "yellow" and self.plosca[i-2][j].barva != "black")
+                                return self.plosca[i-1][j].barva == Gui.barva_praznih or (self.plosca[i-1][j].barva == Gui.barva_igralca_2 and self.plosca[i-2][j].barva != Gui.barva_igralca_1 and self.plosca[i-2][j].barva != Gui.barva_igralca_2)
                     return False
                 elif orientacija == "diagonala":
                     if (i,j) in [(max(I1, I2, I3) + 1, max(J1, J2, J3) + 1),(min(I1, I2, I3) - 1, min(J1, J2, J3) - 1)]:
-                        if self.plosca[i][j].barva == "white":
+                        if self.plosca[i][j].barva == Gui.barva_praznih:
                             return True
-                        elif self.plosca[i][j].barva == "black":
+                        elif self.plosca[i][j].barva == Gui.barva_igralca_2:
                             if i == max(I1, I2, I3) + 1 and j == max(J1, J2, J3) + 1:
-                                return self.plosca[i+1][j+1].barva == "white" or (self.plosca[i+1][j+1].barva == "black" and self.plosca[i+2][j+2].barva != "yellow" and self.plosca[i+2][j+2].barva != "black")
+                                return self.plosca[i+1][j+1].barva == Gui.barva_praznih or (self.plosca[i+1][j+1].barva == Gui.barva_igralca_2 and self.plosca[i+2][j+2].barva != Gui.barva_igralca_1 and self.plosca[i+2][j+2].barva != Gui.barva_igralca_2)
                             elif i == min(I1, I2, I3) - 1 and j == min(J1, J2, J3) - 1:
-                                return self.plosca[i-1][j-1].barva == "white" or (self.plosca[i-1][j-1].barva == "black" and self.plosca[i-2][j-2].barva != "yellow" and self.plosca[i-2][j-2].barva != "black")
+                                return self.plosca[i-1][j-1].barva == Gui.barva_praznih or (self.plosca[i-1][j-1].barva == Gui.barva_igralca_2 and self.plosca[i-2][j-2].barva != Gui.barva_igralca_1 and self.plosca[i-2][j-2].barva != Gui.barva_igralca_2)
                     return False
             return False
             
         
     def premakni_krogce(self, event):
         i,j = self.poisci_polje(event)
-        orientacija = orientacija_izbranih()
+        orientacija = self.orientacija_izbranih()
         if orientacija == "x":
             if j == max([y for y in self.izbrani.y]) + 1:
                 novi_izbrani = []
@@ -266,29 +280,29 @@ class Gui():
                     x = krogec.x
                     y = krogec.y + 1
                     barva = krogec.barva            
-                    novi_izbrani.append(Polje(x, y, barva, oznacen))
+                    novi_izbrani.append(Polje(x, y, barva))
             elif j == min([y for y in self.izbrani.y]) - 1:
                 novi_izbrani = []
                 for krogec in self.izbrani:
                     x = krogec.x
                     y = krogec.y - 1
                     barva = krogec.barva           
-                    novi_izbrani.append(Polje(x, y, barva, oznacen))
+                    novi_izbrani.append(Polje(x, y, barva))
         elif orientacija == "y":
-            if i == max([x for x in self.izbrani.x]) + 1:
+            if i == max([krogec.x for krogec in self.izbrani]) + 1:
                 novi_izbrani = []
                 for krogec in self.izbrani:
                     x = krogec.x + 1
                     y = krogec.y
                     barva = krogec.barva            
-                    novi_izbrani.append(Polje(x, y, barva, oznacen))
+                    novi_izbrani.append(Polje(x, y, barva))
             elif j == min([x for x in self.izbrani.x]) - 1:
                 novi_izbrani = []
                 for krogec in self.izbrani:
                     x = krogec.x - 1
                     y = krogec.y 
                     barva = krogec.barva           
-                    novi_izbrani.append(Polje(x, y, barva, oznacen))
+                    novi_izbrani.append(Polje(x, y, barva))
         elif orientacija == "diagonala":
             if i == max([x for x in self.izbrani.x]) + 1 and j == max([y for y in self.izbrani.y]) + 1:
                 novi_izbrani = []
@@ -296,14 +310,14 @@ class Gui():
                     x = krogec.x + 1
                     y = krogec.y + 1
                     barva = krogec.barva            
-                    novi_izbrani.append(Polje(x, y, barva, oznacen))
+                    novi_izbrani.append(Polje(x, y, barva))
             elif j == min([y for y in self.izbrani.y]) - 1 and i == min([x for x in self.izbrani.x]) - 1:
                 novi_izbrani = []
                 for krogec in self.izbrani:
                     x = krogec.x - 1
                     y = krogec.y - 1
                     barva = krogec.barva           
-                    novi_izbrani.append(Polje(x, y, barva, oznacen))
+                    novi_izbrani.append(Polje(x, y, barva))
         self.oznaceni = []           
 
             
