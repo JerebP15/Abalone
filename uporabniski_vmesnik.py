@@ -30,7 +30,7 @@ class Gui():
     
 
 
-    def __init__(self, master):
+    def __init__(self, master):      
         # Če uporabnik zapre okno naj se poklice self.zapri_okno
         master.protocol("WM_DELETE_WINDOW", lambda: self.zapri_okno(master))
 
@@ -109,9 +109,7 @@ class Gui():
                     self.premakni_krogce(event)
                     self.premik = False
                     self.izbrani = []
-                
-                
-
+    
     def poisci_polje(self, event):
         """Vrne polje, na katero smo kliknili."""
         d = Gui.VELIKOST_POLJA
@@ -139,7 +137,8 @@ class Gui():
         self.okno.itemconfig(self.plosca[i][j].id, fill=self.plosca[i][j].barva)       # itemconfig izgleda uporabno.
         self.plosca[i][j].oznacen = False
         print(self.plosca[i][j])
-
+        
+    #To bi moralo biti v logiki igre in ne tu!
     def preveri_polje(self, p):
         """Pogleda, ali ta krogec lahko izberemo."""
         (i,j) = p
@@ -177,7 +176,8 @@ class Gui():
                             return True
         else:
             return False
-
+        
+    #To bi moralo biti v logiki igre in ne tu!
     def preveri_potezo(self, p):
         """Pogleda, ali označene krogce lahko premaknemo na željeno polje."""
         (i,j) = p
@@ -186,7 +186,9 @@ class Gui():
                 print("Ni mogoče premakniti izbranih krogcev na svoje polje!")
                 return False
             elif len(self.izbrani) == 1:
-                return self.plosca[i][j].barva == Gui.barva_praznih
+                (I1, J1) = (self.izbrani[0].x, self.izbrani[0].y)
+                if (i,j) in [(I1, J1 + 1), (I1, J1 - 1), (I1 + 1, J1), (I1 - 1, J1), (I1 + 1, J1 + 1), (I1 - 1, J1 - 1)]:
+                    return self.plosca[i][j].barva == Gui.barva_praznih
             elif len(self.izbrani) == 2:
                 (I1, J1) = (self.izbrani[0].x, self.izbrani[0].y)
                 (I2, J2) = (self.izbrani[1].x, self.izbrani[1].y)
@@ -278,7 +280,6 @@ class Gui():
                 self.plosca[polje.x][polje.y].oznacen = False
                 self.okno.itemconfig(self.plosca[polje.x][polje.y].id, fill= Gui.barva_praznih)
                 self.plosca[polje.x][polje.y].barva = Gui.barva_praznih
-            print(izbrani,"1")
             novi_izbrani = []
             if orientacija == "x":
                 if i == max([krogec.x for krogec in izbrani]) + 1:
@@ -354,8 +355,15 @@ class Gui():
     def zacni_igro(self):
         """Nastavi stanje igre na zacetek igre.
            Za igralca uporabi dana igralca."""
-        # Pobrišemo vse figure s polja
-        self.okno.delete(Gui.TAG_FIGURA)
+        # Ustavimo vsa vlakna, ki trenutno razmišljajo
+        #self.prekini_igralce()
+        # Ustvarimo novo igro
+        #self.igra = Igra()
+        # Shranimo igralce
+        #self.igralec_x = igralec_x
+        #self.igralec_o = igralec_o
+        self.napis.set("Na potezi je igralec 1.")
+        #self.igralec_x.igraj()
 
     def koncaj_igro(self):
         """Nastavi stanje igre na konec igre."""
