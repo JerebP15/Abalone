@@ -2,9 +2,12 @@
 
 Igrica pri predmetu Programiranje 2.
 
-Naèrt dela:
+NaÄrt dela:
     
--do 29.3. : naèrt kode, osnovni izris, zaèetni meni igre
--do 5.4. : èloveški igralec, logika igre
--do 12.4. : raèunalnik igralec, razveljavi
+-do 29.3. : naÄrt kode, osnovni izris, zaÄetni meni igre
+
+-do 5.4. : ÄloveÅ¡ki igralec, logika igre
+
+-do 12.4. : raÄunalnik igralec, razveljavi
+
 -do 19. 4. : popravljanje in urejanje kode
