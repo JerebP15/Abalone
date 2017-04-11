@@ -278,11 +278,10 @@ class Gui():
                 self.plosca[polje.x][polje.y].oznacen = False
                 self.okno.itemconfig(self.plosca[polje.x][polje.y].id, fill= Gui.barva_praznih)
                 self.plosca[polje.x][polje.y].barva = Gui.barva_praznih
+            print(izbrani,"1")
             novi_izbrani = []
             if orientacija == "x":
-                sez = [krogec.x for krogec in izbrani]
-                m = max(sez) + 1
-                if i == m:
+                if i == max([krogec.x for krogec in izbrani]) + 1:
                     for krogec in izbrani:
                         id = krogec.id
                         x = krogec.x + 1
@@ -296,7 +295,6 @@ class Gui():
                         y = krogec.y
                         barva = krogec.barva            
                         novi_izbrani.append(Polje(id, x, y, barva))
-                    print(novi_izbrani)
             elif orientacija == "y":
                 if j == max([krogec.y for krogec in izbrani]) + 1:
                     for krogec in izbrani:
@@ -332,8 +330,6 @@ class Gui():
                 self.okno.itemconfig(self.plosca[krogec.x][krogec.y].id, fill= krogec.barva)
                 self.plosca[krogec.x][krogec.y].barva = krogec.barva
         self.oznaceni = []           
-
-            
     
     def orientacija_izbranih(self):
         """Pove orientacijo izbranih krogcev. Možne smeri so x, y in diagonala."""
