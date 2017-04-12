@@ -17,6 +17,9 @@ class Clovek():
         # Človek jo lahko ignorira.
         pass
 
-    def klik(self, p):
+    def klik_z_levo(self, p):
         # Povlečemo potezo. Če ni veljavna, se ne bo zgodilo nič.
-        self.gui.povleci_potezo(p)
+        self.gui.oznacevanje(p)
+    def klik_z_desno(self, p):
+        # Povlečemo potezo. Če ni veljavna, se ne bo zgodilo nič.
+        self.gui.premikanje(p)

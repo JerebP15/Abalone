@@ -1,4 +1,13 @@
 import tkinter    # za uporabniški vmesnik
+import argparse   # za argumente iz ukazne vrstice
+import logging    # za odpravljanje napak
+
+# Privzeta minimax globina, če je nismo podali ob zagonu v ukazni vrstici
+MINIMAX_GLOBINA = 3
+
+#from igra import *
+#from clovek import *
+#from racunalnik import *
 
 
 ######################################################################
@@ -30,7 +39,10 @@ class Gui():
     
 
 
-    def __init__(self, master):      
+    def __init__(self, master):
+        self.igralec_1 = None # Objekt, ki igra X (nastavimo ob začetku igre)
+        self.igralec_2 = None # Objekt, ki igra O (nastavimo ob začetku igre)
+        self.igra = None
         # Če uporabnik zapre okno naj se poklice self.zapri_okno
         master.protocol("WM_DELETE_WINDOW", lambda: self.zapri_okno(master))
 
@@ -41,8 +53,23 @@ class Gui():
         # Podmenu za izbiro igre
         menu_igra = tkinter.Menu(menu)
         menu.add_cascade(label="Igra", menu=menu_igra)
+        #TODO preimenuj X, O
         menu_igra.add_command(label="Nova igra",
                               command=lambda: self.zacni_igro())
+        menu_igra.add_command(label="X=Človek, O=Človek",
+                              command=lambda: self.zacni_igro(Clovek(self),
+                                                              Clovek(self)))
+        menu_igra.add_command(label="X=Človek, O=Računalnik",
+                              command=lambda: self.zacni_igro(Clovek(self),
+                                                              Racunalnik(self, Minimax(globina))))
+        menu_igra.add_command(label="X=Računalnik, O=Človek",
+                              command=lambda: self.zacni_igro(Racunalnik(self, Minimax(globina)),
+                                                              Clovek(self)))
+        menu_igra.add_command(label="X=Računalnik, O=Računalnik",
+                              command=lambda: self.zacni_igro(Racunalnik(self, Minimax(globina)),
+                                                              Racunalnik(self, Minimax(globina))))
+
+        
         # Napis, ki prikazuje stanje igre
         self.napis = tkinter.StringVar(master, value="Dobrodošli v Abalone!")
         tkinter.Label(master, textvariable=self.napis).grid(row=0, column=0)
@@ -54,15 +81,18 @@ class Gui():
         # Črte na igralnem polju
         #self.narisi_crte()
         self.plosca = self.narisi_plosco()
+        #TODO to gre v Igra
         self.izbrani = []
         self.premik = False
 
         # Naročimo se na dogodek Button-1 na self.okno,
+        #TODO Novi metodi, ki se različno odzivata na klik z levo in desno
         self.okno.bind("<Button-1>", self.okno_klik)
-        self.okno.bind("<Tab>", self.zacni_premik_krogcev)
+        self.okno.bind("<Button-3>", self.zacni_premik_krogcev)
+        #TODO press, release
 
         # Prični igro
-        self.zacni_igro()
+        self.zacni_igro(Clovek(self), Racunalnik(self, Minimax(globina)))
 
     def narisi_plosco(self):
         self.okno.delete(Gui.TAG_FIGURA)
@@ -91,6 +121,7 @@ class Gui():
     def okno_klik(self, event):
         """Obdelaj klik na ploščo."""
         # Tistemu, ki je na potezi, povemo, da je uporabnik kliknil na ploščo.
+        # TODO Odziv odvisen od igralca na potezi. (veliko dela)
         i,j = self.poisci_polje(event)
         if self.premik is False:            #Če krogcev ne premikamo jih dodajamo
             if i is not None and j is not None and self.plosca[i][j] in self.izbrani:
@@ -109,6 +140,8 @@ class Gui():
                     self.premakni_krogce(event)
                     self.premik = False
                     self.izbrani = []
+
+    # TODO napiši metodo Povleci potezo(zdaj to delno dela okno_klik)
     
     def poisci_polje(self, event):
         """Vrne polje, na katero smo kliknili."""
@@ -130,10 +163,6 @@ class Gui():
         if i in range(9) and j in range(9):
             self.okno.itemconfig(self.plosca[i][j].id, fill='red')  # itemconfig izgleda uporabno.
             self.plosca[i][j].oznacen = True
-            # if self.plosca[i][j].oznacen:
-            #     self.okno.itemconfig(self.plosca[i][j].id, fill=barva)
-            # else:
-            #     self.okno.itemconfig(self.plosca[i][j].id, fill='red')       # itemconfig izgleda uporabno.
             print(self.plosca[i][j])
 
 
@@ -145,7 +174,6 @@ class Gui():
         print(self.plosca[i][j])
         
     #To bi moralo biti v logiki igre in ne tu!
-
     def preveri_polje(self, p):
         """Pogleda, ali ta krogec lahko izberemo."""
         (i,j) = p
@@ -359,26 +387,42 @@ class Gui():
         else:
             self.premik = False
 
-    def zacni_igro(self):
+    def zacni_igro(self, igralec_1, igralec_2):
         """Nastavi stanje igre na zacetek igre.
            Za igralca uporabi dana igralca."""
         # Ustavimo vsa vlakna, ki trenutno razmišljajo
         #self.prekini_igralce()
+        # Pobrišemo tiste, ki so padli dol in narišemo začetno pozicijo
+        self.plosca.delete(Gui.TAG_FIGURA)
+        #self.zacetna() #TODO
         # Ustvarimo novo igro
         #self.igra = Igra()
         # Shranimo igralce
-        #self.igralec_x = igralec_x
-        #self.igralec_o = igralec_o
+        #self.igralec_1 = igralec_1
+        #self.igralec_2 = igralec_2
         self.napis.set("Na potezi je igralec 1.")
-        #self.igralec_x.igraj()
+        #self.igralec_1.igraj()
 
-    def koncaj_igro(self):
+    def koncaj_igro(self, zmagovalec):
         """Nastavi stanje igre na konec igre."""
-        self.napis.set("Konec igre.")
+        if zmagovalec == IGRALEC_1:
+            #TODO Prevod barve
+            #TODO Nekako bolj razvidno povedati, da je konec igre
+            self.napis.set("Zmagal je {}.".format(barva_igralca_1))
+        elif zmagovalec == IGRALEC_O:
+            self.napis.set("Zmagal je {}.".format(barva_igralca_2))
+
+    def prekini_igralce(self):
+        """Sporoči igralcem, da morajo nehati razmišljati."""
+        logging.debug ("prekinjam igralce")
+        if self.igralec_1: self.igralec_1.prekini()
+        if self.igralec_2: self.igralec_3.prekini()
+
 
     def zapri_okno(self, master):
         """Ta metoda se pokliče, ko uporabnik zapre aplikacijo."""
         # Kasneje bo tu treba še kaj narediti
+        # self.prekini_igralce()
         master.destroy()
 
     def narisi_crte(self):
