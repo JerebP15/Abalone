@@ -111,8 +111,12 @@ class Gui():
         d = Gui.VELIKOST_POLJA
         (i, j) = p
         if i in range(9) and j in range(9):
-            self.okno.itemconfig(self.plosca[i][j].id, fill='red')       # itemconfig izgleda uporabno.
+            self.okno.itemconfig(self.plosca[i][j].id, fill='red')  # itemconfig izgleda uporabno.
             self.plosca[i][j].barva = 'red'
+            # if self.plosca[i][j].oznacen:
+            #     self.okno.itemconfig(self.plosca[i][j].id, fill=barva)
+            # else:
+            #     self.okno.itemconfig(self.plosca[i][j].id, fill='red')       # itemconfig izgleda uporabno.
             print(self.plosca[i][j])
 
     def preveri_polje(self, p):
