@@ -1,10 +1,10 @@
-zamik plošèe
-èrte
-monost premika
-raèunalnik igralec
+zamik ploÅ¡Äe
+Ärte
+moÅ¾nost premika
+raÄunalnik igralec
 logika igre
 minimax
 ????????????????
 undo
-monost izbire barve
-teavnost igre
+moÅ¾nost izbire barve
+teÅ¾avnost igre
