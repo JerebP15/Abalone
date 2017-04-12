@@ -1,18 +1,18 @@
 ######################################################################
 ## Igra
 
-IGRALEC_X = "X"
-IGRALEC_O = "O"
+IGRALEC_1 = 1
+IGRALEC_2 = 2
 PRAZNO = "."
 NEODLOCENO = "neodločeno"
 NI_KONEC = "ni konec"
 
 def nasprotnik(igralec):
     """Vrni nasprotnika od igralca."""
-    if igralec == IGRALEC_X:
-        return IGRALEC_O
-    elif igralec == IGRALEC_O:
-        return IGRALEC_X
+    if igralec == IGRALEC_1:
+        return IGRALEC_2
+    elif igralec == IGRALEC_2:
+        return IGRALEC_1
     else:
         # Do sem ne smemo priti, če pridemo, je napaka v programu.
         # V ta namen ima Python ukaz assert, s katerim lahko preverimo,
