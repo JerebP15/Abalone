@@ -1,6 +1,6 @@
 import logging
 
-from igra import IGRALEC_X, IGRALEC_O, PRAZNO, NEODLOCENO, NI_KONEC, nasprotnik
+from logika_igre import IGRALEC_1, IGRALEC_2, PRAZNO, NEODLOCENO, NI_KONEC, nasprotnik
 
 
 ######################################################################
