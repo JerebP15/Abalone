@@ -122,7 +122,7 @@ class Gui():
     def oznacevanje_krogcev(self, event):
         i,j = self.poisci_polje(event)
         print((i,j))
-        if i is not None and j is not None: #Tu manjka še pogoj, da lahko označimo le krogce igralca, ki je na potezi.
+        if i is not None and j is not None: #TODO Tu manjka še pogoj, da lahko označimo le krogce igralca, ki je na potezi.
             if self.plosca[i][j].oznacen == False:
                 if self.preveri_polje((i,j)):
                     self.okno.itemconfig(self.plosca[i][j].id, fill='red')
@@ -217,6 +217,7 @@ class Gui():
             return False
         
     #To bi moralo biti v logiki igre in ne tu!
+    #TODO Ko pridemo do roba mormao izpodrinjeni krogec poriniti iz plošče
     def preveri_potezo(self, p):
         """Pogleda, ali označene krogce lahko premaknemo na željeno polje."""
         (i,j) = p
@@ -238,9 +239,15 @@ class Gui():
                             return True
                         elif self.plosca[i][j].barva == Gui.barva_igralca_2:
                             if j == max(J1, J2) + 1:
-                                return self.plosca[i][j+1].barva == Gui.barva_praznih
+                                if self.plosca[i][j+1].barva == Gui.barva_praznih:
+                                    self.okno.itemconfig(self.plosca[i][j+1].id, fill= Gui.barva_igralca_2)
+                                    self.plosca[i][j+1].barva = Gui.barva_igralca_2
+                                    return True
                             elif j == min(J1, J2) - 1:
-                                return self.plosca[i][j-1].barva == Gui.barva_praznih
+                                if self.plosca[i][j-1].barva == Gui.barva_praznih:
+                                    self.okno.itemconfig(self.plosca[i][j-1].id, fill= Gui.barva_igralca_2)
+                                    self.plosca[i][j-1].barva = Gui.barva_igralca_2
+                                    return True
                     elif (i,j) in [(I1 + 1, min(J1, J2)),(I1 + 1, max(J1, J2) + 1)]:
                         return self.plosca[i][j].barva == Gui.barva_praznih and self.plosca[I1 + 1][max(J1,J2)].barva == Gui.barva_praznih
                     elif (i,j) in [(I1 - 1, max(J1, J2)),(I1 - 1, min(J1, J2) - 1)]:
@@ -252,9 +259,16 @@ class Gui():
                             return True
                         elif self.plosca[i][j].barva == Gui.barva_igralca_2:
                             if i == max(I1, I2) + 1:
-                                return self.plosca[i+1][j].barva == Gui.barva_praznih
+                                if self.plosca[i+1][j].barva == Gui.barva_praznih:
+                                    self.okno.itemconfig(self.plosca[i+1][j].id, fill= Gui.barva_igralca_2)
+                                    self.plosca[i+1][j].barva = Gui.barva_igralca_2
+                                    return True                                    
                             elif i == min(I1, I2) - 1:
-                                return self.plosca[i-1][j].barva == Gui.barva_praznih
+                                if self.plosca[i-1][j].barva == Gui.barva_praznih:                                    
+                                    self.okno.itemconfig(self.plosca[i-1][j].id, fill= Gui.barva_igralca_2)
+                                    self.plosca[i-1][j].barva = Gui.barva_igralca_2
+                                    print(self.plosca[i-1][j])
+                                    return True
                     elif (i,j) in [(max(I1, I2), J1 - 1),(min(I1, I2) - 1, J1 - 1)]:
                         return self.plosca[i][j].barva == Gui.barva_praznih and self.plosca[min(I1,I2)][J1 - 1].barva == Gui.barva_praznih
                     elif (i,j) in [(max(I1, I2) + 1, J1 + 1),(min(I1, I2), J1 + 1)]:
@@ -266,9 +280,15 @@ class Gui():
                             return True
                         elif self.plosca[i][j].barva == Gui.barva_igralca_2:
                             if i == max(I1, I2) + 1 and j == max(J1, J2) + 1:
-                                return self.plosca[i+1][j+1].barva == Gui.barva_praznih
+                                if self.plosca[i+1][j+1].barva == Gui.barva_praznih:
+                                    self.okno.itemconfig(self.plosca[i+1][j+1].id, fill= Gui.barva_igralca_2)
+                                    self.plosca[i+1][j+1].barva = Gui.barva_igralca_2
+                                    return True
                             elif i == min(I1, I2) - 1 and j == min(J1, J2) - 1:
-                                return self.plosca[i-1][j-1].barva == Gui.barva_praznih
+                                if self.plosca[i-1][j-1].barva == Gui.barva_praznih:
+                                    self.okno.itemconfig(self.plosca[i-1][j-1].id, fill= Gui.barva_igralca_2)
+                                    self.plosca[i-1][j-1].barva = Gui.barva_igralca_2                                    
+                                    return True
                     elif (i,j) in [(min(I1,I2), min(J1,J2) - 1),(max(I1,I2) + 1, max(J1,J2))]:
                         return self.plosca[i][j].barva == Gui.barva_praznih and self.plosca[max(I1,J2)][min(J1,J2)].barva == Gui.barva_praznih
                     elif (i,j) in [(max(I1,I2), max(J1,J2) + 1),(min(I1,I2) - 1, min(J1,J2))]:
@@ -286,9 +306,27 @@ class Gui():
                             return True
                         elif self.plosca[i][j].barva == Gui.barva_igralca_2:
                             if j == max(J1, J2, J3) + 1:
-                                return self.plosca[i][j+1].barva == Gui.barva_praznih or (self.plosca[i][j+1].barva == Gui.barva_igralca_2 and self.plosca[i][j+2].barva != Gui.barva_igralca_1 and self.plosca[i][j+2].barva != Gui.barva_igralca_2)
+                                if self.plosca[i][j+1].barva == Gui.barva_praznih:
+                                    self.okno.itemconfig(self.plosca[i][j+1].id, fill= Gui.barva_igralca_2)
+                                    self.plosca[i][j+1].barva = Gui.barva_igralca_2
+                                    return True
+                                elif self.plosca[i][j+1].barva == Gui.barva_igralca_2 and self.plosca[i][j+2].barva != Gui.barva_igralca_1 and self.plosca[i][j+2].barva != Gui.barva_igralca_2:
+                                    self.okno.itemconfig(self.plosca[i][j+1].id, fill= Gui.barva_igralca_2)
+                                    self.plosca[i][j+1].barva = Gui.barva_igralca_2
+                                    self.okno.itemconfig(self.plosca[i][j+2].id, fill= Gui.barva_igralca_2)
+                                    self.plosca[i][j+2].barva = Gui.barva_igralca_2
+                                    return True
                             elif j == min(J1, J2, J3) - 1:
-                                return self.plosca[i][j-1].barva == Gui.barva_praznih or (self.plosca[i][j-1].barva == Gui.barva_igralca_2 and self.plosca[i][j-2].barva != Gui.barva_igralca_1 and self.plosca[i][j-2].barva != Gui.barva_igralca_2)
+                                if self.plosca[i][j-1].barva == Gui.barva_praznih:
+                                    self.okno.itemconfig(self.plosca[i][j-1].id, fill= Gui.barva_igralca_2)
+                                    self.plosca[i][j-1].barva = Gui.barva_igralca_2
+                                    return True
+                                elif self.plosca[i][j-1].barva == Gui.barva_igralca_2 and self.plosca[i][j-2].barva != Gui.barva_igralca_1 and self.plosca[i][j-2].barva != Gui.barva_igralca_2:
+                                    self.okno.itemconfig(self.plosca[i][j-1].id, fill= Gui.barva_igralca_2)
+                                    self.plosca[i][j-1].barva = Gui.barva_igralca_2
+                                    self.okno.itemconfig(self.plosca[i][j-2].id, fill= Gui.barva_igralca_2)
+                                    self.plosca[i][j-2].barva = Gui.barva_igralca_2
+                                    return True
                     elif (i,j) in [(I1 - 1, min(J1,J2,J3) - 1),(I1 - 1, max(J1, J2, J3))]:
                         return self.plosca[i][j].barva == Gui.barva_praznih and self.plosca[I1 - 1][min(J1, J2, J3)].barva == Gui.barva_praznih and self.plosca[I1 - 1][min(J1, J2, J3) + 1].barva == Gui.barva_praznih
                     elif (i,j) in [(I1 + 1, min(J1,J2,J3)),(I1 + 1, max(J1, J2, J3) + 1)]:
@@ -300,9 +338,27 @@ class Gui():
                             return True
                         elif self.plosca[i][j].barva == Gui.barva_igralca_2:
                             if i == max(I1, I2, I3) + 1:
-                                return self.plosca[i+1][j].barva == Gui.barva_praznih or (self.plosca[i+1][j].barva == Gui.barva_igralca_2 and self.plosca[i+2][j].barva != Gui.barva_igralca_1 and self.plosca[i+2][j].barva != Gui.barva_igralca_2)
+                                if self.plosca[i+1][j].barva == Gui.barva_praznih:
+                                    self.okno.itemconfig(self.plosca[i+1][j].id, fill= Gui.barva_igralca_2)
+                                    self.plosca[i+1][j].barva = Gui.barva_igralca_2
+                                    return True
+                                elif self.plosca[i+1][j].barva == Gui.barva_igralca_2 and self.plosca[i+2][j].barva != Gui.barva_igralca_1 and self.plosca[i+2][j].barva != Gui.barva_igralca_2:
+                                    self.okno.itemconfig(self.plosca[i+1][j].id, fill= Gui.barva_igralca_2)
+                                    self.plosca[i+1][j].barva = Gui.barva_igralca_2
+                                    self.okno.itemconfig(self.plosca[i+2][j].id, fill= Gui.barva_igralca_2)
+                                    self.plosca[i+2][j].barva = Gui.barva_igralca_2
+                                    return True                                    
                             elif i == min(I1, I2, I3) - 1:
-                                return self.plosca[i-1][j].barva == Gui.barva_praznih or (self.plosca[i-1][j].barva == Gui.barva_igralca_2 and self.plosca[i-2][j].barva != Gui.barva_igralca_1 and self.plosca[i-2][j].barva != Gui.barva_igralca_2)
+                                if self.plosca[i-1][j].barva == Gui.barva_praznih:
+                                    self.okno.itemconfig(self.plosca[i-1][j].id, fill= Gui.barva_igralca_2)
+                                    self.plosca[i-1][j].barva = Gui.barva_igralca_2
+                                    return True
+                                elif self.plosca[i-1][j].barva == Gui.barva_igralca_2 and self.plosca[i-2][j].barva != Gui.barva_igralca_1 and self.plosca[i-2][j].barva != Gui.barva_igralca_2:
+                                    self.okno.itemconfig(self.plosca[i-1][j].id, fill= Gui.barva_igralca_2)
+                                    self.plosca[i-1][j].barva = Gui.barva_igralca_2
+                                    self.okno.itemconfig(self.plosca[i-2][j].id, fill= Gui.barva_igralca_2)
+                                    self.plosca[i-2][j].barva = Gui.barva_igralca_2
+                                    return True
                     elif (i,j) in [(max(I1,I2,I3), J1 - 1),(min(I1,I2,I3) - 1, J1 - 1)]:
                         return self.plosca[i][j].barva == Gui.barva_praznih and self.plosca[max(I1,I2,I3) - 1][J1 - 1].barva == Gui.barva_praznih and self.plosca[min(I1,I2,I3) + 1][J1 - 1].barva == Gui.barva_praznih
                     elif (i,j) in [(max(I1,I2,I3) + 1, J1 + 1),(min(I1,I2,I3), J1 + 1)]:
@@ -314,16 +370,34 @@ class Gui():
                             return True
                         elif self.plosca[i][j].barva == Gui.barva_igralca_2:
                             if i == max(I1, I2, I3) + 1 and j == max(J1, J2, J3) + 1:
-                                return self.plosca[i+1][j+1].barva == Gui.barva_praznih or (self.plosca[i+1][j+1].barva == Gui.barva_igralca_2 and self.plosca[i+2][j+2].barva != Gui.barva_igralca_1 and self.plosca[i+2][j+2].barva != Gui.barva_igralca_2)
+                                if self.plosca[i+1][j+1].barva == Gui.barva_praznih:
+                                    self.okno.itemconfig(self.plosca[i+1][j+1].id, fill= Gui.barva_igralca_2)
+                                    self.plosca[i+1][j+1].barva = Gui.barva_igralca_2
+                                    return True
+                                elif self.plosca[i+1][j+1].barva == Gui.barva_igralca_2 and self.plosca[i+2][j+2].barva != Gui.barva_igralca_1 and self.plosca[i+2][j+2].barva != Gui.barva_igralca_2:
+                                    self.okno.itemconfig(self.plosca[i+1][j+1].id, fill= Gui.barva_igralca_2)
+                                    self.plosca[i+1][j+1].barva = Gui.barva_igralca_2
+                                    self.okno.itemconfig(self.plosca[i+2][j+2].id, fill= Gui.barva_igralca_2)
+                                    self.plosca[i+2][j+2].barva = Gui.barva_igralca_2
+                                    return True                                    
                             elif i == min(I1, I2, I3) - 1 and j == min(J1, J2, J3) - 1:
-                                return self.plosca[i-1][j-1].barva == Gui.barva_praznih or (self.plosca[i-1][j-1].barva == Gui.barva_igralca_2 and self.plosca[i-2][j-2].barva != Gui.barva_igralca_1 and self.plosca[i-2][j-2].barva != Gui.barva_igralca_2)
+                                if self.plosca[i-1][j-1].barva == Gui.barva_praznih:
+                                    self.okno.itemconfig(self.plosca[i-1][j-1].id, fill= Gui.barva_igralca_2)
+                                    self.plosca[i-1][j-1].barva = Gui.barva_igralca_2
+                                    return True
+                                elif self.plosca[i-1][j-1].barva == Gui.barva_igralca_2 and self.plosca[i-2][j-2].barva != Gui.barva_igralca_1 and self.plosca[i-2][j-2].barva != Gui.barva_igralca_2:
+                                    self.okno.itemconfig(self.plosca[i-1][j-1].id, fill= Gui.barva_igralca_2)
+                                    self.plosca[i-1][j-1].barva = Gui.barva_igralca_2
+                                    self.okno.itemconfig(self.plosca[i-2][j-2].id, fill= Gui.barva_igralca_2)
+                                    self.plosca[i-2][j-2].barva = Gui.barva_igralca_2
+                                    return True  
                     elif (i,j) in [(min(I1, I2, I3), min(J1, J2, J3) - 1),(max(I1, I2, I3) + 1, max(J1, J2, J3))]:
                         return self.plosca[i][j].barva == Gui.barva_praznih and self.plosca[max(I1,I2,I3)][max(J1, J2, J3) - 1].barva == Gui.barva_praznih and self.plosca[min(I1,I2,I3) + 1][min(J1, J2, J3)].barva == Gui.barva_praznih
                     elif (i,j) in [(max(I1, I2, I3), max(J1, J2, J3) + 1),(min(I1, I2, I3) - 1, min(J1, J2, J3))]:
                         return self.plosca[i][j].barva == Gui.barva_praznih and self.plosca[max(I1,I2,I3) - 1][max(J1, J2, J3)].barva == Gui.barva_praznih and self.plosca[min(I1,I2,I3)][min(J1, J2, J3) + 1].barva == Gui.barva_praznih
                     return False
-            return False            
-        
+            return False
+    
     def premakni_krogce(self, event):
         i,j = self.poisci_polje(event)
         if len(self.izbrani) == 1:
@@ -521,9 +595,9 @@ class Gui():
         if zmagovalec == IGRALEC_1:
             #TODO Prevod barve
             #TODO Nekako bolj razvidno povedati, da je konec igre
-            self.napis.set("Zmagal je {}.".format(barva_igralca_1))
+            self.napis.set("Zmagal je {} igralec.".format(barva_igralca_1))
         elif zmagovalec == IGRALEC_O:
-            self.napis.set("Zmagal je {}.".format(barva_igralca_2))
+            self.napis.set("Zmagal je {} igralec.".format(barva_igralca_2))
 
     def prekini_igralce(self):
         """Sporoči igralcem, da morajo nehati razmišljati."""
@@ -546,6 +620,13 @@ class Gui():
         self.okno.create_line(2.5*d, 1*d, 9*d, 1*d, tag=Gui.TAG_OKVIR)
         self.okno.create_line(0*d, 5.5*d, 2.5*d, 1*d, tag=Gui.TAG_OKVIR)
         self.okno.create_line(9*d, 1*d, 11*d, 5.5*d, tag=Gui.TAG_OKVIR)
+        
+    def prevod_barve(self, barva):
+        #TODO To bova dokončala proti koncu projekta, ko bova imela čas se ukvarjati z barvami(saj je to le lepotna izboljšava)
+        if barva == "yellow":
+            return "rumeni"
+        elif barva == "black":
+            return "črni"
 
 class Polje:
 
