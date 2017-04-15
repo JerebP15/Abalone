@@ -188,10 +188,10 @@ class Gui():
                 return False
             else:
                 (I1, J1, B1) = (self.izbrani[0].x, self.izbrani[0].y, self.izbrani[0].barva)
-                if len(self.izbrani) == 1:
-                    if p in [(I1,J1+1),(I1,J1-1),(I1+1,J1),(I1-1,J1),(I1-1,J1-1),(I1+1,J1+1)] and self.plosca[i][j].barva == B1:
+                if len(self.izbrani) == 1 and self.plosca[i][j].barva == B1:
+                    if p in [(I1,J1+1),(I1,J1-1),(I1+1,J1),(I1-1,J1),(I1-1,J1-1),(I1+1,J1+1)]:
                         return True
-                elif len(self.izbrani) == 2:
+                elif len(self.izbrani) == 2 and self.plosca[i][j].barva == B1:
                     (I2, J2, B2) = (self.izbrani[1].x, self.izbrani[1].y, self.izbrani[1].barva)
                     if I1 == I2:
                         if abs(J1 - J2) == 2:
@@ -227,17 +227,18 @@ class Gui():
                 return False
             elif len(self.izbrani) == 1:
                 (I1, J1) = (self.izbrani[0].x, self.izbrani[0].y)
-                if (i,j) in [(I1, J1 + 1), (I1, J1 - 1), (I1 + 1, J1), (I1 - 1, J1), (I1 + 1, J1 + 1), (I1 - 1, J1 - 1)]:
+                if (i,j) in [(I1, J1 + 1), (I1, J1 - 1), (I1 + 1, J1), (I1 - 1, J1), (I1 + 1, J1 + 1), (I1 - 1, J1 - 1)]: # En krogec lahko premaknemo na katerokoli sosednje prosto polje.
                     return self.plosca[i][j].barva == Gui.barva_praznih
             elif len(self.izbrani) == 2:
-                (I1, J1) = (self.izbrani[0].x, self.izbrani[0].y)
+                (I1, J1, B) = (self.izbrani[0].x, self.izbrani[0].y, self.izbrani[0].barva)
                 (I2, J2) = (self.izbrani[1].x, self.izbrani[1].y)
                 orientacija = self.orientacija_izbranih()
                 if orientacija == "y":
                     if (i,j) in [(I1, max(J1, J2) + 1),(I1, min(J1, J2) - 1)]:
                         if self.plosca[i][j].barva == Gui.barva_praznih:
                             return True
-                        elif self.plosca[i][j].barva == Gui.barva_igralca_2:
+                        elif self.plosca[i][j].barva != B:
+                            # # return self.preveri_potisk(orientacija) #TODO self.preveri_potisk
                             if j == max(J1, J2) + 1:
                                 if self.plosca[i][j+1].barva == Gui.barva_praznih:
                                     self.okno.itemconfig(self.plosca[i][j+1].id, fill= Gui.barva_igralca_2)
@@ -257,7 +258,8 @@ class Gui():
                     if (i,j) in [(max(I1, I2) + 1, J1),(min(I1, I2) - 1, J1)]:
                         if self.plosca[i][j].barva == Gui.barva_praznih:
                             return True
-                        elif self.plosca[i][j].barva == Gui.barva_igralca_2:
+                        elif self.plosca[i][j].barva != B:
+                            # return self.preveri_potisk() #TODO self.preveri_potisk
                             if i == max(I1, I2) + 1:
                                 if self.plosca[i+1][j].barva == Gui.barva_praznih:
                                     self.okno.itemconfig(self.plosca[i+1][j].id, fill= Gui.barva_igralca_2)
@@ -278,7 +280,8 @@ class Gui():
                     if (i,j) in [(max(I1, I2) + 1, max(J1, J2) + 1),(min(I1, I2) - 1, min(J1, J2) - 1)]:
                         if self.plosca[i][j].barva == Gui.barva_praznih:
                             return True
-                        elif self.plosca[i][j].barva == Gui.barva_igralca_2:
+                        elif self.plosca[i][j].barva != B:
+                            # return self.preveri_potisk() #TODO self.preveri_potisk
                             if i == max(I1, I2) + 1 and j == max(J1, J2) + 1:
                                 if self.plosca[i+1][j+1].barva == Gui.barva_praznih:
                                     self.okno.itemconfig(self.plosca[i+1][j+1].id, fill= Gui.barva_igralca_2)
@@ -296,7 +299,7 @@ class Gui():
                         return self.plosca[i][j].barva == Gui.barva_praznih and self.plosca[min(I1,J2)][max(J1,J2)].barva == Gui.barva_praznih
                     return False
             elif len(self.izbrani) == 3:
-                (I1, J1) = (self.izbrani[0].x, self.izbrani[0].y)
+                (I1, J1, B) = (self.izbrani[0].x, self.izbrani[0].y, self.izbrani[0].barva)
                 (I2, J2) = (self.izbrani[1].x, self.izbrani[1].y)
                 (I3, J3) = (self.izbrani[2].x, self.izbrani[2].y)
                 orientacija = self.orientacija_izbranih()
@@ -304,7 +307,8 @@ class Gui():
                     if (i,j) in [(I1, max(J1, J2, J3) +1),(I1, min(J1, J2, J3) - 1)]:
                         if self.plosca[i][j].barva == Gui.barva_praznih:
                             return True
-                        elif self.plosca[i][j].barva == Gui.barva_igralca_2:
+                        elif self.plosca[i][j].barva != B:
+                            # return self.preveri_potisk() #TODO self.preveri_potisk
                             if j == max(J1, J2, J3) + 1:
                                 if self.plosca[i][j+1].barva == Gui.barva_praznih:
                                     self.okno.itemconfig(self.plosca[i][j+1].id, fill= Gui.barva_igralca_2)
@@ -336,7 +340,8 @@ class Gui():
                     if (i,j) in [(max(I1, I2, I3) + 1, J1),(min(I1, I2, I3) - 1, J1)]:
                         if self.plosca[i][j].barva == Gui.barva_praznih:
                             return True
-                        elif self.plosca[i][j].barva == Gui.barva_igralca_2:
+                        elif self.plosca[i][j].barva != B:
+                            # return self.preveri_potisk() #TODO self.preveri_potisk
                             if i == max(I1, I2, I3) + 1:
                                 if self.plosca[i+1][j].barva == Gui.barva_praznih:
                                     self.okno.itemconfig(self.plosca[i+1][j].id, fill= Gui.barva_igralca_2)
@@ -368,7 +373,8 @@ class Gui():
                     if (i,j) in [(max(I1, I2, I3) + 1, max(J1, J2, J3) + 1),(min(I1, I2, I3) - 1, min(J1, J2, J3) - 1)]:
                         if self.plosca[i][j].barva == Gui.barva_praznih:
                             return True
-                        elif self.plosca[i][j].barva == Gui.barva_igralca_2:
+                        elif self.plosca[i][j].barva != B:
+                            # return self.preveri_potisk() #TODO self.preveri_potisk
                             if i == max(I1, I2, I3) + 1 and j == max(J1, J2, J3) + 1:
                                 if self.plosca[i+1][j+1].barva == Gui.barva_praznih:
                                     self.okno.itemconfig(self.plosca[i+1][j+1].id, fill= Gui.barva_igralca_2)
@@ -397,6 +403,23 @@ class Gui():
                         return self.plosca[i][j].barva == Gui.barva_praznih and self.plosca[max(I1,I2,I3) - 1][max(J1, J2, J3)].barva == Gui.barva_praznih and self.plosca[min(I1,I2,I3)][min(J1, J2, J3) + 1].barva == Gui.barva_praznih
                     return False
             return False
+
+##    def preveri_potisk(self, orientacija, p):
+##        (i,j) = p
+##        stevilo_oznacenih = len(self.izbrani)
+##        B1 = self.izbrani[0].barva
+##        B2 = self.plosca[i][j].barva
+##        koordinate_oznacenih = []
+##        for krogec in self.izbrani:
+##            koordinate_oznacenih.append((krogec.x, krogec.y))
+##        slovar_orientacij = {"y" : 1, "x" : 2}
+##        (j_max, j_min) = (max(krogec.y for krogec in self.izbrani), min(krogec.y for krogec in self.izbrani))
+##        (i_max, i_min) = (max(krogec.x for krogec in self.izbrani), min(krogec.x for krogec in self.izbrani))
+##        if orientacija in ["x", "y"]:
+##            
+##        if ...
+##        self.izrini #TODO
+        
     
     def premakni_krogce(self, event):
         i,j = self.poisci_polje(event)
@@ -414,139 +437,24 @@ class Gui():
             izbrani = []
             for polje in self.izbrani:
                 izbrani.append(Polje(polje.id, polje.x, polje.y, polje.barva))
-            for polje in izbrani:
-                self.plosca[polje.x][polje.y].oznacen = False
-                self.okno.itemconfig(self.plosca[polje.x][polje.y].id, fill= Gui.barva_praznih)
-                self.plosca[polje.x][polje.y].barva = Gui.barva_praznih
+            for krogec in izbrani:
+                self.plosca[krogec.x][krogec.y].oznacen = False
+                self.okno.itemconfig(self.plosca[krogec.x][krogec.y].id, fill= Gui.barva_praznih)
+                self.plosca[krogec.x][krogec.y].barva = Gui.barva_praznih
+            (j_max, j_min, J) = (max(krogec.y for krogec in self.izbrani), min(krogec.y for krogec in self.izbrani), izbrani[0].y)
+            (i_max, i_min, I) = (max(krogec.x for krogec in self.izbrani), min(krogec.x for krogec in self.izbrani), izbrani[0].x)
             novi_izbrani = []
-            if orientacija == "x":
-                if i == max([krogec.x for krogec in izbrani]) + 1 and j == izbrani[0].y:
+            # Ta slovar je nadomestil 18 if-stavkov, ki so si bili zelo podobni. Te if-stavke zdaj pokrije spodnja for-zanka.
+            SLOVAR = {"x" : [(i_max, 1, J, 0), (i_max, 0, J, -1), (i_max, 1, J, 1), (i_min, -1, J, 0), (i_min, -1, J, -1), (i_min, 0, J, 1)],
+                      "y" : [(I, 0, j_max, 1), (I, 1, j_max, 1), (I, -1, j_max, 0), (I, 0, j_min, -1), (I, 1, j_min, 0), (I, -1, j_min, -1),],
+                      "diagonala" : [(i_max, 1, j_max, 1), (i_max, 0, j_max, 1), (i_max, 1, j_max, 0), (i_min, -1, j_min, -1), (i_min, 0, j_min, -1), (i_min, -1, j_min, 0)]}
+            for parametri in SLOVAR[orientacija]:
+                if i == parametri[0] + parametri[1] and j == parametri[2] + parametri[3]:
                     for krogec in izbrani:
                         id = krogec.id
-                        x = krogec.x + 1
-                        y = krogec.y
-                        barva = krogec.barva            
-                        novi_izbrani.append(Polje(id, x, y, barva))
-                elif i == max([krogec.x for krogec in izbrani]) and j == izbrani[0].y - 1:
-                    for krogec in izbrani:
-                        id = krogec.id
-                        x = krogec.x
-                        y = krogec.y - 1
-                        barva = krogec.barva            
-                        novi_izbrani.append(Polje(id, x, y, barva))
-                elif i == max([krogec.x for krogec in izbrani]) + 1 and j == izbrani[0].y + 1:
-                    for krogec in izbrani:
-                        id = krogec.id
-                        x = krogec.x + 1
-                        y = krogec.y + 1
-                        barva = krogec.barva            
-                        novi_izbrani.append(Polje(id, x, y, barva))
-                elif i == min([krogec.x for krogec in izbrani]) - 1 and j == izbrani[0].y:
-                    for krogec in izbrani:
-                        id = krogec.id
-                        x = krogec.x - 1
-                        y = krogec.y
-                        barva = krogec.barva            
-                        novi_izbrani.append(Polje(id, x, y, barva))
-                elif i == min([krogec.x for krogec in izbrani]) - 1 and j == izbrani[0].y - 1:
-                    for krogec in izbrani:
-                        id = krogec.id
-                        x = krogec.x - 1
-                        y = krogec.y - 1
-                        barva = krogec.barva            
-                        novi_izbrani.append(Polje(id, x, y, barva))
-                elif i == min([krogec.x for krogec in izbrani]) and j == izbrani[0].y + 1:
-                    for krogec in izbrani:
-                        id = krogec.id
-                        x = krogec.x
-                        y = krogec.y + 1
-                        barva = krogec.barva            
-                        novi_izbrani.append(Polje(id, x, y, barva))
-            elif orientacija == "y":
-                if j == max([krogec.y for krogec in izbrani]) + 1 and i == izbrani[0].x:
-                    for krogec in izbrani:
-                        id = krogec.id
-                        x = krogec.x
-                        y = krogec.y + 1
-                        barva = krogec.barva            
-                        novi_izbrani.append(Polje(id, x, y, barva))
-                elif j == max([krogec.y for krogec in izbrani]) + 1 and i == izbrani[0].x + 1:
-                    for krogec in izbrani:
-                        id = krogec.id
-                        x = krogec.x + 1
-                        y = krogec.y + 1
-                        barva = krogec.barva           
-                        novi_izbrani.append(Polje(id, x, y, barva))
-                elif j == max([krogec.y for krogec in izbrani]) and i == izbrani[0].x - 1:
-                    for krogec in izbrani:
-                        id = krogec.id
-                        x = krogec.x - 1
-                        y = krogec.y
-                        barva = krogec.barva           
-                        novi_izbrani.append(Polje(id, x, y, barva))
-                elif j == min([krogec.y for krogec in izbrani]) - 1 and i == izbrani[0].x:
-                    for krogec in izbrani:
-                        id = krogec.id
-                        x = krogec.x
-                        y = krogec.y - 1
-                        barva = krogec.barva           
-                        novi_izbrani.append(Polje(id, x, y, barva))
-                elif j == min([krogec.y for krogec in izbrani]) and i == izbrani[0].x + 1:
-                    for krogec in izbrani:
-                        id = krogec.id
-                        x = krogec.x + 1
-                        y = krogec.y
-                        barva = krogec.barva           
-                        novi_izbrani.append(Polje(id, x, y, barva))
-                elif j == min([krogec.y for krogec in izbrani]) - 1 and i == izbrani[0].x - 1:
-                    for krogec in izbrani:
-                        id = krogec.id
-                        x = krogec.x - 1
-                        y = krogec.y - 1
-                        barva = krogec.barva           
-                        novi_izbrani.append(Polje(id, x, y, barva))
-            elif orientacija == "diagonala":
-                if i == max([krogec.x for krogec in izbrani]) + 1 and j == max([krogec.y for krogec in izbrani]) + 1:
-                    for krogec in izbrani:
-                        id = krogec.id
-                        x = krogec.x + 1
-                        y = krogec.y + 1
-                        barva = krogec.barva            
-                        novi_izbrani.append(Polje(id, x, y, barva))
-                elif i == max([krogec.x for krogec in izbrani]) and j == max([krogec.y for krogec in izbrani]) + 1:
-                    for krogec in izbrani:
-                        id = krogec.id
-                        x = krogec.x
-                        y = krogec.y + 1
-                        barva = krogec.barva            
-                        novi_izbrani.append(Polje(id, x, y, barva))
-                elif i == max([krogec.x for krogec in izbrani]) + 1 and j == max([krogec.y for krogec in izbrani]):
-                    for krogec in izbrani:
-                        id = krogec.id
-                        x = krogec.x + 1
-                        y = krogec.y
-                        barva = krogec.barva            
-                        novi_izbrani.append(Polje(id, x, y, barva))
-                elif j == min([krogec.y for krogec in izbrani]) - 1 and i == min([krogec.x for krogec in izbrani]) - 1:
-                    for krogec in izbrani:
-                        id = krogec.id
-                        x = krogec.x - 1
-                        y = krogec.y - 1
-                        barva = krogec.barva           
-                        novi_izbrani.append(Polje(id, x, y, barva))
-                elif j == min([krogec.y for krogec in izbrani]) - 1 and i == min([krogec.x for krogec in izbrani]):
-                    for krogec in izbrani:
-                        id = krogec.id
-                        x = krogec.x
-                        y = krogec.y - 1
-                        barva = krogec.barva           
-                        novi_izbrani.append(Polje(id, x, y, barva))
-                elif j == min([krogec.y for krogec in izbrani]) and i == min([krogec.x for krogec in izbrani]) - 1:
-                    for krogec in izbrani:
-                        id = krogec.id
-                        x = krogec.x - 1
-                        y = krogec.y
-                        barva = krogec.barva           
+                        x = krogec.x + parametri[1]
+                        y = krogec.y + parametri[3]
+                        barva = krogec.barva
                         novi_izbrani.append(Polje(id, x, y, barva))
             for krogec in novi_izbrani:
                 self.plosca[krogec.x][krogec.y].oznacen = False
