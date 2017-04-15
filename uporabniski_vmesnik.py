@@ -99,18 +99,18 @@ class Gui():
         self.okno.delete(Gui.TAG_FIGURA)
         d = Gui.VELIKOST_POLJA
         matrika = []
-        for x in range(9):
+        for x in range(11):
                seznam = []
-               for y in range(9):
+               for y in range(11):
                    seznam.append(None)
                matrika.append(seznam)
         for i in range(len(matrika)):
             for j in range(len(matrika[i])):
-                if (i,j) in [(0,0),(0,1),(1,0),(1,1),(2,0),(2,1),(2,2),(3,0),(3,1),(3,2),(4,0),(4,1),(4,2),(5,1)]:
+                if (i,j) in [(1, 1), (1, 2), (2, 1), (2, 2), (3, 1), (3, 2), (3, 3), (4, 1), (4, 2), (4, 3), (5, 1), (5, 2), (5, 3), (6, 2)]:
                     barva = Gui.barva_igralca_1
-                elif (i,j) in [(3,7),(4,6),(4,7),(4,8),(5,6),(5,7),(5,8),(6,6),(6,7),(6,8),(7,7),(7,8),(8,7),(8,8)]:
+                elif (i,j) in [(4, 8), (5, 7), (5, 8), (5, 9), (6, 7), (6, 8), (6, 9), (7, 7), (7, 8), (7, 9), (8, 8), (8, 9), (9, 8), (9, 9)]:
                     barva = Gui.barva_igralca_2
-                elif (i,j) not in [(5,0),(6,0),(7,0),(8,0),(6,1),(7,1),(8,1),(7,2),(8,2),(8,3)] and (j,i) not in [(5,0),(6,0),(7,0),(8,0),(6,1),(7,1),(8,1),(7,2),(8,2),(8,3)]:
+                elif (i,j) not in [(6, 1), (7, 1), (8, 1), (9, 1), (7, 2), (8, 2), (9, 2), (8, 3), (9, 3), (9, 4)] and (j,i) not in [(6, 1), (7, 1), (8, 1), (9, 1), (7, 2), (8, 2), (9, 2), (8, 3), (9, 3), (9, 4)] and i != 0 and j != 0 and i != 10 and j != 10:
                     barva = Gui.barva_praznih
                 else:
                     barva = None
@@ -150,8 +150,8 @@ class Gui():
     def poisci_polje(self, event):
         """Vrne polje, na katero smo kliknili."""
         d = Gui.VELIKOST_POLJA
-        for i in range(9):
-            for j in range(9):
+        for i in range(11):
+            for j in range(11):
                 if self.plosca[i][j] is None:
                     continue        # Poskusi naslednji i,j
                 sredisce_x = (i - j*0.5)*d + 2.5*d
@@ -161,7 +161,7 @@ class Gui():
                     return i,j
         return (None, None)
 
-    def oznaci_krogec(self, p):
+    def oznaci_krogec(self, p): # Tega nikjer ne uporabiva.
         """Izbrani krogec pobarva rdeče."""
         (i, j) = p
         if i in range(9) and j in range(9):
@@ -170,7 +170,7 @@ class Gui():
             print(self.plosca[i][j])
 
 
-    def odznaci_krogec(self, p):
+    def odznaci_krogec(self, p): # Tega nikjer ne uporabiva.
         """Obratno kot označi krogec."""
         (i, j) = p         
         self.okno.itemconfig(self.plosca[i][j].id, fill=self.plosca[i][j].barva)
@@ -237,18 +237,8 @@ class Gui():
                     if (i,j) in [(I1, max(J1, J2) + 1),(I1, min(J1, J2) - 1)]:
                         if self.plosca[i][j].barva == Gui.barva_praznih:
                             return True
-                        elif self.plosca[i][j].barva != B:
-                            # # return self.preveri_potisk(orientacija) #TODO self.preveri_potisk
-                            if j == max(J1, J2) + 1:
-                                if self.plosca[i][j+1].barva == Gui.barva_praznih:
-                                    self.okno.itemconfig(self.plosca[i][j+1].id, fill= Gui.barva_igralca_2)
-                                    self.plosca[i][j+1].barva = Gui.barva_igralca_2
-                                    return True
-                            elif j == min(J1, J2) - 1:
-                                if self.plosca[i][j-1].barva == Gui.barva_praznih:
-                                    self.okno.itemconfig(self.plosca[i][j-1].id, fill= Gui.barva_igralca_2)
-                                    self.plosca[i][j-1].barva = Gui.barva_igralca_2
-                                    return True
+                        else:
+                            return self.potisni(orientacija, p)
                     elif (i,j) in [(I1 + 1, min(J1, J2)),(I1 + 1, max(J1, J2) + 1)]:
                         return self.plosca[i][j].barva == Gui.barva_praznih and self.plosca[I1 + 1][max(J1,J2)].barva == Gui.barva_praznih
                     elif (i,j) in [(I1 - 1, max(J1, J2)),(I1 - 1, min(J1, J2) - 1)]:
@@ -258,19 +248,8 @@ class Gui():
                     if (i,j) in [(max(I1, I2) + 1, J1),(min(I1, I2) - 1, J1)]:
                         if self.plosca[i][j].barva == Gui.barva_praznih:
                             return True
-                        elif self.plosca[i][j].barva != B:
-                            # return self.preveri_potisk() #TODO self.preveri_potisk
-                            if i == max(I1, I2) + 1:
-                                if self.plosca[i+1][j].barva == Gui.barva_praznih:
-                                    self.okno.itemconfig(self.plosca[i+1][j].id, fill= Gui.barva_igralca_2)
-                                    self.plosca[i+1][j].barva = Gui.barva_igralca_2
-                                    return True                                    
-                            elif i == min(I1, I2) - 1:
-                                if self.plosca[i-1][j].barva == Gui.barva_praznih:                                    
-                                    self.okno.itemconfig(self.plosca[i-1][j].id, fill= Gui.barva_igralca_2)
-                                    self.plosca[i-1][j].barva = Gui.barva_igralca_2
-                                    print(self.plosca[i-1][j])
-                                    return True
+                        else:
+                            return self.potisni(orientacija, p)
                     elif (i,j) in [(max(I1, I2), J1 - 1),(min(I1, I2) - 1, J1 - 1)]:
                         return self.plosca[i][j].barva == Gui.barva_praznih and self.plosca[min(I1,I2)][J1 - 1].barva == Gui.barva_praznih
                     elif (i,j) in [(max(I1, I2) + 1, J1 + 1),(min(I1, I2), J1 + 1)]:
@@ -280,18 +259,8 @@ class Gui():
                     if (i,j) in [(max(I1, I2) + 1, max(J1, J2) + 1),(min(I1, I2) - 1, min(J1, J2) - 1)]:
                         if self.plosca[i][j].barva == Gui.barva_praznih:
                             return True
-                        elif self.plosca[i][j].barva != B:
-                            # return self.preveri_potisk() #TODO self.preveri_potisk
-                            if i == max(I1, I2) + 1 and j == max(J1, J2) + 1:
-                                if self.plosca[i+1][j+1].barva == Gui.barva_praznih:
-                                    self.okno.itemconfig(self.plosca[i+1][j+1].id, fill= Gui.barva_igralca_2)
-                                    self.plosca[i+1][j+1].barva = Gui.barva_igralca_2
-                                    return True
-                            elif i == min(I1, I2) - 1 and j == min(J1, J2) - 1:
-                                if self.plosca[i-1][j-1].barva == Gui.barva_praznih:
-                                    self.okno.itemconfig(self.plosca[i-1][j-1].id, fill= Gui.barva_igralca_2)
-                                    self.plosca[i-1][j-1].barva = Gui.barva_igralca_2                                    
-                                    return True
+                        else:
+                            return self.potisni(orientacija, p)
                     elif (i,j) in [(min(I1,I2), min(J1,J2) - 1),(max(I1,I2) + 1, max(J1,J2))]:
                         return self.plosca[i][j].barva == Gui.barva_praznih and self.plosca[max(I1,J2)][min(J1,J2)].barva == Gui.barva_praznih
                     elif (i,j) in [(max(I1,I2), max(J1,J2) + 1),(min(I1,I2) - 1, min(J1,J2))]:
@@ -307,30 +276,8 @@ class Gui():
                     if (i,j) in [(I1, max(J1, J2, J3) +1),(I1, min(J1, J2, J3) - 1)]:
                         if self.plosca[i][j].barva == Gui.barva_praznih:
                             return True
-                        elif self.plosca[i][j].barva != B:
-                            # return self.preveri_potisk() #TODO self.preveri_potisk
-                            if j == max(J1, J2, J3) + 1:
-                                if self.plosca[i][j+1].barva == Gui.barva_praznih:
-                                    self.okno.itemconfig(self.plosca[i][j+1].id, fill= Gui.barva_igralca_2)
-                                    self.plosca[i][j+1].barva = Gui.barva_igralca_2
-                                    return True
-                                elif self.plosca[i][j+1].barva == Gui.barva_igralca_2 and self.plosca[i][j+2].barva != Gui.barva_igralca_1 and self.plosca[i][j+2].barva != Gui.barva_igralca_2:
-                                    self.okno.itemconfig(self.plosca[i][j+1].id, fill= Gui.barva_igralca_2)
-                                    self.plosca[i][j+1].barva = Gui.barva_igralca_2
-                                    self.okno.itemconfig(self.plosca[i][j+2].id, fill= Gui.barva_igralca_2)
-                                    self.plosca[i][j+2].barva = Gui.barva_igralca_2
-                                    return True
-                            elif j == min(J1, J2, J3) - 1:
-                                if self.plosca[i][j-1].barva == Gui.barva_praznih:
-                                    self.okno.itemconfig(self.plosca[i][j-1].id, fill= Gui.barva_igralca_2)
-                                    self.plosca[i][j-1].barva = Gui.barva_igralca_2
-                                    return True
-                                elif self.plosca[i][j-1].barva == Gui.barva_igralca_2 and self.plosca[i][j-2].barva != Gui.barva_igralca_1 and self.plosca[i][j-2].barva != Gui.barva_igralca_2:
-                                    self.okno.itemconfig(self.plosca[i][j-1].id, fill= Gui.barva_igralca_2)
-                                    self.plosca[i][j-1].barva = Gui.barva_igralca_2
-                                    self.okno.itemconfig(self.plosca[i][j-2].id, fill= Gui.barva_igralca_2)
-                                    self.plosca[i][j-2].barva = Gui.barva_igralca_2
-                                    return True
+                        else:
+                            return self.potisni(orientacija, p)
                     elif (i,j) in [(I1 - 1, min(J1,J2,J3) - 1),(I1 - 1, max(J1, J2, J3))]:
                         return self.plosca[i][j].barva == Gui.barva_praznih and self.plosca[I1 - 1][min(J1, J2, J3)].barva == Gui.barva_praznih and self.plosca[I1 - 1][min(J1, J2, J3) + 1].barva == Gui.barva_praznih
                     elif (i,j) in [(I1 + 1, min(J1,J2,J3)),(I1 + 1, max(J1, J2, J3) + 1)]:
@@ -340,30 +287,8 @@ class Gui():
                     if (i,j) in [(max(I1, I2, I3) + 1, J1),(min(I1, I2, I3) - 1, J1)]:
                         if self.plosca[i][j].barva == Gui.barva_praznih:
                             return True
-                        elif self.plosca[i][j].barva != B:
-                            # return self.preveri_potisk() #TODO self.preveri_potisk
-                            if i == max(I1, I2, I3) + 1:
-                                if self.plosca[i+1][j].barva == Gui.barva_praznih:
-                                    self.okno.itemconfig(self.plosca[i+1][j].id, fill= Gui.barva_igralca_2)
-                                    self.plosca[i+1][j].barva = Gui.barva_igralca_2
-                                    return True
-                                elif self.plosca[i+1][j].barva == Gui.barva_igralca_2 and self.plosca[i+2][j].barva != Gui.barva_igralca_1 and self.plosca[i+2][j].barva != Gui.barva_igralca_2:
-                                    self.okno.itemconfig(self.plosca[i+1][j].id, fill= Gui.barva_igralca_2)
-                                    self.plosca[i+1][j].barva = Gui.barva_igralca_2
-                                    self.okno.itemconfig(self.plosca[i+2][j].id, fill= Gui.barva_igralca_2)
-                                    self.plosca[i+2][j].barva = Gui.barva_igralca_2
-                                    return True                                    
-                            elif i == min(I1, I2, I3) - 1:
-                                if self.plosca[i-1][j].barva == Gui.barva_praznih:
-                                    self.okno.itemconfig(self.plosca[i-1][j].id, fill= Gui.barva_igralca_2)
-                                    self.plosca[i-1][j].barva = Gui.barva_igralca_2
-                                    return True
-                                elif self.plosca[i-1][j].barva == Gui.barva_igralca_2 and self.plosca[i-2][j].barva != Gui.barva_igralca_1 and self.plosca[i-2][j].barva != Gui.barva_igralca_2:
-                                    self.okno.itemconfig(self.plosca[i-1][j].id, fill= Gui.barva_igralca_2)
-                                    self.plosca[i-1][j].barva = Gui.barva_igralca_2
-                                    self.okno.itemconfig(self.plosca[i-2][j].id, fill= Gui.barva_igralca_2)
-                                    self.plosca[i-2][j].barva = Gui.barva_igralca_2
-                                    return True
+                        else:
+                            return self.potisni(orientacija, p)
                     elif (i,j) in [(max(I1,I2,I3), J1 - 1),(min(I1,I2,I3) - 1, J1 - 1)]:
                         return self.plosca[i][j].barva == Gui.barva_praznih and self.plosca[max(I1,I2,I3) - 1][J1 - 1].barva == Gui.barva_praznih and self.plosca[min(I1,I2,I3) + 1][J1 - 1].barva == Gui.barva_praznih
                     elif (i,j) in [(max(I1,I2,I3) + 1, J1 + 1),(min(I1,I2,I3), J1 + 1)]:
@@ -373,30 +298,6 @@ class Gui():
                     if (i,j) in [(max(I1, I2, I3) + 1, max(J1, J2, J3) + 1),(min(I1, I2, I3) - 1, min(J1, J2, J3) - 1)]:
                         if self.plosca[i][j].barva == Gui.barva_praznih:
                             return True
-                        elif self.plosca[i][j].barva != B:
-                            # return self.preveri_potisk() #TODO self.preveri_potisk
-                            if i == max(I1, I2, I3) + 1 and j == max(J1, J2, J3) + 1:
-                                if self.plosca[i+1][j+1].barva == Gui.barva_praznih:
-                                    self.okno.itemconfig(self.plosca[i+1][j+1].id, fill= Gui.barva_igralca_2)
-                                    self.plosca[i+1][j+1].barva = Gui.barva_igralca_2
-                                    return True
-                                elif self.plosca[i+1][j+1].barva == Gui.barva_igralca_2 and self.plosca[i+2][j+2].barva != Gui.barva_igralca_1 and self.plosca[i+2][j+2].barva != Gui.barva_igralca_2:
-                                    self.okno.itemconfig(self.plosca[i+1][j+1].id, fill= Gui.barva_igralca_2)
-                                    self.plosca[i+1][j+1].barva = Gui.barva_igralca_2
-                                    self.okno.itemconfig(self.plosca[i+2][j+2].id, fill= Gui.barva_igralca_2)
-                                    self.plosca[i+2][j+2].barva = Gui.barva_igralca_2
-                                    return True                                    
-                            elif i == min(I1, I2, I3) - 1 and j == min(J1, J2, J3) - 1:
-                                if self.plosca[i-1][j-1].barva == Gui.barva_praznih:
-                                    self.okno.itemconfig(self.plosca[i-1][j-1].id, fill= Gui.barva_igralca_2)
-                                    self.plosca[i-1][j-1].barva = Gui.barva_igralca_2
-                                    return True
-                                elif self.plosca[i-1][j-1].barva == Gui.barva_igralca_2 and self.plosca[i-2][j-2].barva != Gui.barva_igralca_1 and self.plosca[i-2][j-2].barva != Gui.barva_igralca_2:
-                                    self.okno.itemconfig(self.plosca[i-1][j-1].id, fill= Gui.barva_igralca_2)
-                                    self.plosca[i-1][j-1].barva = Gui.barva_igralca_2
-                                    self.okno.itemconfig(self.plosca[i-2][j-2].id, fill= Gui.barva_igralca_2)
-                                    self.plosca[i-2][j-2].barva = Gui.barva_igralca_2
-                                    return True  
                     elif (i,j) in [(min(I1, I2, I3), min(J1, J2, J3) - 1),(max(I1, I2, I3) + 1, max(J1, J2, J3))]:
                         return self.plosca[i][j].barva == Gui.barva_praznih and self.plosca[max(I1,I2,I3)][max(J1, J2, J3) - 1].barva == Gui.barva_praznih and self.plosca[min(I1,I2,I3) + 1][min(J1, J2, J3)].barva == Gui.barva_praznih
                     elif (i,j) in [(max(I1, I2, I3), max(J1, J2, J3) + 1),(min(I1, I2, I3) - 1, min(J1, J2, J3))]:
@@ -404,22 +305,73 @@ class Gui():
                     return False
             return False
 
-##    def preveri_potisk(self, orientacija, p):
-##        (i,j) = p
-##        stevilo_oznacenih = len(self.izbrani)
-##        B1 = self.izbrani[0].barva
-##        B2 = self.plosca[i][j].barva
-##        koordinate_oznacenih = []
-##        for krogec in self.izbrani:
-##            koordinate_oznacenih.append((krogec.x, krogec.y))
-##        slovar_orientacij = {"y" : 1, "x" : 2}
-##        (j_max, j_min) = (max(krogec.y for krogec in self.izbrani), min(krogec.y for krogec in self.izbrani))
-##        (i_max, i_min) = (max(krogec.x for krogec in self.izbrani), min(krogec.x for krogec in self.izbrani))
-##        if orientacija in ["x", "y"]:
-##            
-##        if ...
-##        self.izrini #TODO
+    def potisni(self, orientacija, p):
+        (i,j) = p
+        stevilo_oznacenih = len(self.izbrani)
+        (stevilo_nasprotnih, ali_izrinemo) = self.stevilo_nasprotnih(orientacija, p)
+        if stevilo_nasprotnih is None:
+            return False
+        elif stevilo_nasprotnih >= stevilo_oznacenih:
+            return False
+        else:
+            B = self.plosca[i][j].barva # ta je potisnjen 
+            (j_max, j_min) = (max(krogec.y for krogec in self.izbrani), min(krogec.y for krogec in self.izbrani))
+            (i_max, i_min) = (max(krogec.x for krogec in self.izbrani), min(krogec.x for krogec in self.izbrani))
+            # Prvi izgine, potem premik kot običajno
+            if i in [i_max + 1, i_min - 1] or j in [j_max + 1, j_min - 1]:
+                self.plosca[i][j].barva == Gui.barva_praznih
+                self.okno.itemconfig(self.plosca[i][j].id, fill= Gui.barva_praznih)
+                if ali_izrinemo:
+                    return True # TODO tukaj je treba ta izrinjeni krogec dodat v nek seznam oziroma nekam ...
+                else:
+                    # V bistvu dodaš krogec na konec teh, ki jih rineš.
+                    SLOVAR = {"x" : [(i_max + 1, j, i_max + 1 + stevilo_nasprotnih, j), (i_min - 1, j, i_min - (1 + stevilo_nasprotnih), j)],
+                              "y" : [(i, j_max + 1, i, j_max + 1 + stevilo_nasprotnih), (i, j_min - 1, i, j_min - (1 + stevilo_nasprotnih))],
+                              "diagonala" : [(i_max + 1, j_max + 1, i_max + 1 + stevilo_nasprotnih, j_max + 1 + stevilo_nasprotnih),
+                                             (i_min - 1, j_min - 1, i_min - (1 + stevilo_nasprotnih), j_min - (1 + stevilo_nasprotnih))]}
+                    for parametri in SLOVAR[orientacija]:
+                        if i == parametri[0] and j == parametri[1]:
+                            self.plosca[parametri[2]][parametri[3]].barva = B
+                            self.okno.itemconfig(self.plosca[parametri[2]][parametri[3]].id, fill=B)
+                            break
+                    return True
         
+
+
+    def stevilo_nasprotnih(self, orientacija, p):
+        (i,j) = p
+        barva = self.plosca[i][j].barva
+        (j_max, j_min) = (max(krogec.y for krogec in self.izbrani), min(krogec.y for krogec in self.izbrani))
+        (i_max, i_min) = (max(krogec.x for krogec in self.izbrani), min(krogec.x for krogec in self.izbrani))
+        SLOVAR = {"x" : [(i_max + 1, j, i + 1, j, i + 2, j),(i_min - 1, j, i - 1, j, i - 2, j)],
+                  "y" : [(i, j_max + 1, i, j + 1, i, j + 2),(i, j_min - 1, i, j - 1, i, j - 2)]} # TODO dodati za diagonalno orientacijo
+        for parametri in SLOVAR[orientacija]:
+            if i == parametri[0] and j == parametri[1]:
+                print(parametri)
+                if self.plosca[parametri[2]][parametri[3]] is None:
+                    return (1, True)
+                elif self.plosca[parametri[2]][parametri[3]].barva == Gui.barva_praznih:
+                    return (1, False)
+                elif self.plosca[parametri[2]][parametri[3]].barva == barva:
+                    if self.plosca[parametri[4]][parametri[5]] is None:
+                        return (2, True)
+                    elif self.plosca[parametri[4]][parametri[5]].barva == Gui.barva_praznih:
+                        return (2, False)
+##        if orientacija == "x":
+##            if i == i_max + 1:
+##                if self.plosca[i + 1][j] is None or i + 1 >= 9:
+##                    return (1, True)
+##                elif self.plosca[i + 1][j].barva == Gui.barva_praznih:
+##                    return (1, False)
+##                elif self.plosca[i + 1][j].barva == barva:
+##                    if self.plosca[i + 2][j].barva is None or i + 2 >= 9:
+##                        return (2, True)
+##                    elif self.plosca[i + 2][j].barva == Gui.barva_praznih:
+##                        return (2, False)
+        return None, None
+                
+                      
+         
     
     def premakni_krogce(self, event):
         i,j = self.poisci_polje(event)
@@ -448,7 +400,7 @@ class Gui():
             SLOVAR = {"x" : [(i_max, 1, J, 0), (i_max, 0, J, -1), (i_max, 1, J, 1), (i_min, -1, J, 0), (i_min, -1, J, -1), (i_min, 0, J, 1)],
                       "y" : [(I, 0, j_max, 1), (I, 1, j_max, 1), (I, -1, j_max, 0), (I, 0, j_min, -1), (I, 1, j_min, 0), (I, -1, j_min, -1),],
                       "diagonala" : [(i_max, 1, j_max, 1), (i_max, 0, j_max, 1), (i_max, 1, j_max, 0), (i_min, -1, j_min, -1), (i_min, 0, j_min, -1), (i_min, -1, j_min, 0)]}
-            for parametri in SLOVAR[orientacija]:
+            for parametri in SLOVAR[orientacija]: 
                 if i == parametri[0] + parametri[1] and j == parametri[2] + parametri[3]:
                     for krogec in izbrani:
                         id = krogec.id
@@ -456,12 +408,13 @@ class Gui():
                         y = krogec.y + parametri[3]
                         barva = krogec.barva
                         novi_izbrani.append(Polje(id, x, y, barva))
+                    break
             for krogec in novi_izbrani:
                 self.plosca[krogec.x][krogec.y].oznacen = False
                 self.okno.itemconfig(self.plosca[krogec.x][krogec.y].id, fill= krogec.barva)
                 self.plosca[krogec.x][krogec.y].barva = krogec.barva
         self.oznaceni = []           
-    
+
     def orientacija_izbranih(self):
         """Pove orientacijo izbranih krogcev. Možne smeri so x, y in diagonala."""
         (I1, J1) = (self.izbrani[0].x, self.izbrani[0].y)
