@@ -80,7 +80,7 @@ class Gui():
         # Črte na igralnem polju
         #self.narisi_crte()
         self.zacetna_pozicija = self.narisi_plosco()
-        self.plosca = self.narisi_plosco()[:]
+        self.plosca = self.narisi_plosco()[:] # TODO Tjaša ne razume tega [:]
         #TODO to gre v Igra
         self.izbrani = []
         self.premik = False
@@ -145,7 +145,7 @@ class Gui():
                 self.izbrani = []
 
                 
-    # TODO napiši metodo Povleci potezo(zdaj to delno dela okno_klik)
+    # TODO napiši metodo Povleci potezo !!!
     
     def poisci_polje(self, event):
         """Vrne polje, na katero smo kliknili."""
@@ -229,6 +229,15 @@ class Gui():
                 (I1, J1) = (self.izbrani[0].x, self.izbrani[0].y)
                 if (i,j) in [(I1, J1 + 1), (I1, J1 - 1), (I1 + 1, J1), (I1 - 1, J1), (I1 + 1, J1 + 1), (I1 - 1, J1 - 1)]: # En krogec lahko premaknemo na katerokoli sosednje prosto polje.
                     return self.plosca[i][j].barva == Gui.barva_praznih
+##            else:
+##                (j_max, j_min) = (max(krogec.y for krogec in self.izbrani), min(krogec.y for krogec in self.izbrani))
+##                (i_max, i_min) = (max(krogec.x for krogec in self.izbrani), min(krogec.x for krogec in self.izbrani))
+##                orientacija = self.orientacija_izbranih()
+##                SLOVAR = {"x" : [],
+##                          "y" : [()],
+##                          "diagonala" : []}
+##                for parametri in SLOVAR[orientacija]:
+##                    if (i,j) in 
             elif len(self.izbrani) == 2:
                 (I1, J1, B) = (self.izbrani[0].x, self.izbrani[0].y, self.izbrani[0].barva)
                 (I2, J2) = (self.izbrani[1].x, self.izbrani[1].y)
@@ -298,6 +307,8 @@ class Gui():
                     if (i,j) in [(max(I1, I2, I3) + 1, max(J1, J2, J3) + 1),(min(I1, I2, I3) - 1, min(J1, J2, J3) - 1)]:
                         if self.plosca[i][j].barva == Gui.barva_praznih:
                             return True
+                        else:
+                            return self.potisni(orientacija, p)
                     elif (i,j) in [(min(I1, I2, I3), min(J1, J2, J3) - 1),(max(I1, I2, I3) + 1, max(J1, J2, J3))]:
                         return self.plosca[i][j].barva == Gui.barva_praznih and self.plosca[max(I1,I2,I3)][max(J1, J2, J3) - 1].barva == Gui.barva_praznih and self.plosca[min(I1,I2,I3) + 1][min(J1, J2, J3)].barva == Gui.barva_praznih
                     elif (i,j) in [(max(I1, I2, I3), max(J1, J2, J3) + 1),(min(I1, I2, I3) - 1, min(J1, J2, J3))]:
@@ -322,7 +333,7 @@ class Gui():
                 self.plosca[i][j].barva == Gui.barva_praznih
                 self.okno.itemconfig(self.plosca[i][j].id, fill= Gui.barva_praznih)
                 if ali_izrinemo:
-                    return True # TODO tukaj je treba ta izrinjeni krogec dodat v nek seznam oziroma nekam ...
+                    pass # TODO tukaj je treba ta izrinjeni krogec dodat v nek seznam oziroma nekam ...
                 else:
                     # V bistvu dodaš krogec na konec teh, ki jih rineš.
                     SLOVAR = {"x" : [(i_max + 1, j, i_max + 1 + stevilo_nasprotnih, j), (i_min - 1, j, i_min - (1 + stevilo_nasprotnih), j)],
@@ -334,7 +345,7 @@ class Gui():
                             self.plosca[parametri[2]][parametri[3]].barva = B
                             self.okno.itemconfig(self.plosca[parametri[2]][parametri[3]].id, fill=B)
                             break
-                    return True
+                return True
         
 
 
@@ -344,7 +355,8 @@ class Gui():
         (j_max, j_min) = (max(krogec.y for krogec in self.izbrani), min(krogec.y for krogec in self.izbrani))
         (i_max, i_min) = (max(krogec.x for krogec in self.izbrani), min(krogec.x for krogec in self.izbrani))
         SLOVAR = {"x" : [(i_max + 1, j, i + 1, j, i + 2, j),(i_min - 1, j, i - 1, j, i - 2, j)],
-                  "y" : [(i, j_max + 1, i, j + 1, i, j + 2),(i, j_min - 1, i, j - 1, i, j - 2)]} # TODO dodati za diagonalno orientacijo
+                  "y" : [(i, j_max + 1, i, j + 1, i, j + 2),(i, j_min - 1, i, j - 1, i, j - 2)],
+                  "diagonala" : [(i_max + 1, j_max + 1, i + 1, j + 1, i + 2, j + 2),(i_min - 1, j_min - 1, i - 1, j - 1, i - 2, j - 2)]} 
         for parametri in SLOVAR[orientacija]:
             if i == parametri[0] and j == parametri[1]:
                 print(parametri)
