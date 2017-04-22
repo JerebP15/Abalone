@@ -39,6 +39,7 @@ class Igra():
         self.na_potezi = IGRALEC_1
         self.zgodovina = []
         self.izbrani = []
+        self.spremembe_premik = []
 
     def ustvari_plosco(self):
         #self.okno.delete(gui.TAG_FIGURA)
@@ -114,6 +115,217 @@ class Igra():
                             return True
         else:
             return False
+    def premikanje(self, p):
+        if len(self.izbrani) == 0:
+            print("Noben krogec ni izbran")
+            return None
+        else:
+            if self.preveri_potezo(p):
+                self.premakni_krogce(p)
+                self.izbrani = []
+                spremembe = self.spremembe_premik[:]
+                self.spremembe_premik = []
+            return spremembe
+        
+    def preveri_potezo(self, p):
+        """Pogleda, ali označene krogce lahko premaknemo na željeno polje."""
+        (i,j) = p
+        if i is not None and j is not None:     # Zagotovimo, da smo na plošči.
+            if self.plosca[i][j].barva == self.izbrani[0].barva:
+                print("Ni mogoče premakniti izbranih krogcev na svoje polje!")
+                return False
+            elif len(self.izbrani) == 1:
+                (I1, J1) = (self.izbrani[0].x, self.izbrani[0].y)
+                if (i,j) in [(I1, J1 + 1), (I1, J1 - 1), (I1 + 1, J1), (I1 - 1, J1), (I1 + 1, J1 + 1), (I1 - 1, J1 - 1)]: # En krogec lahko premaknemo na katerokoli sosednje prosto polje.
+                    return self.plosca[i][j].barva == self.barva_praznih
+            elif len(self.izbrani) == 2:
+                (I1, J1, B) = (self.izbrani[0].x, self.izbrani[0].y, self.izbrani[0].barva)
+                (I2, J2) = (self.izbrani[1].x, self.izbrani[1].y)
+                orientacija = self.orientacija_izbranih()
+                if abs(I1 - I2) == 1 or abs(J1 - J2) == 1 or (abs(I1 - I2) == 1 and abs(J1 - J2) == 1):
+                    if orientacija == "y":
+                        if (i,j) in [(I1, max(J1, J2) + 1),(I1, min(J1, J2) - 1)]:
+                            if self.plosca[i][j].barva == self.barva_praznih:
+                                return True
+                            else:
+                                return self.potisni(orientacija, p)
+                        elif (i,j) in [(I1 + 1, min(J1, J2)),(I1 + 1, max(J1, J2) + 1)]:
+                            return self.plosca[i][j].barva == self.barva_praznih and self.plosca[I1 + 1][max(J1,J2)].barva == self.barva_praznih
+                        elif (i,j) in [(I1 - 1, max(J1, J2)),(I1 - 1, min(J1, J2) - 1)]:
+                            return self.plosca[i][j].barva == self.barva_praznih and self.plosca[I1 - 1][min(J1,J2)].barva == self.barva_praznih
+                        return False
+                    elif orientacija == "x":
+                        if (i,j) in [(max(I1, I2) + 1, J1),(min(I1, I2) - 1, J1)]:
+                            if self.plosca[i][j].barva == self.barva_praznih:
+                                return True
+                            else:
+                                return self.potisni(orientacija, p)
+                        elif (i,j) in [(max(I1, I2), J1 - 1),(min(I1, I2) - 1, J1 - 1)]:
+                            return self.plosca[i][j].barva == self.barva_praznih and self.plosca[min(I1,I2)][J1 - 1].barva == self.barva_praznih
+                        elif (i,j) in [(max(I1, I2) + 1, J1 + 1),(min(I1, I2), J1 + 1)]:
+                            return self.plosca[i][j].barva == self.barva_praznih and self.plosca[max(I1,I2)][J1 + 1].barva == self.barva_praznih
+                        return False
+                    elif orientacija == "diagonala":
+                        if (i,j) in [(max(I1, I2) + 1, max(J1, J2) + 1),(min(I1, I2) - 1, min(J1, J2) - 1)]:
+                            if self.plosca[i][j].barva == self.barva_praznih:
+                                return True
+                            else:
+                                return self.potisni(orientacija, p)
+                        elif (i,j) in [(min(I1,I2), min(J1,J2) - 1),(max(I1,I2) + 1, max(J1,J2))]:
+                            return self.plosca[i][j].barva == self.barva_praznih and self.plosca[max(I1,J2)][min(J1,J2)].barva == self.barva_praznih
+                        elif (i,j) in [(max(I1,I2), max(J1,J2) + 1),(min(I1,I2) - 1, min(J1,J2))]:    
+                            return self.plosca[i][j].barva == self.barva_praznih and self.plosca[min(I1,J2)][max(J1,J2)].barva == self.barva_praznih
+                        return False
+            elif len(self.izbrani) == 3:
+                (I1, J1, B) = (self.izbrani[0].x, self.izbrani[0].y, self.izbrani[0].barva)
+                (I2, J2) = (self.izbrani[1].x, self.izbrani[1].y)
+                (I3, J3) = (self.izbrani[2].x, self.izbrani[2].y)
+                orientacija = self.orientacija_izbranih()
+                if orientacija == "y":
+                    if (i,j) in [(I1, max(J1, J2, J3) +1),(I1, min(J1, J2, J3) - 1)]:
+                        if self.plosca[i][j].barva == self.barva_praznih:
+                            return True
+                        else:
+                            return self.potisni(orientacija, p)
+                    elif (i,j) in [(I1 - 1, min(J1,J2,J3) - 1),(I1 - 1, max(J1, J2, J3))]:
+                        return self.plosca[i][j].barva == self.barva_praznih and self.plosca[I1 - 1][min(J1, J2, J3)].barva == self.barva_praznih and self.plosca[I1 - 1][min(J1, J2, J3) + 1].barva == self.barva_praznih
+                    elif (i,j) in [(I1 + 1, min(J1,J2,J3)),(I1 + 1, max(J1, J2, J3) + 1)]:
+                        return self.plosca[i][j].barva == self.barva_praznih and self.plosca[I1 + 1][max(J1, J2, J3)].barva == self.barva_praznih and self.plosca[I1 + 1][min(J1, J2, J3) + 1].barva == self.barva_praznih
+                    return False
+                elif orientacija == "x":
+                    if (i,j) in [(max(I1, I2, I3) + 1, J1),(min(I1, I2, I3) - 1, J1)]:
+                        if self.plosca[i][j].barva == self.barva_praznih:
+                            return True
+                        else:
+                            return self.potisni(orientacija, p)
+                    elif (i,j) in [(max(I1,I2,I3), J1 - 1),(min(I1,I2,I3) - 1, J1 - 1)]:
+                        return self.plosca[i][j].barva == self.barva_praznih and self.plosca[max(I1,I2,I3) - 1][J1 - 1].barva == self.barva_praznih and self.plosca[min(I1,I2,I3) + 1][J1 - 1].barva == self.barva_praznih
+                    elif (i,j) in [(max(I1,I2,I3) + 1, J1 + 1),(min(I1,I2,I3), J1 + 1)]:
+                        return self.plosca[i][j].barva == self.barva_praznih and self.plosca[max(I1,I2,I3)][J1 + 1].barva == self.barva_praznih and self.plosca[min(I1,I2,I3) + 1][J1 + 1].barva == self.barva_praznih
+                    return False
+                elif orientacija == "diagonala":
+                    if (i,j) in [(max(I1, I2, I3) + 1, max(J1, J2, J3) + 1),(min(I1, I2, I3) - 1, min(J1, J2, J3) - 1)]:
+                        if self.plosca[i][j].barva == self.barva_praznih:
+                            return True
+                    elif (i,j) in [(min(I1, I2, I3), min(J1, J2, J3) - 1),(max(I1, I2, I3) + 1, max(J1, J2, J3))]:
+                        return self.plosca[i][j].barva == self.barva_praznih and self.plosca[max(I1,I2,I3)][max(J1, J2, J3) - 1].barva == self.barva_praznih and self.plosca[min(I1,I2,I3) + 1][min(J1, J2, J3)].barva == self.barva_praznih
+                    elif (i,j) in [(max(I1, I2, I3), max(J1, J2, J3) + 1),(min(I1, I2, I3) - 1, min(J1, J2, J3))]:
+                        return self.plosca[i][j].barva == self.barva_praznih and self.plosca[max(I1,I2,I3) - 1][max(J1, J2, J3)].barva == self.barva_praznih and self.plosca[min(I1,I2,I3)][min(J1, J2, J3) + 1].barva == self.barva_praznih
+                    return False
+            return False
+        
+    def premakni_krogce(self, p):
+        (i,j) = p
+        if len(self.izbrani) == 1:
+            x = self.izbrani[0].x
+            y = self.izbrani[0].y
+            barva = self.izbrani[0].barva
+            self.plosca[x][y].oznacen = False
+            #self.okno.itemconfig(self.plosca[x][y].id, fill= self.barva_praznih)
+            self.plosca[x][y].barva = self.barva_praznih
+            #self.okno.itemconfig(self.plosca[i][j].id, fill= barva)
+            self.plosca[i][j].barva = barva
+            self.spremembe_premik.append((x,y,self.barva_praznih))
+            self.spremembe_premik.append((i,j,barva))
+        else:      
+            orientacija = self.orientacija_izbranih()
+            izbrani = []
+            for polje in self.izbrani:
+                izbrani.append(Polje(polje.id, polje.x, polje.y, polje.barva))
+            for krogec in izbrani:
+                self.plosca[krogec.x][krogec.y].oznacen = False
+                #self.okno.itemconfig(self.plosca[krogec.x][krogec.y].id, fill= self.igra.barva_praznih)
+                self.plosca[krogec.x][krogec.y].barva = self.barva_praznih
+                self.spremembe_premik.append((krogec.x,krogec.y,self.barva_praznih))
+            (j_max, j_min, J) = (max(krogec.y for krogec in self.izbrani), min(krogec.y for krogec in self.izbrani), izbrani[0].y)
+            (i_max, i_min, I) = (max(krogec.x for krogec in self.izbrani), min(krogec.x for krogec in self.izbrani), izbrani[0].x)
+            novi_izbrani = []
+            SLOVAR = {"x" : [(i_max, 1, J, 0), (i_max, 0, J, -1), (i_max, 1, J, 1), (i_min, -1, J, 0), (i_min, -1, J, -1), (i_min, 0, J, 1)],
+                      "y" : [(I, 0, j_max, 1), (I, 1, j_max, 1), (I, -1, j_max, 0), (I, 0, j_min, -1), (I, 1, j_min, 0), (I, -1, j_min, -1),],
+                      "diagonala" : [(i_max, 1, j_max, 1), (i_max, 0, j_max, 1), (i_max, 1, j_max, 0), (i_min, -1, j_min, -1), (i_min, 0, j_min, -1), (i_min, -1, j_min, 0)]}
+            for parametri in SLOVAR[orientacija]: 
+                if i == parametri[0] + parametri[1] and j == parametri[2] + parametri[3]:
+                    for krogec in izbrani:
+                        id = krogec.id
+                        x = krogec.x + parametri[1]
+                        y = krogec.y + parametri[3]
+                        barva = krogec.barva
+                        novi_izbrani.append(Polje(id, x, y, barva))
+                    break
+            for krogec in novi_izbrani:
+                self.plosca[krogec.x][krogec.y].oznacen = False
+                #self.okno.itemconfig(self.plosca[krogec.x][krogec.y].id, fill= krogec.barva)
+                self.plosca[krogec.x][krogec.y].barva = krogec.barva
+                self.spremembe_premik.append((krogec.x,krogec.y,krogec.barva))
+        self.oznaceni = []           
+
+    def orientacija_izbranih(self):
+        """Pove orientacijo izbranih krogcev. Možne smeri so x, y in diagonala."""
+        (I1, J1) = (self.izbrani[0].x, self.izbrani[0].y)
+        (I2, J2) = (self.izbrani[1].x, self.izbrani[1].y)
+        if J1 == J2:
+            return "x"
+        elif I1 == I2:
+            return "y"
+        elif abs(I1 - I2) == 1 and abs(J1 - J2) == 1:
+            return "diagonala"
+        else:
+            return None
+        
+    def potisni(self, orientacija, p):
+        (i,j) = p
+        stevilo_oznacenih = len(self.izbrani)
+        (stevilo_nasprotnih, ali_izrinemo) = self.stevilo_nasprotnih(orientacija, p)
+        if stevilo_nasprotnih is None:
+            return False
+        elif stevilo_nasprotnih >= stevilo_oznacenih:
+            return False
+        else:
+            B = self.plosca[i][j].barva # ta je potisnjen 
+            (j_max, j_min) = (max(krogec.y for krogec in self.izbrani), min(krogec.y for krogec in self.izbrani))
+            (i_max, i_min) = (max(krogec.x for krogec in self.izbrani), min(krogec.x for krogec in self.izbrani))
+            # Prvi izgine, potem premik kot običajno
+            if i in [i_max + 1, i_min - 1] or j in [j_max + 1, j_min - 1]:
+                self.plosca[i][j].barva == self.barva_praznih
+                #self.okno.itemconfig(self.plosca[i][j].id, fill= self.igra.barva_praznih)
+                if ali_izrinemo:
+                    return True # TODO tukaj je treba ta izrinjeni krogec dodat v nek seznam oziroma nekam ...
+                else:
+                    # V bistvu dodaš krogec na konec teh, ki jih rineš.
+                    SLOVAR = {"x" : [(i_max + 1, j, i_max + 1 + stevilo_nasprotnih, j), (i_min - 1, j, i_min - (1 + stevilo_nasprotnih), j)],
+                              "y" : [(i, j_max + 1, i, j_max + 1 + stevilo_nasprotnih), (i, j_min - 1, i, j_min - (1 + stevilo_nasprotnih))],
+                              "diagonala" : [(i_max + 1, j_max + 1, i_max + 1 + stevilo_nasprotnih, j_max + 1 + stevilo_nasprotnih),
+                                             (i_min - 1, j_min - 1, i_min - (1 + stevilo_nasprotnih), j_min - (1 + stevilo_nasprotnih))]}
+                    for parametri in SLOVAR[orientacija]:
+                        if i == parametri[0] and j == parametri[1]:
+                            self.plosca[parametri[2]][parametri[3]].barva = B
+                            #self.okno.itemconfig(self.plosca[parametri[2]][parametri[3]].id, fill=B)
+                            break
+                    return True        
+
+
+    def stevilo_nasprotnih(self, orientacija, p):
+        (i,j) = p
+        barva = self.plosca[i][j].barva
+        (j_max, j_min) = (max(krogec.y for krogec in self.izbrani), min(krogec.y for krogec in self.izbrani))
+        (i_max, i_min) = (max(krogec.x for krogec in self.izbrani), min(krogec.x for krogec in self.izbrani))
+        SLOVAR = {"x" : [(i_max + 1, j, i + 1, j, i + 2, j),(i_min - 1, j, i - 1, j, i - 2, j)],
+                  "y" : [(i, j_max + 1, i, j + 1, i, j + 2),(i, j_min - 1, i, j - 1, i, j - 2)],
+                  "diagonala" : [(i_max + 1, j_max + 1, i + 1, j + 1, i + 2, j + 2),(i_min - 1, j_min - 1, i - 1, j - 1, i - 2, j - 2)]}
+        for parametri in SLOVAR[orientacija]:
+            if i == parametri[0] and j == parametri[1]:
+                print(parametri)
+                if self.plosca[parametri[2]][parametri[3]] is None:
+                    return (1, True)
+                elif self.plosca[parametri[2]][parametri[3]].barva == self.barva_praznih:
+                    return (1, False)
+                elif self.plosca[parametri[2]][parametri[3]].barva == barva:
+                    if self.plosca[parametri[4]][parametri[5]] is None:
+                        return (2, True)
+                    elif self.plosca[parametri[4]][parametri[5]].barva == self.barva_praznih:
+                        return (2, False)
+        return None, None
+        
 
     def shrani_pozicijo(self):
         """Shrani trenutno pozicijo, da se bomo lahko kasneje vrnili vanjo
