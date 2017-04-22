@@ -15,7 +15,6 @@ from racunalnik import *
 
 #TODO Mislim da preverjanje poteze včasih ne deluje povsem pravilno(malo "zašteka") vendar sam v kodi ne vidim napake...
 # Nujno UNDO. Ali je dovolj, da se v zgodovino shrani samo matrika? Ali potrebujemo tudi seznam izbranih polj? Ta polja so rdeča, tako da se to mogoče vidi že iz matrike?
-#Treba bo popraviti premikanje saj nekaj ne dela previlno: če krogec premaknemo in ga nato označimo in odznačimo se bo obarval belo
 
 
 
@@ -64,14 +63,18 @@ class Gui():
         
         # Napis, ki prikazuje stanje igre
         self.napis = tkinter.StringVar(master, value="Dobrodošli v Abalone!")
-        tkinter.Label(master, textvariable=self.napis).grid(row=0, column=0)
+        tkinter.Label(master, textvariable=self.napis).grid(row=0, column=1)
 
         # Igralno območje
         self.okno = tkinter.Canvas(master, width=11*Gui.VELIKOST_POLJA, height=11*Gui.VELIKOST_POLJA)
-        self.okno.grid(row=1, column=0)
+        self.okno.grid(row=1, column=1)
+        self.polje_izpodrinjenih1 = tkinter.Canvas(master, width=Gui.VELIKOST_POLJA, height=6*Gui.VELIKOST_POLJA)
+        self.polje_izpodrinjenih1.grid(row=1, column=0)
+        self.polje_izpodrinjenih2 = tkinter.Canvas(master, width=Gui.VELIKOST_POLJA, height=6*Gui.VELIKOST_POLJA)
+        self.polje_izpodrinjenih2.grid(row=1, column=2)
 
         # Črte na igralnem polju
-        #self.narisi_crte()
+        self.narisi_crte()
         self.plosca = self.igra.plosca
         #TODO to gre v Igra
         self.premik = False
@@ -143,7 +146,7 @@ class Gui():
     def odznaci_krogec(self, p):
         """Obratno kot označi krogec."""
         (i, j) = p         
-        self.okno.itemconfig(self.plosca[i][j].id, fill=self.plosca[i][j].barva)
+        self.okno.itemconfig(self.plosca[i][j].id, fill=self.igra.plosca[i][j].barva)
         print(self.plosca[i][j])
           
 ##    def preveri_potezo(self, p):
@@ -344,7 +347,7 @@ class Gui():
 ##        else:
 ##            return None
         
-
+    #Mislim da se to nikjer ne uporabi in lahko izbriševa
     def zacni_premik_krogcev(self,event):
         if self.premik is False:
             self.premik = True
@@ -394,10 +397,21 @@ class Gui():
         """Nariši črte v igralnem polju"""
         self.okno.delete(Gui.TAG_OKVIR)
         d = Gui.VELIKOST_POLJA
-        self.okno.create_line(2.5*d, 0.1*d, 9*d, 0.1*d, tag=Gui.TAG_OKVIR)
-        self.okno.create_line(2.5*d, 1*d, 9*d, 1*d, tag=Gui.TAG_OKVIR)
-        self.okno.create_line(0*d, 5.5*d, 2.5*d, 1*d, tag=Gui.TAG_OKVIR)
-        self.okno.create_line(9*d, 1*d, 11*d, 5.5*d, tag=Gui.TAG_OKVIR)
+        self.okno.create_line(2.5*d, 0.1*d, 7.5*d, 0.1*d, tag=Gui.TAG_OKVIR)
+        self.okno.create_line(2.5*d, 0.8*d, 7.5*d, 0.8*d, tag=Gui.TAG_OKVIR)
+        self.okno.create_line(2.5*d, 0.8*d, 0.2*d, 4.9*d, tag=Gui.TAG_OKVIR)
+        self.okno.create_line(7.5*d, 0.8*d, 9.8*d, 4.9*d, tag=Gui.TAG_OKVIR)
+        self.okno.create_line(0.2*d, 4.9*d, 2.5*d, 8.9*d, tag=Gui.TAG_OKVIR)
+        self.okno.create_line(2.5*d, 8.9*d, 7.5*d, 8.9*d, tag=Gui.TAG_OKVIR)
+        self.okno.create_line(7.5*d, 8.9*d, 9.8*d, 4.9*d, tag=Gui.TAG_OKVIR)        
+        self.polje_izpodrinjenih1.create_line(0.1*d, 0.1*d, 0.9*d, 0.1*d, tag=Gui.TAG_OKVIR)
+        self.polje_izpodrinjenih1.create_line(0.1*d, 0.1*d, 0.1*d, 5.9*d, tag=Gui.TAG_OKVIR)
+        self.polje_izpodrinjenih1.create_line(0.1*d, 5.9*d, 0.9*d, 5.9*d, tag=Gui.TAG_OKVIR)
+        self.polje_izpodrinjenih1.create_line(0.9*d, 5.9*d, 0.9*d, 0.1*d, tag=Gui.TAG_OKVIR)
+        self.polje_izpodrinjenih2.create_line(0.1*d, 0.1*d, 0.9*d, 0.1*d, tag=Gui.TAG_OKVIR)
+        self.polje_izpodrinjenih2.create_line(0.1*d, 0.1*d, 0.1*d, 5.9*d, tag=Gui.TAG_OKVIR)
+        self.polje_izpodrinjenih2.create_line(0.1*d, 5.9*d, 0.9*d, 5.9*d, tag=Gui.TAG_OKVIR)
+        self.polje_izpodrinjenih2.create_line(0.9*d, 5.9*d, 0.9*d, 0.1*d, tag=Gui.TAG_OKVIR)
         
     def prevod_barve(self, barva):
         #TODO To bova dokončala proti koncu projekta, ko bova imela čas se ukvarjati z barvami(saj je to le lepotna izboljšava)

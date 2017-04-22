@@ -40,6 +40,7 @@ class Igra():
         self.zgodovina = []
         self.izbrani = []
         self.spremembe_premik = []
+        self.izpodrinjeni = [] #Pri izpodrivanju sem dodamo krogce, ki so padli iz plošče, da jih nato gui nariše v posebna stolpca
 
     def ustvari_plosco(self):
         #self.okno.delete(gui.TAG_FIGURA)
@@ -115,17 +116,20 @@ class Igra():
                             return True
         else:
             return False
+        
     def premikanje(self, p):
         if len(self.izbrani) == 0:
             print("Noben krogec ni izbran")
-            return None
+            spremembe = None
         else:
             if self.preveri_potezo(p):
                 self.premakni_krogce(p)
-                self.izbrani = []
                 spremembe = self.spremembe_premik[:]
-                self.spremembe_premik = []
-            return spremembe
+                self.izbrani = []
+            else:
+                spremembe = None
+        self.spremembe_premik = []
+        return spremembe
         
     def preveri_potezo(self, p):
         """Pogleda, ali označene krogce lahko premaknemo na željeno polje."""
@@ -287,6 +291,7 @@ class Igra():
             # Prvi izgine, potem premik kot običajno
             if i in [i_max + 1, i_min - 1] or j in [j_max + 1, j_min - 1]:
                 self.plosca[i][j].barva == self.barva_praznih
+                self.spremembe_premik.append((i,j,self.barva_praznih))
                 #self.okno.itemconfig(self.plosca[i][j].id, fill= self.igra.barva_praznih)
                 if ali_izrinemo:
                     return True # TODO tukaj je treba ta izrinjeni krogec dodat v nek seznam oziroma nekam ...
@@ -299,6 +304,7 @@ class Igra():
                     for parametri in SLOVAR[orientacija]:
                         if i == parametri[0] and j == parametri[1]:
                             self.plosca[parametri[2]][parametri[3]].barva = B
+                            self.spremembe_premik.append((parametri[2],parametri[3],B))
                             #self.okno.itemconfig(self.plosca[parametri[2]][parametri[3]].id, fill=B)
                             break
                     return True        
