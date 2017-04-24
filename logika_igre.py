@@ -120,14 +120,17 @@ class Igra():
     def premikanje(self, p):
         if len(self.izbrani) == 0:
             print("Noben krogec ni izbran")
-            spremembe = None
+            spremembe = (None, None)
         else:
             if self.preveri_potezo(p):
+                print("izbrani:",self.izbrani)
                 self.premakni_krogce(p)
-                spremembe = self.spremembe_premik[:]
+                spremembe = [self.spremembe_premik[:],self.izpodrinjeni[:]]                
                 self.izbrani = []
+                self.shrani_pozicijo()
             else:
-                spremembe = None
+                spremembe = (None, None)
+        print("1izbrani:",self.izbrani)
         self.spremembe_premik = []
         return spremembe
         
@@ -294,6 +297,8 @@ class Igra():
                 self.spremembe_premik.append((i,j,self.barva_praznih))
                 #self.okno.itemconfig(self.plosca[i][j].id, fill= self.igra.barva_praznih)
                 if ali_izrinemo:
+                    self.izpodrinjeni.append(B)
+                    print(self.izpodrinjeni)
                     return True # TODO tukaj je treba ta izrinjeni krogec dodat v nek seznam oziroma nekam ...
                 else:
                     # V bistvu dodaš krogec na konec teh, ki jih rineš.
@@ -336,8 +341,8 @@ class Igra():
     def shrani_pozicijo(self):
         """Shrani trenutno pozicijo, da se bomo lahko kasneje vrnili vanjo
            z metodo razveljavi."""
-        p = [self.plosca[i][:] for i in range(3)]
-        self.zgodovina.append((p, self.na_potezi))
+        p = self.plosca[:]
+        self.zgodovina.append((p, self.na_potezi, self.izpodrinjeni))
 
     def kopija(self):
         """Vrni kopijo te igre, brez zgodovine."""
@@ -351,9 +356,10 @@ class Igra():
         k.na_potezi = self.na_potezi
         return k
 
-    def razveljavi(self):
+    def undo(self):
         """Razveljavi potezo in se vrni v prejšnje stanje."""
-        (self.plosca, self.na_potezi) = self.zgodovina.pop()
+        (self.plosca, self.na_potezi, self.izpodrinjeni) = self.zgodovina.pop()
+        return (self.plosca, self.izpodrinjeni)
 
     def veljavne_poteze(self):
         """Vrni seznam veljavnih potez."""

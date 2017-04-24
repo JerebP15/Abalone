@@ -15,7 +15,7 @@ from racunalnik import *
 
 #TODO Mislim da preverjanje poteze včasih ne deluje povsem pravilno(malo "zašteka") vendar sam v kodi ne vidim napake...
 # Nujno UNDO. Ali je dovolj, da se v zgodovino shrani samo matrika? Ali potrebujemo tudi seznam izbranih polj? Ta polja so rdeča, tako da se to mogoče vidi že iz matrike?
-
+# TODO Bug da če najprej izbereš spodnji od 2 krogcev na diagonali ju ne moreš premakniti levo navzdol
 
 
 ## Uporabniški vmesnik
@@ -75,13 +75,15 @@ class Gui():
 
         # Črte na igralnem polju
         self.narisi_crte()
-        self.plosca = self.igra.plosca
+        self.plosca = self.igra.plosca #To ni uporabno, ker se matrika ne sinhronizira z matriko iz logike igre
         #TODO to gre v Igra
         self.premik = False
+        self.izpodrinjeni = []
 
         # Naročimo se na dogodke
         self.okno.bind("<Button-1>", self.oznacevanje_krogcev)
         self.okno.bind("<Button-3>", self.premik_krogcev)
+        self.okno.bind("<Button-2>", self.razveljavi)
         #TODO press, release
         #self.okno.bind("<ButtonPress-1>", self.okno_klik)
         #self.okno.bind("<ButtonRelease-1>", self.oznacevanje_krogcev)
@@ -113,11 +115,20 @@ class Gui():
     def premik_krogcev(self, event):
         i,j = self.poisci_polje(event)
         p = (i,j)
-        odziv = self.igra.premikanje(p)
-        if odziv is not None:
-            for polje in odziv:
+        (premik, izrinjeni) = self.igra.premikanje(p)
+        if premik is not None:
+            for polje in premik:
                 (x,y,barva) = polje
                 self.okno.itemconfig(self.plosca[x][y].id, fill = barva)
+            if len(izrinjeni) != len(self.izpodrinjeni):
+                self.izpodrinjeni.append(izrinjeni[-1])
+                self.narisi_izpodrinjene(izrinjeni[-1])
+
+    def razveljavi(self,event):
+        (plosca, izpodrinjeni) = self.igra.undo()
+        print(plosca, izpodrinjeni)
+        #TODO Dokončati to metodo
+                
 
                 
     # TODO napiši metodo Povleci potezo(zdaj to delno dela okno_klik)
@@ -353,6 +364,21 @@ class Gui():
             self.premik = True
         else:
             self.premik = False
+
+    def narisi_izpodrinjene(self,barva):
+        d = Gui.VELIKOST_POLJA
+        stevec = 0
+        for barva in self.izpodrinjeni:
+            if barva == self.igra.barva_igralca_1:
+                stevec += 1
+        if barva == self.igra.barva_igralca_1:
+            h = stevec - 1
+            self.polje_izpodrinjenih1.create_oval(0.15*d, (5.5 - h)*d, 1.15*d, (6.5 - h)*d, tag=Gui.TAG_FIGURA, fill = barva)
+        elif barva == self.igra.barva_igralca_2:
+            h = len(self.izpodrinjeni) - stevec - 1
+            self.polje_izpodrinjenih2.create_oval(0.15*d, (5.5 - h)*d, 1.15*d, (6.5 - h)*d, tag=Gui.TAG_FIGURA, fill = barva)
+            
+            
 
     def zacni_igro(self, igralec_1, igralec_2):
         """Nastavi stanje igre na zacetek igre.
