@@ -75,7 +75,6 @@ class Gui():
 
         # Črte na igralnem polju
         self.narisi_crte()
-        #self.plosca = self.igra.plosca #To ni uporabno, ker se matrika ne sinhronizira z matriko iz logike igre
         #TODO to gre v Igra
         self.premik = False
         self.izpodrinjeni = []

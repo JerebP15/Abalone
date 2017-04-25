@@ -80,7 +80,6 @@ class Igra():
                 if self.preveri_polje((i,j)):
                     self.plosca[i][j].oznacen = True
                     self.izbrani.append(self.plosca[i][j])
-                    print('IGRA :: oznacevnanje - smo OZNACILI krogec')
                     return "oznaci"
             elif self.plosca[i][j].oznacen == True:
                 self.plosca[i][j].oznacen = False
@@ -239,7 +238,6 @@ class Igra():
             return False
         
     def premakni_krogce(self, p): 
-        print('IGRA :: premakni_krogce - zacetek')
         (i,j) = p
         if len(self.izbrani) == 1:
             x = self.izbrani[0].x
@@ -301,7 +299,6 @@ class Igra():
             return None
         
     def potisni(self, orientacija, p):
-        print('IGRA :: potisni - zacetek (ni konca)')
         (i,j) = p
         stevilo_oznacenih = len(self.izbrani)
         (stevilo_nasprotnih, ali_izrinemo) = self.stevilo_nasprotnih(orientacija, p)
@@ -338,7 +335,6 @@ class Igra():
 
 
     def stevilo_nasprotnih(self, orientacija, p):
-        print('IGRA :: stevilo_nasprotnih - zacetek (ni konca)')
         (i,j) = p
         barva = self.plosca[i][j].barva
         (j_max, j_min) = (max(krogec.y for krogec in self.izbrani), min(krogec.y for krogec in self.izbrani))
@@ -364,7 +360,6 @@ class Igra():
     def shrani_pozicijo(self):
         """Shrani trenutno pozicijo, da se bomo lahko kasneje vrnili vanjo
            z metodo razveljavi."""
-        print('IGRA :: shrani_pozicijo')
         p = self.plosca[:]
         self.zgodovina.append((p, self.na_potezi, self.izpodrinjeni))
 
@@ -445,6 +440,7 @@ class Igra():
             return IGRALEC_1
         else:
             return NI_KONEC
+
 class Polje:
 
     def __init__(self, id, x, y, barva=None, oznacen=False):
@@ -456,3 +452,4 @@ class Polje:
 
     def __repr__(self):
         return 'Polje({0}, ({1}, {2}), {3}, {4})'.format(self.id, self.x, self.y, self.barva, self.oznacen)
+
