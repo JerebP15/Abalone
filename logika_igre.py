@@ -452,4 +452,3 @@ class Polje:
 
     def __repr__(self):
         return 'Polje({0}, ({1}, {2}), {3}, {4})'.format(self.id, self.x, self.y, self.barva, self.oznacen)
-
