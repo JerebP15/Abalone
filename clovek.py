@@ -19,7 +19,7 @@ class Clovek():
 
     def klik_z_levo(self, p):
         # Povlečemo potezo. Če ni veljavna, se ne bo zgodilo nič.
-        self.gui.oznacevanje(p)
+        self.gui.oznacevanje_krogcev(p)
     def klik_z_desno(self, p):
         # Povlečemo potezo. Če ni veljavna, se ne bo zgodilo nič.
-        self.gui.premikanje(p)
+        self.gui.premik_krogcev(p)
