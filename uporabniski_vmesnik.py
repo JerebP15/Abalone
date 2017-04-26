@@ -105,6 +105,7 @@ class Gui():
         #print('GUI :: levi_klik - zacetek')
         p = self.poisci_polje(event)
         (i,j) = p
+        print(self.igra.mozni_izbrani())
         if i is not None and j is not None:
             igralec = self.igra.na_potezi
             if igralec == IGRALEC_1:
