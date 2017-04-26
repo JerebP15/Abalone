@@ -381,13 +381,67 @@ class Igra():
         return (self.plosca, self.izpodrinjeni)
 
     def veljavne_poteze(self):
-        """Vrni seznam veljavnih potez."""
+        """Vrni seznam parov (mozni oznaceni, mozen premik)."""
         poteze = []
-        for i in range(3):
-            for j in range(3):
-                if self.plosca[i][j] is PRAZNO:
-                    poteze.append((i,j))
+        slovar = self.mozni_izbrani_z_vsemi_sosedi()
+        for kljuc in slovar:
+            for sosed in slovar[kljuc]:
+                self.izbrani = slovar[kljuc]
+                if self.preveri_potezo(sosed):
+                    poteze.append((kljuc, sosed))
+                self.izbrani = []
         return poteze
+
+    def mozni_izbrani_z_vsemi_sosedi(self):
+        mozni_izbrani = self.mozni_izbrani()
+        pass
+
+    def mozne_enice(self):
+        seznam = []
+        for i in range(1,10):
+            for j in range(1,10):
+                if self.plosca[i][j] is not None:
+                    if self.plosca[i][j].barva == pripadajoca_barva(self.na_potezi):
+                        seznam.append((self.plosca[i][j].x, self.plosca[i][j].y))
+        return seznam
+
+    def mozni_izbrani(self):
+        trojice = []
+        dvojice = self.mozne_dvojice()
+        enice = self.mozne_enice()
+        for (prvi,drugi) in dvojice:
+            (I1, J1) = prvi
+            (I2, J2) = drugi
+            self.izbrani.append(self.plosca[I1][J1])
+            self.izbrani.append(self.plosca[I2][J2])
+            orientacija = self.orientacija_izbranih()
+            print(orientacija)
+            barva = self.plosca[I1][J1].barva
+            slovarcek = {"x" : [(min(I1,I2) - 1, J1),(max(I1, I2) + 1, J1)],
+                         "y" : [(I1, min(J1,J2) - 1),(I1, max(J1,J2) + 1)],
+                         "diagonala" : [(min(I1,I2) - 1, min(J1,J2) - 1),(max(I1, I2) + 1, max(J1, J2) + 1)]}
+            for (x,y) in slovarcek[orientacija]:
+                if self.plosca[x][y] is not None and self.plosca[x][y].barva == barva:
+                    tretji = (x,y)
+                    seznam = [(prvi,drugi,tretji),(tretji, prvi, drugi),(drugi, prvi, tretji),(tretji,drugi,prvi)]
+                    if seznam[0] not in trojice and seznam[1] not in trojice and seznam[2] not in trojice and seznam[3] not in trojice:
+                        trojice.append(seznam[0])
+        return enice + dvojice + trojice
+
+    def mozne_dvojice(self):
+        dvojice = []
+        enice = self.mozne_enice()
+        for (i,j) in enice:
+            barva = self.plosca[i][j].barva
+            sosedi = [(i + 1, j), (i - 1, j), (i, j +1), (i, j - 1), (i + 1, j + 1), (i - 1, j - 1)]
+            for (x,y) in sosedi:
+                if self.plosca[x][y] is not None and self.plosca[x][y].barva == barva:
+                    par = ((i,j),(x,y))
+                    obratni_par = ((x,y),(i,j))
+                    if par not in dvojice and obratni_par not in dvojice:
+                        dvojice.append(par)
+        return dvojice
+                    
 
     def povleci_potezo(self, p):
         """Povleci potezo p, ne naredi nič, če je neveljavna.
