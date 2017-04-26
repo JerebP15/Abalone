@@ -4,7 +4,7 @@
 IGRALEC_1 = 1
 IGRALEC_2 = 2
 PRAZNO = "."
-NEODLOCENO = "neodločeno"
+NEODLOCENO = "neodločeno"     # Ne potrebujemo, ker nikoli ne bo neodločeno ?
 NI_KONEC = "ni konec"
 
 
@@ -26,6 +26,14 @@ def nasprotnik(igralec):
         # Assert uporabimo takrat, ko bi program lahko deloval naprej kljub
         # napaki (če bo itak takoj crknil, potem assert ni potreben).
         assert False, "neveljaven nasprotnik"
+
+def pripadajoca_barva(igralec):
+    if igralec == IGRALEC_1:
+        return Igra.barva_igralca_1
+    elif igralec == IGRALEC_2:
+        return Igra.barva_igralca_2
+    else:
+        assert False
 
 
 class Igra():
@@ -63,24 +71,26 @@ class Igra():
                 if barva is not None:
                     matrika[i][j] = Polje(None, i, j, barva)             
         return matrika
-    
-    def oznacevanje(self, p):
+    def oznacevanje(self, p, igralec):
+        print('IGRA :: oznacevnanje - zacetek')
         (i,j) = p
-        if i is not None and j is not None: #TODO Tu manjka še pogoj, da lahko označimo le krogce igralca, ki je na potezi.
+        # TODO Če bomo ukinili razred Polje, je tu treba spremenit "self.plosca[i][j].barva" v "self.plosca[i][j]"
+        if i is not None and j is not None and self.plosca[i][j].barva == pripadajoca_barva(igralec):
             if self.plosca[i][j].oznacen == False:
                 if self.preveri_polje((i,j)):
                     self.plosca[i][j].oznacen = True
                     self.izbrani.append(self.plosca[i][j])
-                    print("oznacil:",self.plosca[i][j])
                     return "oznaci"
             elif self.plosca[i][j].oznacen == True:
                 self.plosca[i][j].oznacen = False
                 self.izbrani.remove(self.plosca[i][j])
-                print("odznacil:",self.plosca[i][j])
+                print('IGRA :: oznacevnanje - smo ODZNACILI krogec')
                 return "odznaci"
+        print('IGRA :: oznacevnanje - konec')
             
     def preveri_polje(self, p):
         """Pogleda, ali ta krogec lahko izberemo."""
+        print('IGRA :: preveri_polje - zacetek')
         (i,j) = p
         if i is not None and j is not None and self.plosca[i][j].barva != Igra.barva_praznih:     # Zagotovimo, da smo na plošči in da nismo izbrali praznega polja.
             if len(self.izbrani) == 0:      # Prvo izbrano polje je lahko katerokoli.
@@ -115,29 +125,33 @@ class Igra():
                         if i == (I1 + I2)/2 and j == (J1 + J2)/2:
                             return True
         else:
+            print('IGRA :: preveri_polje - konec')
             return False
         
     def premikanje(self, p):
+        print('IGRA :: premikanje - zacetek')
         if len(self.izbrani) == 0:
             print("Noben krogec ni izbran")
-            spremembe = (None, None)
+            return None
         else:
             if self.preveri_potezo(p):
-                print("izbrani:",self.izbrani)
-                self.premakni_krogce(p)
+                self.premakni_krogce(p) # To samo popravi matriko. (Se mi zdi.)
                 spremembe = [self.spremembe_premik[:],self.izpodrinjeni[:]]                
                 self.izbrani = []
                 self.shrani_pozicijo()
+                print('IGRA :: premikanje - poteza je veljavna, poteka premik krogcev')
             else:
                 spremembe = (None, None)
-        print("1izbrani:",self.izbrani)
-        self.spremembe_premik = []
-        return spremembe
+                print('IGRA :: premikanje - poteza NI veljavna')
+            self.spremembe_premik = []
+            print('IGRA :: premikanje - konec')            
+            return spremembe
         
     def preveri_potezo(self, p):
         """Pogleda, ali označene krogce lahko premaknemo na željeno polje."""
         (i,j) = p
-        if i is not None and j is not None:     # Zagotovimo, da smo na plošči.
+        print('IGRA :: preveri_potezo - zacetek (ni printa za konec)', (i,j), self.plosca[i][j], self.izbrani)
+        if i is not None and j is not None and len(self.izbrani) != 0:     # Zagotovimo, da smo na plošči.
             if self.plosca[i][j].barva == self.izbrani[0].barva:
                 print("Ni mogoče premakniti izbranih krogcev na svoje polje!")
                 return False
@@ -214,6 +228,8 @@ class Igra():
                     if (i,j) in [(max(I1, I2, I3) + 1, max(J1, J2, J3) + 1),(min(I1, I2, I3) - 1, min(J1, J2, J3) - 1)]:
                         if self.plosca[i][j].barva == self.barva_praznih:
                             return True
+                        else:
+                            return self.potisni(orientacija, p)
                     elif (i,j) in [(min(I1, I2, I3), min(J1, J2, J3) - 1),(max(I1, I2, I3) + 1, max(J1, J2, J3))]:
                         return self.plosca[i][j].barva == self.barva_praznih and self.plosca[max(I1,I2,I3)][max(J1, J2, J3) - 1].barva == self.barva_praznih and self.plosca[min(I1,I2,I3) + 1][min(J1, J2, J3)].barva == self.barva_praznih
                     elif (i,j) in [(max(I1, I2, I3), max(J1, J2, J3) + 1),(min(I1, I2, I3) - 1, min(J1, J2, J3))]:
@@ -221,7 +237,7 @@ class Igra():
                     return False
             return False
         
-    def premakni_krogce(self, p):
+    def premakni_krogce(self, p): 
         (i,j) = p
         if len(self.izbrani) == 1:
             x = self.izbrani[0].x
@@ -264,9 +280,12 @@ class Igra():
                 #self.okno.itemconfig(self.plosca[krogec.x][krogec.y].id, fill= krogec.barva)
                 self.plosca[krogec.x][krogec.y].barva = krogec.barva
                 self.spremembe_premik.append((krogec.x,krogec.y,krogec.barva))
-        self.oznaceni = []           
+        self.oznaceni = []
+        print('IGRA :: premakni_krogce - konec')
+
 
     def orientacija_izbranih(self):
+        print('IGRA :: orientacija_izbranih')
         """Pove orientacijo izbranih krogcev. Možne smeri so x, y in diagonala."""
         (I1, J1) = (self.izbrani[0].x, self.izbrani[0].y)
         (I2, J2) = (self.izbrani[1].x, self.izbrani[1].y)
@@ -373,21 +392,18 @@ class Igra():
     def povleci_potezo(self, p):
         """Povleci potezo p, ne naredi nič, če je neveljavna.
            Vrne stanje_igre() po potezi ali None, ce je poteza neveljavna."""
+        print('IGRA :: povleci_potezo')
         (i,j) = p
-        if (self.plosca[i][j] != PRAZNO) or (self.na_potezi == None):
-            # neveljavna poteza
+        if self.preveri_potezo(p) == False: # Neveljavna poteza
             return None
         else:
             self.shrani_pozicijo()
-            self.plosca[i][j] = self.na_potezi
-            (zmagovalec, trojka) = self.stanje_igre()
+            zmagovalec = self.stanje_igre()
             if zmagovalec == NI_KONEC:
-                # Igre ni konec, zdaj je na potezi nasprotnik
                 self.na_potezi = nasprotnik(self.na_potezi)
             else:
-                # Igre je konec
                 self.na_potezi = None
-            return (zmagovalec, trojka)
+            return zmagovalec
 
     # Tabela vseh trojk, ki nastopajo v igralnem polju
     trojke = [
@@ -406,26 +422,25 @@ class Igra():
 
     def stanje_igre(self):
         """Ugotovi, kakšno je trenutno stanje igre. Vrne:
-           - (IGRALEC_X, trojka), če je igre konec in je zmagal IGRALEC_X z dano zmagovalno trojko
-           - (IGRALEC_O, trojka), če je igre konec in je zmagal IGRALEC_O z dano zmagovalno trojko
-           - (NEODLOCENO, None), če je igre konec in je neodločeno
-           - (NI_KONEC, None), če igre še ni konec
+           - IGRALEC_1, če je igre konec in je zmagal IGRALEC_1 (izrinil je 6 nasprotnikovih kroglic s plošče)
+           - IGRALEC_2, če je igre konec in je zmagal IGRALEC_2 (izrinil je 6 nasprotnikovih kroglic s plošče)
+           - NI_KONEC, če igre še ni konec
         """
-        for t in Igra.trojke:
-            ((i1,j1),(i2,j2),(i3,j3)) = t
-            p = self.plosca[i1][j1]
-            if p != PRAZNO and p == self.plosca[i2][j2] == self.plosca[i3][j3]:
-                # Našli smo zmagovalno trojko
-                return (p, [t[0], t[1], t[2]])
-        # Ni zmagovalca, ali je igre konec?
-        for i in range(3):
-            for j in range(3):
-                if self.plosca[i][j] is PRAZNO:
-                    # Našli smo prazno plosca, igre ni konec
-                    return (NI_KONEC, None)
-        # Vsa polja so polna, rezultat je neodločen
-        return (NEODLOCENO, None)
-    
+        print('IGRA :: smo v stanje_igre')
+        kroglice_prvega = 0
+        kroglice_drugega = 0
+        for barva in self.izpodrinjeni:
+            if barva == Igra.barva_igralca_1:
+                kroglice_prvega += 1
+            else:
+                kroglice_drugega += 1
+        if kroglice_prvega == 6:
+            return IGRALEC_2
+        elif kroglice_drugega == 6:
+            return IGRALEC_1
+        else:
+            return NI_KONEC
+
 class Polje:
 
     def __init__(self, id, x, y, barva=None, oznacen=False):
@@ -437,5 +452,3 @@ class Polje:
 
     def __repr__(self):
         return 'Polje({0}, ({1}, {2}), {3}, {4})'.format(self.id, self.x, self.y, self.barva, self.oznacen)
-    
-

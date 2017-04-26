@@ -17,9 +17,16 @@ class Clovek():
         # Človek jo lahko ignorira.
         pass
 
-    def klik_z_levo(self, p):
+    def oznaci(self, p):
+        # Povlečemo potezo. Če ni veljavna, se ne bo zgodilo nič.        print('ČLOVEK :: oznaci - zacetek')
+        self.gui.oznacevanje(p)
+        print('ČLOVEK :: oznaci - konec')
+
+    def premakni(self, p):
         # Povlečemo potezo. Če ni veljavna, se ne bo zgodilo nič.
-        self.gui.oznacevanje_krogcev(p)
-    def klik_z_desno(self, p):
-        # Povlečemo potezo. Če ni veljavna, se ne bo zgodilo nič.
-        self.gui.premik_krogcev(p)
+        #self.gui.premikanje(p)
+        print('ČLOVEK :: premakni - zacetek')
+        self.gui.povleci_potezo(p)
+        print('ČLOVEK :: premakni - koneco')
+
+
