@@ -137,7 +137,7 @@ class Gui():
     def desni_klik(self, event):
         """Obdelamo desni klik - premikanje krogcev."""
         p = self.poisci_polje(event)
-        print(self.igra.mozni_izbrani_z_vsemi_sosedi(), len(self.igramozni_izbrani_z_vsemi_sosedi()))
+        print(self.igra.veljavne_poteze(), len(self.igra.veljavne_poteze()))
         (i,j) = p
         if i is not None and j is not None and len(self.igra.izbrani) != 0:
             igralec = self.igra.na_potezi
