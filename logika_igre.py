@@ -10,7 +10,7 @@ NI_KONEC = "ni konec"
 
 
 def nasprotnik(igralec):
-    """Vrni nasprotnika od igralca."""
+    """Vrni nasprotnika danega igralca."""
     if igralec == IGRALEC_1:
         return IGRALEC_2
     elif igralec == IGRALEC_2:
@@ -377,18 +377,27 @@ class Igra():
         return (self.plosca, self.izpodrinjeni)
 
     def veljavne_poteze(self):
-        """ Vrne seznam parov veljavnih potez (možni izbrani krogci, možen premik).
+        """ Vrne seznam veljavnih potez v naslednji obliki: [(možni izbrani krogci), možen premik].
         Možni označeni krogci so predstavljeni s koordinatami na plošči,
         možen premik pa je polje p = (i,j), kamor se označeni krogci lahko prestavijo.
         """
         poteze = []
         slovar = self.mozni_izbrani_z_vsemi_sosedi()
-        for kljuc in slovar:
-            for sosed in slovar[kljuc]:
-                self.izbrani = slovar[kljuc]
+        for izbor in slovar:
+            # Najprej pogledamo, ali je izbran le en krogec.
+            if type(izbor[0]) == int:
+                (x,y) = izbor
+                self.izbrani.append(self.plosca[x][y])
+            # Sicer sta izbrana dva ali trije krogce, v tem primeru vsakega posebej dodamo v self.izbrani.
+            else:
+                for (x,y) in izbor:
+                    self.izbrani.append(self.plosca[x][y])
+            # Zdaj preverimo, ali lahko izbrane krogce premaknemo na katero od sosednjih polj, in veljavne poteze dodamo v slovar.
+            for sosed in slovar[izbor]:
                 if self.preveri_potezo(sosed):
-                    poteze.append((kljuc, sosed))
-                self.izbrani = []
+                    poteze.append([izbor, sosed])
+            # Pobrišemo self.izbrani, ker smo preverjanje za ta izbor krogcev zaključili.
+            self.izbrani = []
         return poteze
 
     def mozni_izbrani_z_vsemi_sosedi(self):
@@ -402,28 +411,28 @@ class Igra():
             # Poiščemo 6 polj, kamor bi se teoretično lahko premaknili.
             # Če je izbran samo en krogec, so to kar vsi sosedje,
             # sicer pa so koordinate odvisne od orientacije.
-            if len(moznost) == 1:
-                print(11111111111111111111111111111111111111)
-                (i,j) = moznost[0]
+            if type(moznost[0]) == int:
+                # Izbran je le en krogec.
+                (i,j) = moznost
                 sosedi = [(i + 1, j), (i - 1, j), (i, j +1), (i, j - 1), (i + 1, j + 1), (i - 1, j - 1)]
-            else:
-                print(23232323232323232323232323232323232323)
-                pass
-                self.izbrani = moznost
-                (i_max, i_min, I) = (max(x for (x,y) in moznost), min(x for (x,y) in moznost), moznost[0][0])
-                (j_max, j_min, J) = (max(y for (x,y) in moznost), min(y for (x,y) in moznost), moznost[0][1])
-                # Ta slovar zaenkrat nima smisla, samo nastavljen je. Noter bo treba napisat nekaj podobnega kot
-                # zgoraj pri sosedih, samo z i_min, i_max itd.
-                slovar_sosedov = {"x" : 2,
-                                  "y" : 2,
-                                  "diagonala" : 2}
-                sosedi = slovar_sosedov[self.orientacija_izbranih]
+            elif type(moznost[0]) == tuple:
+                # Izbrana sta dva ali trije krogci.
+                for (x,y) in moznost:
+                    self.izbrani.append(self.plosca[x][y])
+                (i_max, i_min, i) = (max(x for (x,y) in moznost), min(x for (x,y) in moznost), moznost[0][0])
+                (j_max, j_min, j) = (max(y for (x,y) in moznost), min(y for (x,y) in moznost), moznost[0][1])
+                slovar_sosedov = {"x" : [(i_max + 1, j), (i_min - 1, j), (i_max, j - 1), (i_max + 1, j + 1), (i_min - 1, j - 1), (i_min, j + 1)],
+                                  "y" : [(i, j_max + 1), (i, j_min - 1), (i - 1, j_max), (i + 1, j_max + 1), (i - 1, j_min - 1), (i + 1, j_min)],
+                                  "diagonala" : [(i_max + 1, j_max + 1), (i_max + 1, j_max), (i_max, j_max + 1), (i_min - 1, j_min - 1), (i_min - 1, j_min), (i_min, j_min - 1)]}
+                orientacija = self.orientacija_izbranih()
+                sosedi = slovar_sosedov[orientacija]
                 self.izbrani = []
             for sosed in sosedi:
-                if sosed is not None:
+                (x,y) = sosed
+                if self.plosca[x][y] is not None:
                     # V tem primeru dodamo v slovar pod ključ 'moznost' vrednost 'sosed'.
                     # Kasneje bomo preverili, ali je poteza veljavna (None moramo vseeno izločiti,
-                    # ker metoda preveri_potezo ne deluje za None.
+                    # ker metoda preveri_potezo ne deluje za None).
                     if moznost not in nepreverjeni_sosedje:
                         nepreverjeni_sosedje[moznost] = [sosed]
                     else:
@@ -432,30 +441,30 @@ class Igra():
 
     def mozne_enice(self):
         """ Vrne seznam koordinat vseh posameznih krogcev igralca na potezi.
-        Oblika seznama: [[(x1,y1)], [(x2,y2)], ...]
+        Oblika seznama: [(x1,y1), (x2,y2), ...]
         """
         seznam = []
         for i in range(1,10):
             for j in range(1,10):
                 if self.plosca[i][j] is not None:
                     if self.plosca[i][j].barva == pripadajoca_barva(self.na_potezi):
-                        seznam.append([(self.plosca[i][j].x, self.plosca[i][j].y)])
+                        seznam.append((self.plosca[i][j].x, self.plosca[i][j].y))
         return seznam
 
     def mozne_dvojice(self):
         """ Vrne seznam koordinat vseh parov krogcev (torej brez enic), ki bi jih lahko izbral igralec na potezi.
         Vsak par nastopi samo enkrat.
-        Oblika seznama: [[(x1,y1),(x2,y2)], [(x3,y3),(x4,y4)]...]
+        Oblika seznama: [((x1,y1),(x2,y2)), ((x3,y3),(x4,y4))...]
         """
         dvojice = []
         enice = self.mozne_enice()
-        for [(i,j)] in enice:
+        for (i,j) in enice:
             barva = self.plosca[i][j].barva
             sosedi = [(i + 1, j), (i - 1, j), (i, j +1), (i, j - 1), (i + 1, j + 1), (i - 1, j - 1)]
             for (x,y) in sosedi:
                 if self.plosca[x][y] is not None and self.plosca[x][y].barva == barva:
-                    par = [(i,j),(x,y)]
-                    obratni_par = [(x,y),(i,j)]
+                    par = ((i,j),(x,y))
+                    obratni_par = ((x,y),(i,j))
                     if par not in dvojice and obratni_par not in dvojice:
                         dvojice.append(par)
         return dvojice
@@ -463,7 +472,7 @@ class Igra():
     def mozni_izbrani(self):
         """ Vrne seznam koordinat vseh možnih izborov krogcev (enega, dveh ali treh).
         Vsak izbor nastopi samo enkrat.
-        Oblika seznama: [[(x1,y1),(x2,y2)], [(x3,y3),(x4,y4)], [(x5,y5)], [(x6,y6),(x7,y7),(x8,y8)]...]
+        Oblika seznama: [((x1,y1),(x2,y2)), ((x3,y3),(x4,y4)), (x5,y5), ((x6,y6),(x7,y7),(x8,y8))...]
         """
         trojice = []
         dvojice = self.mozne_dvojice()
@@ -482,7 +491,7 @@ class Igra():
             for (x,y) in slovarcek[orientacija]:
                 if self.plosca[x][y] is not None and self.plosca[x][y].barva == barva:
                     tretji = (x,y)
-                    seznam = [[prvi,drugi,tretji],[tretji, prvi, drugi],[drugi, prvi, tretji],[tretji,drugi,prvi]]
+                    seznam = [(prvi,drugi,tretji),(tretji, prvi, drugi),(drugi, prvi, tretji),(tretji,drugi,prvi)]
                     if seznam[0] not in trojice and seznam[1] not in trojice and seznam[2] not in trojice and seznam[3] not in trojice:
                         trojice.append(seznam[0])
         self.izbrani = [] # Saj je to prav?
