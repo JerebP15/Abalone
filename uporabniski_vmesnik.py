@@ -87,9 +87,10 @@ class Gui():
         self.okno.bind("<Button-1>", self.levi_klik)
         self.okno.bind("<Button-3>", self.desni_klik)
         self.okno.bind('<Escape>', self.odznaci_krogec)  #Zaradi nekega razloga dela samo, če klikneš tab (ko klikneš tab se polje obrobi in od takrat naprej to dela, prej pa se ne zgodi nič)
-
+        # self.okno.bind("<Button-2>", self.razveljavi)
         #TODO press, release
-
+        #self.okno.bind("<ButtonPress-1>", self.okno_klik)
+        #self.okno.bind("<ButtonRelease-1>", self.oznacevanje_krogcev)
 
         # Prični igro
         self.zacni_igro(Clovek(self), Clovek(self))
