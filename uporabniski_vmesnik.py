@@ -231,7 +231,7 @@ class Gui():
     def oznaci_krogec(self, p):
         """Izbrani krogec pobarva rdeče."""
         (i, j) = p
-        self.okno.itemconfig(self.igra.plosca[i][j].id, fill='red')
+        self.okno.itemconfig(self.igra.plosca[i][j].id, fill=self.igra.barva_izbranih)
         #print(self.plosca[i][j])
 
 

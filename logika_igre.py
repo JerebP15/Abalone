@@ -33,6 +33,7 @@ class Igra():
     barva_praznih = "white"
     barva_igralca_1 = "yellow"
     barva_igralca_2 = "black"
+    barva_izbranih = "red"
     
     def __init__(self):
         self.plosca = self.ustvari_plosco()
@@ -71,18 +72,13 @@ class Igra():
         doda oznacen krogec v seznam izbranih (dodamo torej element razred Polje)."""
         (i,j) = p
         if i is not None and j is not None and self.plosca[i][j].barva == pripadajoca_barva(igralec):
-            if self.plosca[i][j].oznacen == False:
-                if self.preveri_polje((i,j)):
-                    self.plosca[i][j].oznacen = True
-                    self.izbrani.append(self.plosca[i][j])
-                    return "oznaci"
-            elif self.plosca[i][j].oznacen == True:
-                self.plosca[i][j].oznacen = False
+            if self.plosca[i][j] in self.izbrani:
                 self.izbrani.remove(self.plosca[i][j])
-                print('IGRA :: oznacevnanje - smo ODZNACILI krogec')
                 return "odznaci"
-        print('IGRA :: oznacevnanje - konec')
-            
+            elif self.plosca[i][j] not in self.izbrani and self.preveri_polje((i,j)):
+                self.izbrani.append(self.plosca[i][j])
+                return "oznaci"
+           
     def preveri_polje(self, p):
         """Pogleda, ali lahko izberemo krogec na mestu p. Vrne True, če je to mogoče, in False, če ni."""
         (i,j) = p
@@ -240,7 +236,6 @@ class Igra():
             x = self.izbrani[0].x
             y = self.izbrani[0].y
             barva = self.izbrani[0].barva
-            self.plosca[x][y].oznacen = False
             self.plosca[x][y].barva = self.barva_praznih
             self.plosca[i][j].barva = barva
             self.spremembe_premik.append((x,y,self.barva_praznih))
@@ -251,7 +246,6 @@ class Igra():
             for polje in self.izbrani:
                 izbrani.append(Polje(polje.id, polje.x, polje.y, polje.barva))
             for krogec in izbrani:
-                self.plosca[krogec.x][krogec.y].oznacen = False
                 self.plosca[krogec.x][krogec.y].barva = self.barva_praznih
                 self.spremembe_premik.append((krogec.x,krogec.y,self.barva_praznih))
             (j_max, j_min, J) = (max(krogec.y for krogec in self.izbrani), min(krogec.y for krogec in self.izbrani), izbrani[0].y)
@@ -270,10 +264,9 @@ class Igra():
                         novi_izbrani.append(Polje(id, x, y, barva))
                     break
             for krogec in novi_izbrani:
-                self.plosca[krogec.x][krogec.y].oznacen = False
                 self.plosca[krogec.x][krogec.y].barva = krogec.barva
                 self.spremembe_premik.append((krogec.x,krogec.y,krogec.barva))
-        self.oznaceni = []
+        self.izbrani = []
         print('IGRA :: premakni_krogce - konec')
 
 
@@ -295,11 +288,11 @@ class Igra():
         Vrne False, če potisk ni mogoč. V nasprotnem primeru vrne True in popravi matriko tako, da ustreza potezi.
         Če nasprotnikov krogec izrinemo iz plošče, ka doda v seznam izrinjenih."""
         (i,j) = p
-        stevilo_oznacenih = len(self.izbrani)
+        stevilo_izbranih = len(self.izbrani)
         (stevilo_nasprotnih, ali_izrinemo) = self.stevilo_nasprotnih(orientacija, p)
         if stevilo_nasprotnih is None:
             return False
-        elif stevilo_nasprotnih >= stevilo_oznacenih:
+        elif stevilo_nasprotnih >= stevilo_izbranih:
             return False
         else:
             B = self.plosca[i][j].barva # ta je potisnjen 
@@ -540,12 +533,11 @@ class Igra():
 
 class Polje:
 
-    def __init__(self, id, x, y, barva=None, oznacen=False):
+    def __init__(self, id, x, y, barva=None):
         self.id = id
         self.x = x
         self.y = y
         self.barva = barva
-        self.oznacen = oznacen
 
     def __repr__(self):
-        return 'Polje({0}, ({1}, {2}), {3}, {4})'.format(self.id, self.x, self.y, self.barva, self.oznacen)
+        return 'Polje({0}, ({1}, {2}), {3})'.format(self.id, self.x, self.y, self.barva)
