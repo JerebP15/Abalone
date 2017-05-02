@@ -62,6 +62,7 @@ class Gui():
         menu_igra.add_command(label="Črni=Računalnik, Rumeni=Računalnik",
                               command=lambda: self.zacni_igro(Racunalnik(self, Minimax(MINIMAX_GLOBINA)),
                                                               Racunalnik(self, Minimax(MINIMAX_GLOBINA))))
+        menu.add_cascade(label="Navodila")
 
 
         # Napis, ki prikazuje stanje igre
@@ -94,6 +95,7 @@ class Gui():
 
         # Prični igro
         self.zacni_igro(Clovek(self), Clovek(self))
+
 
 
     def ustvari_matriko_id(self):

@@ -127,7 +127,7 @@ class Igra():
                 self.premakni_krogce(p) # To samo popravi matriko. (Se mi zdi.)
                 spremembe = [self.spremembe_premik[:],self.izpodrinjeni[:]]                
                 self.izbrani = []
-                self.shrani_pozicijo()
+                # self.shrani_pozicijo()
             else:
                 spremembe = (None, None)
             self.spremembe_premik = []      
