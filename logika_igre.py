@@ -62,7 +62,7 @@ class Igra():
                 else:
                     barva = None
                 if barva is not None:
-                    matrika[i][j] = Polje(None, barva)             
+                    matrika[i][j] = Polje(barva)             
         return matrika
 
     def oznacevanje(self, p, igralec):
@@ -523,9 +523,8 @@ class Igra():
 
 class Polje:
 
-    def __init__(self, id, barva=None):
-        self.id = id
+    def __init__(self, barva=None):
         self.barva = barva
 
     def __repr__(self):
-        return 'Polje({0}, {1})'.format(self.id, self.barva)
+        return 'Polje({0})'.format(self.barva)
