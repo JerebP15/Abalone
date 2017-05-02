@@ -1,6 +1,6 @@
 import logging
 
-from logika_igre import IGRALEC_1, IGRALEC_2, PRAZNO, NEODLOCENO, NI_KONEC, nasprotnik, pripadajoca_barva
+from logika_igre import IGRALEC_1, IGRALEC_2, PRAZNO, NI_KONEC, nasprotnik, pripadajoca_barva
 
 
 ######################################################################
@@ -12,8 +12,8 @@ class Minimax:
     # v drugem vlaknu kot tkinter).
 
     def __init__(self, globina):
-        self.globina = globina  # do katere globine iščemo?
-        self.prekinitev = False # ali moramo končati?
+        self.globina = globina  # do katere globine iščemo
+        self.prekinitev = False # ali moramo končati
         self.igra = None # objekt, ki opisuje igro (ga dobimo kasneje)
         self.jaz = None  # katerega igralca igramo (podatek dobimo kasneje)
         self.poteza = None # sem napišemo potezo, ko jo najdemo
@@ -40,7 +40,7 @@ class Minimax:
             self.poteza = poteza
 
     # Vrednosti igre
-    ZMAGA = 100000 # Mora biti vsaj 10^5
+    ZMAGA = 100000
     NESKONCNO = ZMAGA + 1 # Več kot zmaga
 
     def vrednost_pozicije(self):
@@ -51,53 +51,50 @@ class Minimax:
         zunanji_krog = [(1,1),(2,1),(3,1),(4,1),(5,1),(6,2),(7,3),(8,4),(9,5),(9,6),(9,7),(9,8),(9,9),(8,9),(7,9),(6,9),(5,9),(4,8),(3,7),(2,6),(1,5),(1,4),(1,3),(1,2)]
         vrednost = 0
         for i in range(1,10):
-            for j in range(1,10):
-                if self.igra.plosca[i][j] is not None:
-                    x = i
-                    y = j
-                    stevilo = 0
-                    if x == y == 5: #Sredinsko polje
-                        stevilo = 100
+            for polje in self.igra.plosca[i]:
+                if polje is not None:
+                    x = polje.x
+                    y = polje.y
+                    barva = polje.barva
+                    if barva == pripadajoca_barva(self.jaz):
+                        predznak = 1
+                    elif barva == pripadajoca_barva(nasprotnik(self.jaz)):
+                        predznak = -1
+                    if x ==5 and y == 5:
+                        vrednost += predznak * 100
                     elif (x,y) in notranji_krog:
-                        stevilo = 50
-                    elif (x,y) in srednji_krog:
-                        stevilo = 0
+                        vrednost += predznak * 50
                     elif (x,y) in [(2,2),(5,8),(4,7),(3,6),(2,5),(2,4),(2,3)]:
-                        if self.igra.plosca[x+1][y].barva == pripadajoca_barva(self.jaz) and self.igra.plosca[x-1][y].barva != pripadajoca_barva(self.jaz):
-                            stevilo = Minimax.ZMAGA / 10
+                        if self.igra.plosca[x+1][y].barva == pripadajoca_barva(self.jaz) and self.igra.plosca[x-1][y].barva == pripadajoca_barva(nasprotnik(self.jaz)):
+                            vrednost += predznak * Minimax.ZMAGA / 100
                         else:
-                            stevilo = -10
+                            vrednost -= predznak * 10
                     elif (x,y) in [(2,5),(2,4),(2,3),(2,2),(3,2),(4,2),(5,2)]:
-                        if self.igra.plosca[x+1][y+1].barva == pripadajoca_barva(self.jaz) and self.igra.plosca[x-1][y-1].barva != pripadajoca_barva(self.jaz):
-                            stevilo = Minimax.ZMAGA / 10
+                        if self.igra.plosca[x+1][y+1].barva == pripadajoca_barva(self.jaz) and self.igra.plosca[x-1][y-1].barva == pripadajoca_barva(nasprotnik(self.jaz)):
+                            vrednost += predznak * Minimax.ZMAGA / 100
                         else:
-                            stevilo = -10
+                            vrednost -= predznak * 10
                     elif (x,y) in [(2,2),(3,2),(4,2),(5,2),(6,3),(7,4),(8,5)]:
-                        if self.igra.plosca[x][y-1].barva == pripadajoca_barva(self.jaz) and self.igra.plosca[x][y+1].barva != pripadajoca_barva(self.jaz):
-                            stevilo = Minimax.ZMAGA / 10
+                        if self.igra.plosca[x][y+1].barva == pripadajoca_barva(self.jaz) and self.igra.plosca[x][y-1].barva == pripadajoca_barva(nasprotnik(self.jaz)):
+                            vrednost += predznak * Minimax.ZMAGA / 100
                         else:
-                            stevilo = -10
+                            vrednost -= predznak * 10
                     elif (x,y) in [(5,2),(6,3),(7,4),(8,5),(8,6),(8,7),(8,8)]:
-                        if self.igra.plosca[x-1][y].barva == pripadajoca_barva(self.jaz) and self.igra.plosca[x+1][y].barva != pripadajoca_barva(self.jaz):
-                            stevilo = Minimax.ZMAGA / 10
+                        if self.igra.plosca[x-1][y].barva == pripadajoca_barva(self.jaz) and self.igra.plosca[x+1][y].barva == pripadajoca_barva(nasprotnik(self.jaz)):
+                            vrednost += predznak * Minimax.ZMAGA / 100
                         else:
-                            stevilo = -10
-                    elif (x,y) in [(5,8),(6,8),(7,8),(8,8),(8,7),(8,6),(8,6)]:
-                        if self.igra.plosca[x+1][y+1].barva == pripadajoca_barva(self.jaz) and self.igra.plosca[x-1][y-1].barva != pripadajoca_barva(self.jaz):
-                            stevilo = Minimax.ZMAGA / 10
+                            vrednost -= predznak * 10
+                    elif (x,y) in [(5,8),(6,8),(7,8),(8,8),(8,7),(8,6),(8,5)]:
+                        if self.igra.plosca[x-1][y-1].barva == pripadajoca_barva(self.jaz) and self.igra.plosca[x+1][y+1].barva == pripadajoca_barva(nasprotnik(self.jaz)):
+                            vrednost += predznak * Minimax.ZMAGA / 100
                         else:
-                            stevilo = -10
+                            vrednost -= predznak * 10
                     elif (x,y) in [(8,8),(7,8),(6,8),(5,8),(4,7),(3,6),(2,5)]:
-                        if self.igra.plosca[x+1][y+1].barva == pripadajoca_barva(self.jaz) and self.igra.plosca[x-1][y-1].barva != pripadajoca_barva(self.jaz):
-                            stevilo = Minimax.ZMAGA / 10
+                        if self.igra.plosca[x][y-1].barva == pripadajoca_barva(self.jaz) and self.igra.plosca[x][y+1].barva == pripadajoca_barva(nasprotnik(self.jaz)):
+                            vrednost += predznak * Minimax.ZMAGA / 100
                         else:
-                            stevilo = -10
-                    elif (x,y) in zunanji_krog:
-                        stevilo = -20
-                    if self.igra.plosca[i][j].barva == pripadajoca_barva(self.jaz):
-                        vrednost += stevilo
-                    else:
-                        vrednost -= stevilo
+                            vrednost -= predznak * 10
+        print("na potezi je",self.jaz,", minimax je izračunal vrednost",vrednost)            
         return vrednost
 
     def minimax(self, globina, maksimiziramo):
