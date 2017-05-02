@@ -23,7 +23,7 @@ def prevod_barve(barva):
 
 class Gui():
     # S to oznako so označeni vsi grafični elementi v self.okno, ki se
-    # pobrišejo, ko se začne nova igra (torej, križci in krožci)
+    # pobrišejo, ko se začne nova igra
     TAG_FIGURA = 'figura'
 
     # Oznaka za črte
@@ -35,9 +35,9 @@ class Gui():
 
 
     def __init__(self, master):
-        self.igralec_1 = None # Objekt, ki igra X (nastavimo ob začetku igre)
-        self.igralec_2 = None # Objekt, ki igra O (nastavimo ob začetku igre)
-        self.igra = None # Kot pri profesorju
+        self.igralec_1 = None # Objekt, ki igra prvi igralec (nastavimo ob začetku igre)
+        self.igralec_2 = None # Objekt, ki igra drugi igralec (nastavimo ob začetku igre)
+        self.igra = None # Objekt, ki predstavlja logiko igre
         # Če uporabnik zapre okno naj se poklice self.zapri_okno
         master.protocol("WM_DELETE_WINDOW", lambda: self.zapri_okno(master))
 
@@ -48,16 +48,17 @@ class Gui():
         # Podmenu za izbiro igre
         menu_igra = tkinter.Menu(menu, tearoff = 0)
         menu.add_cascade(label="Nova igra", menu=menu_igra)
-        menu_igra.add_command(label="Rumeni=Človek, Črni=Človek",
+        menu_igra.add_command(label="Črni=Človek, Rumeni=Človek",
                               command=lambda: self.zacni_igro(Clovek(self),
                                                               Clovek(self)))
-        menu_igra.add_command(label="Rumeni=Človek, Črni=Računalnik",
-                              command=lambda: self.zacni_igro(Clovek(self),
-                                                              Racunalnik(self, Minimax(MINIMAX_GLOBINA))))
-        menu_igra.add_command(label="Rumeni=Računalnik, Črni=Človek",
+        menu_igra.add_command(label="Črni=Človek, Rumeni=Računalnik",
                               command=lambda: self.zacni_igro(Racunalnik(self, Minimax(MINIMAX_GLOBINA)),
                                                               Clovek(self)))
-        menu_igra.add_command(label="Rumeni=Računalnik, Črni=Računalnik",
+        menu_igra.add_command(label="Črni=Računalnik, Rumeni=Človek",
+                              command=lambda: self.zacni_igro(Clovek(self),
+                                                              Racunalnik(self, Minimax(MINIMAX_GLOBINA))))
+
+        menu_igra.add_command(label="Črni=Računalnik, Rumeni=Računalnik",
                               command=lambda: self.zacni_igro(Racunalnik(self, Minimax(MINIMAX_GLOBINA)),
                                                               Racunalnik(self, Minimax(MINIMAX_GLOBINA))))
 
@@ -69,6 +70,8 @@ class Gui():
         # Igralno območje
         self.okno = tkinter.Canvas(master, width=11*Gui.VELIKOST_POLJA, height=11*Gui.VELIKOST_POLJA)
         self.okno.grid(row=1, column=1)
+
+        # Območje, kjer se rišejo krogci, ki so bili že izpodrinjeni iz plošče
         self.polje_izpodrinjenih1 = tkinter.Canvas(master, width=2*Gui.VELIKOST_POLJA, height=8*Gui.VELIKOST_POLJA)
         self.polje_izpodrinjenih1.grid(row=1, column=0)
         self.polje_izpodrinjenih2 = tkinter.Canvas(master, width=2*Gui.VELIKOST_POLJA, height=8*Gui.VELIKOST_POLJA)
@@ -76,13 +79,14 @@ class Gui():
 
         # Črte na igralnem polju
         self.narisi_crte()
-        #TODO to gre v Igra
-        self.premik = False
+        
+        # Seznam izpodrinjenih krogcev
         self.izpodrinjeni = []
 
         # Naročimo se na dogodke
         self.okno.bind("<Button-1>", self.levi_klik)
         self.okno.bind("<Button-3>", self.desni_klik)
+        self.okno.bind('<Escape>', self.odznaci_krogec)  #Zaradi nekega razloga dela samo, če klikneš tab (ko klikneš tab se polje obrobi in od takrat naprej to dela, prej pa se ne zgodi nič)
         # self.okno.bind("<Button-2>", self.razveljavi)
         #TODO press, release
         #self.okno.bind("<ButtonPress-1>", self.okno_klik)
@@ -93,6 +97,7 @@ class Gui():
 
 
     def risi_plosco(self):
+        """Nariše krogce na plošči (v začetni poziciji)."""
         d = Gui.VELIKOST_POLJA
         matrika = self.igra.plosca
         for i in range(len(matrika)):
@@ -103,11 +108,9 @@ class Gui():
 
     def levi_klik(self, event):
         """Obdelamo levi klik - oznacevanje krogcev."""
-        #print('GUI :: levi_klik - zacetek')
         p = self.poisci_polje(event)
         (i,j) = p
-        print(p, self.igra.plosca[i][j])
-        # print(self.igra.mozni_izbrani())
+        print(p)
         if i is not None and j is not None:
             igralec = self.igra.na_potezi
             if igralec == IGRALEC_1:
@@ -116,29 +119,26 @@ class Gui():
                 self.igralec_2.oznaci(p)
             else:
                 pass
-        #print('GUI :: levi_klik - konec')
 
     def oznacevanje(self, p):
         """Če smo izbrali (svoje) neoznačene krogce, se označijo.
            Če smo izbrali že označene krogce, se odznačijo in spet postanejo barvni."""
         igralec = self.igra.na_potezi
         odziv = self.igra.oznacevanje(p, igralec)
-        if odziv == "oznaci":
+        if odziv:
             self.oznaci_krogec(p)
-        elif odziv == "odznaci":
-            self.odznaci_krogec(p)
+##        elif odziv == "odznaci":
+##            self.odznaci_krogec(p)
         else:
             pass
 
-    def razveljavi(self,event):
-        (plosca, izpodrinjeni) = self.igra.undo()
-        print(plosca, izpodrinjeni)
+##    def razveljavi(self,event):
+##        (plosca, izpodrinjeni) = self.igra.undo()
         #TODO Dokončati to metodo
 
     def desni_klik(self, event):
         """Obdelamo desni klik - premikanje krogcev."""
         p = self.poisci_polje(event)
-        #print(self.igra.veljavne_poteze(), len(self.igra.veljavne_poteze())) #To sem zakomentiral ker drugače ne dela
         (i,j) = p
         if i is not None and j is not None and len(self.igra.izbrani) != 0:
             igralec = self.igra.na_potezi
@@ -152,7 +152,6 @@ class Gui():
     def povleci_potezo(self, p):
         """Povlece potezo in zamenja, kdo je na potezi."""
         igralec = self.igra.na_potezi
-        print("gui mora narediti to potezo:",p)
         if type(p) == tuple:
             (premik, izrinjeni) = self.igra.premikanje(p)
             if premik is not None:
@@ -183,9 +182,7 @@ class Gui():
             else:
                 for polje in p[0]:
                     self.igra.izbrani.append(polje[0],polje[1])
-            print("tik preden gui reče igrni naj naredi potezo",self.igra.izbrani)
             (premik, izrinjeni) = self.igra.premikanje(p[1])
-            print("gui dobi informacijo o potezi: premik={},izrinjeni={}".format(premik, izrinjeni))
             if premik is not None:
                 for polje in premik:
                     (x,y,barva) = polje
@@ -209,11 +206,6 @@ class Gui():
                     # Igre je konec, koncaj
                     self.koncaj_igro(r)
 
-    def razveljavi(self,event):
-        (plosca, izpodrinjeni) = self.igra.undo()
-        print(plosca, izpodrinjeni)
-        #TODO Dokončati to metodo
-
     def poisci_polje(self, event):
         """Vrne polje, na katero smo kliknili, ali (None, None), če smo kliknili izven plošče."""
         d = Gui.VELIKOST_POLJA
@@ -229,17 +221,18 @@ class Gui():
         return (None, None)
 
     def oznaci_krogec(self, p):
-        """Izbrani krogec pobarva rdeče."""
+        """Krogec na katerega smo kliknili označi (pobarva rdeče)."""
         (i, j) = p
         self.okno.itemconfig(self.igra.plosca[i][j].id, fill=self.igra.barva_izbranih)
-        #print(self.plosca[i][j])
 
 
     def odznaci_krogec(self, p):
-        """Obratno kot označi krogec."""
-        (i, j) = p
-        self.okno.itemconfig(self.igra.plosca[i][j].id, fill=self.igra.plosca[i][j].barva)
-        #print(self.plosca[i][j])
+        """Odznači vse izbrane krogce."""
+        print("izbrani so:",self.igra.izbrani)
+        for p in self.igra.izbrani:
+            (i, j) = p
+            self.okno.itemconfig(self.igra.plosca[i][j].id, fill=self.igra.plosca[i][j].barva)
+        self.igra.izbrani = []
 
     def narisi_izpodrinjene(self,barva):
         """Krogec, ki je bil izpodrinjen, nariše v ustrezen stolpec ob igralni plošči."""
@@ -297,7 +290,6 @@ class Gui():
 
     def zapri_okno(self, master):
         """Ta metoda se pokliče, ko uporabnik zapre aplikacijo."""
-        # Kasneje bo tu treba še kaj narediti
         self.prekini_igralce()
         master.destroy()
 

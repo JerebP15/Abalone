@@ -18,15 +18,10 @@ class Clovek():
         pass
 
     def oznaci(self, p):
-        # Povlečemo potezo. Če ni veljavna, se ne bo zgodilo nič.        print('ČLOVEK :: oznaci - zacetek')
+        # Označimo krogce. Če to označevanje ni veljavno, se ne bo zgodilo nič.
         self.gui.oznacevanje(p)
-        print('ČLOVEK :: oznaci - konec')
 
     def premakni(self, p):
         # Povlečemo potezo. Če ni veljavna, se ne bo zgodilo nič.
-        #self.gui.premikanje(p)
-        print('ČLOVEK :: premakni - zacetek')
         self.gui.povleci_potezo(p)
-        print('ČLOVEK :: premakni - koneco')
-
 
