@@ -62,13 +62,13 @@ class Igra():
                 else:
                     barva = None
                 if barva is not None:
-                    matrika[i][j] = Polje(barva)             
+                    matrika[i][j] = barva             
         return matrika
 
     def oznacevanje(self, p, igralec):
         """Doda oznacen krogec v seznam izbranih self.izbrani. Vrne True, če je krogec možno izbrati in False sicer."""
         (i,j) = p
-        if i is not None and j is not None and self.plosca[i][j].barva == pripadajoca_barva(igralec):
+        if i is not None and j is not None and self.plosca[i][j] == pripadajoca_barva(igralec):
 ##            if p in self.izbrani:
 ##                self.izbrani.remove(p)
 ##                return "odznaci"
@@ -80,20 +80,20 @@ class Igra():
     def preveri_polje(self, p):
         """Pogleda, ali lahko izberemo krogec na mestu p. Vrne True, če je to mogoče, in False, če ni."""
         (i,j) = p
-        if i is not None and j is not None and self.plosca[i][j].barva != Igra.barva_praznih:     # Zagotovimo, da smo na plošči in da nismo izbrali praznega polja.
+        if i is not None and j is not None and self.plosca[i][j] != Igra.barva_praznih:     # Zagotovimo, da smo na plošči in da nismo izbrali praznega polja.
             if len(self.izbrani) == 0:      # Prvo izbrano polje je lahko katerokoli.
                 return True
             elif len(self.izbrani) == 3:      # Izbrana so lahko največ tri polja.
                 return False
             else:
                 (I1, J1) = (self.izbrani[0])
-                B1 = self.plosca[I1][J1].barva                
-                if len(self.izbrani) == 1 and self.plosca[i][j].barva == B1:
+                B1 = self.plosca[I1][J1]                
+                if len(self.izbrani) == 1 and self.plosca[i][j] == B1:
                     if p in [(I1,J1+1),(I1,J1-1),(I1+1,J1),(I1-1,J1),(I1-1,J1-1),(I1+1,J1+1)]:
                         return True
-                elif len(self.izbrani) == 2 and self.plosca[i][j].barva == B1:
+                elif len(self.izbrani) == 2 and self.plosca[i][j] == B1:
                     (I2, J2) = (self.izbrani[1])
-                    B2 = self.plosca[I2][J2].barva 
+                    B2 = self.plosca[I2][J2] 
                     if I1 == I2:
                         if abs(J1 - J2) == 2:
                             if i == I1 and j == (J1 + J2)/2:
@@ -140,49 +140,49 @@ class Igra():
         (i,j) = p
         if i is not None and j is not None and len(self.izbrani) != 0:     # Zagotovimo, da smo na plošči.
             (I1, J1) = (self.izbrani[0])
-            B = self.plosca[I1][J1].barva
-            if self.plosca[i][j].barva == B:
+            B = self.plosca[I1][J1]
+            if self.plosca[i][j] == B:
                 print("Ni mogoče premakniti izbranih krogcev na svoje polje!")
                 return False
             elif len(self.izbrani) == 1:
                 if (i,j) in [(I1, J1 + 1), (I1, J1 - 1), (I1 + 1, J1), (I1 - 1, J1), (I1 + 1, J1 + 1), (I1 - 1, J1 - 1)]: # En krogec lahko premaknemo na katerokoli sosednje prosto polje.
-                    return self.plosca[i][j].barva == self.barva_praznih
+                    return self.plosca[i][j] == self.barva_praznih
             elif len(self.izbrani) == 2:
                 (I2, J2) = (self.izbrani[1])
                 orientacija = self.orientacija_izbranih()
                 if abs(I1 - I2) == 1 or abs(J1 - J2) == 1 or (abs(I1 - I2) == 1 and abs(J1 - J2) == 1):
                     if orientacija == "y":
                         if (i,j) in [(I1, max(J1, J2) + 1),(I1, min(J1, J2) - 1)]:
-                            if self.plosca[i][j].barva == self.barva_praznih:
+                            if self.plosca[i][j] == self.barva_praznih:
                                 return True
                             else:
                                 return self.potisni(orientacija, p)
                         elif (i,j) in [(I1 + 1, min(J1, J2)),(I1 + 1, max(J1, J2) + 1)]:
-                            return self.plosca[i][j].barva == self.barva_praznih and self.plosca[I1 + 1][max(J1,J2)].barva == self.barva_praznih
+                            return self.plosca[i][j] == self.barva_praznih and self.plosca[I1 + 1][max(J1,J2)] == self.barva_praznih
                         elif (i,j) in [(I1 - 1, max(J1, J2)),(I1 - 1, min(J1, J2) - 1)]:
-                            return self.plosca[i][j].barva == self.barva_praznih and self.plosca[I1 - 1][min(J1,J2)].barva == self.barva_praznih
+                            return self.plosca[i][j] == self.barva_praznih and self.plosca[I1 - 1][min(J1,J2)] == self.barva_praznih
                         return False
                     elif orientacija == "x":
                         if (i,j) in [(max(I1, I2) + 1, J1),(min(I1, I2) - 1, J1)]:
-                            if self.plosca[i][j].barva == self.barva_praznih:
+                            if self.plosca[i][j] == self.barva_praznih:
                                 return True
                             else:
                                 return self.potisni(orientacija, p)
                         elif (i,j) in [(max(I1, I2), J1 - 1),(min(I1, I2) - 1, J1 - 1)]:
-                            return self.plosca[i][j].barva == self.barva_praznih and self.plosca[min(I1,I2)][J1 - 1].barva == self.barva_praznih
+                            return self.plosca[i][j] == self.barva_praznih and self.plosca[min(I1,I2)][J1 - 1] == self.barva_praznih
                         elif (i,j) in [(max(I1, I2) + 1, J1 + 1),(min(I1, I2), J1 + 1)]:
-                            return self.plosca[i][j].barva == self.barva_praznih and self.plosca[max(I1,I2)][J1 + 1].barva == self.barva_praznih
+                            return self.plosca[i][j] == self.barva_praznih and self.plosca[max(I1,I2)][J1 + 1] == self.barva_praznih
                         return False
                     elif orientacija == "diagonala":
                         if (i,j) in [(max(I1, I2) + 1, max(J1, J2) + 1),(min(I1, I2) - 1, min(J1, J2) - 1)]:
-                            if self.plosca[i][j].barva == self.barva_praznih:
+                            if self.plosca[i][j] == self.barva_praznih:
                                 return True
                             else:
                                 return self.potisni(orientacija, p)
                         elif (i,j) in [(min(I1,I2), min(J1,J2) - 1),(max(I1,I2) + 1, max(J1,J2))]:
-                            return self.plosca[i][j].barva == self.barva_praznih and self.plosca[max(I1,I2)][min(J1,J2)].barva == self.barva_praznih
+                            return self.plosca[i][j] == self.barva_praznih and self.plosca[max(I1,I2)][min(J1,J2)] == self.barva_praznih
                         elif (i,j) in [(max(I1,I2), max(J1,J2) + 1),(min(I1,I2) - 1, min(J1,J2))]:    
-                            return self.plosca[i][j].barva == self.barva_praznih and self.plosca[min(I1,I2)][max(J1,J2)].barva == self.barva_praznih
+                            return self.plosca[i][j] == self.barva_praznih and self.plosca[min(I1,I2)][max(J1,J2)] == self.barva_praznih
                         return False
             elif len(self.izbrani) == 3:
                 (I2, J2) = (self.izbrani[1])
@@ -190,36 +190,36 @@ class Igra():
                 orientacija = self.orientacija_izbranih()
                 if orientacija == "y":
                     if (i,j) in [(I1, max(J1, J2, J3) +1),(I1, min(J1, J2, J3) - 1)]:
-                        if self.plosca[i][j].barva == self.barva_praznih:
+                        if self.plosca[i][j] == self.barva_praznih:
                             return True
                         else:
                             return self.potisni(orientacija, p)
                     elif (i,j) in [(I1 - 1, min(J1,J2,J3) - 1),(I1 - 1, max(J1, J2, J3))]:
-                        return self.plosca[i][j].barva == self.barva_praznih and self.plosca[I1 - 1][min(J1, J2, J3)].barva == self.barva_praznih and self.plosca[I1 - 1][min(J1, J2, J3) + 1].barva == self.barva_praznih
+                        return self.plosca[i][j] == self.barva_praznih and self.plosca[I1 - 1][min(J1, J2, J3)] == self.barva_praznih and self.plosca[I1 - 1][min(J1, J2, J3) + 1] == self.barva_praznih
                     elif (i,j) in [(I1 + 1, min(J1,J2,J3)),(I1 + 1, max(J1, J2, J3) + 1)]:
-                        return self.plosca[i][j].barva == self.barva_praznih and self.plosca[I1 + 1][max(J1, J2, J3)].barva == self.barva_praznih and self.plosca[I1 + 1][min(J1, J2, J3) + 1].barva == self.barva_praznih
+                        return self.plosca[i][j] == self.barva_praznih and self.plosca[I1 + 1][max(J1, J2, J3)] == self.barva_praznih and self.plosca[I1 + 1][min(J1, J2, J3) + 1] == self.barva_praznih
                     return False
                 elif orientacija == "x":
                     if (i,j) in [(max(I1, I2, I3) + 1, J1),(min(I1, I2, I3) - 1, J1)]:
-                        if self.plosca[i][j].barva == self.barva_praznih:
+                        if self.plosca[i][j] == self.barva_praznih:
                             return True
                         else:
                             return self.potisni(orientacija, p)
                     elif (i,j) in [(max(I1,I2,I3), J1 - 1),(min(I1,I2,I3) - 1, J1 - 1)]:
-                        return self.plosca[i][j].barva == self.barva_praznih and self.plosca[max(I1,I2,I3) - 1][J1 - 1].barva == self.barva_praznih and self.plosca[min(I1,I2,I3) + 1][J1 - 1].barva == self.barva_praznih
+                        return self.plosca[i][j] == self.barva_praznih and self.plosca[max(I1,I2,I3) - 1][J1 - 1] == self.barva_praznih and self.plosca[min(I1,I2,I3) + 1][J1 - 1] == self.barva_praznih
                     elif (i,j) in [(max(I1,I2,I3) + 1, J1 + 1),(min(I1,I2,I3), J1 + 1)]:
-                        return self.plosca[i][j].barva == self.barva_praznih and self.plosca[max(I1,I2,I3)][J1 + 1].barva == self.barva_praznih and self.plosca[min(I1,I2,I3) + 1][J1 + 1].barva == self.barva_praznih
+                        return self.plosca[i][j] == self.barva_praznih and self.plosca[max(I1,I2,I3)][J1 + 1] == self.barva_praznih and self.plosca[min(I1,I2,I3) + 1][J1 + 1] == self.barva_praznih
                     return False
                 elif orientacija == "diagonala":
                     if (i,j) in [(max(I1, I2, I3) + 1, max(J1, J2, J3) + 1),(min(I1, I2, I3) - 1, min(J1, J2, J3) - 1)]:
-                        if self.plosca[i][j].barva == self.barva_praznih:
+                        if self.plosca[i][j] == self.barva_praznih:
                             return True
                         else:
                             return self.potisni(orientacija, p)
                     elif (i,j) in [(min(I1, I2, I3), min(J1, J2, J3) - 1),(max(I1, I2, I3) + 1, max(J1, J2, J3))]:
-                        return self.plosca[i][j].barva == self.barva_praznih and self.plosca[max(I1,I2,I3)][max(J1, J2, J3) - 1].barva == self.barva_praznih and self.plosca[min(I1,I2,I3) + 1][min(J1, J2, J3)].barva == self.barva_praznih
+                        return self.plosca[i][j] == self.barva_praznih and self.plosca[max(I1,I2,I3)][max(J1, J2, J3) - 1] == self.barva_praznih and self.plosca[min(I1,I2,I3) + 1][min(J1, J2, J3)] == self.barva_praznih
                     elif (i,j) in [(max(I1, I2, I3), max(J1, J2, J3) + 1),(min(I1, I2, I3) - 1, min(J1, J2, J3))]:
-                        return self.plosca[i][j].barva == self.barva_praznih and self.plosca[max(I1,I2,I3) - 1][max(J1, J2, J3)].barva == self.barva_praznih and self.plosca[min(I1,I2,I3)][min(J1, J2, J3) + 1].barva == self.barva_praznih
+                        return self.plosca[i][j] == self.barva_praznih and self.plosca[max(I1,I2,I3) - 1][max(J1, J2, J3)] == self.barva_praznih and self.plosca[min(I1,I2,I3)][min(J1, J2, J3) + 1] == self.barva_praznih
                     return False
             return False
         
@@ -228,19 +228,19 @@ class Igra():
         (i,j) = p
         if len(self.izbrani) == 1:
             (x,y) = self.izbrani[0]
-            barva = self.plosca[x][y].barva
-            self.plosca[x][y].barva = self.barva_praznih
-            self.plosca[i][j].barva = barva
+            barva = self.plosca[x][y]
+            self.plosca[x][y] = self.barva_praznih
+            self.plosca[i][j] = barva
             self.spremembe_premik.append((x,y,self.barva_praznih))
             self.spremembe_premik.append((i,j,barva))
         else:      
             orientacija = self.orientacija_izbranih()
             izbrani = []
-            barva = self.plosca[self.izbrani[0][0]][self.izbrani[0][1]].barva
+            barva = self.plosca[self.izbrani[0][0]][self.izbrani[0][1]]
             for (x,y) in self.izbrani:
                 izbrani.append((x,y))
             for (xx,yy) in izbrani:
-                self.plosca[xx][yy].barva = self.barva_praznih
+                self.plosca[xx][yy] = self.barva_praznih
                 self.spremembe_premik.append((xx,yy,self.barva_praznih))
             (i_max, i_min) = (max(x for (x,y) in self.izbrani), min(x for (x,y) in self.izbrani))
             (j_max, j_min) = (max(y for (x,y) in self.izbrani), min(y for (x,y) in self.izbrani))
@@ -264,7 +264,7 @@ class Igra():
 ##                        novi_izbrani.append(Polje(id, x, y, barva))
                     break
             for (xxx,yyy) in novi_izbrani:
-                self.plosca[xxx][yyy].barva = barva
+                self.plosca[xxx][yyy] = barva
                 self.spremembe_premik.append((xxx,yyy,barva))
         self.izbrani = []
 
@@ -294,12 +294,12 @@ class Igra():
         elif stevilo_nasprotnih >= stevilo_izbranih:
             return False
         else:
-            B = self.plosca[i][j].barva # ta je potisnjen 
+            B = self.plosca[i][j] # ta je potisnjen 
             (i_max, i_min) = (max(x for (x,y) in self.izbrani), min(x for (x,y) in self.izbrani))
             (j_max, j_min) = (max(y for (x,y) in self.izbrani), min(y for (x,y) in self.izbrani))
             # Prvi izgine, potem premik kot običajno
             if i in [i_max + 1, i_min - 1] or j in [j_max + 1, j_min - 1]:
-                self.plosca[i][j].barva == self.barva_praznih
+                self.plosca[i][j] == self.barva_praznih
                 self.spremembe_premik.append((i,j,self.barva_praznih))
                 if ali_izrinemo:
                     self.izpodrinjeni.append(B)
@@ -312,7 +312,7 @@ class Igra():
                                              (i_min - 1, j_min - 1, i_min - (1 + stevilo_nasprotnih), j_min - (1 + stevilo_nasprotnih))]}
                     for parametri in SLOVAR[orientacija]:
                         if i == parametri[0] and j == parametri[1]:
-                            self.plosca[parametri[2]][parametri[3]].barva = B
+                            self.plosca[parametri[2]][parametri[3]] = B
                             self.spremembe_premik.append((parametri[2],parametri[3],B))
                             break
                     return True        
@@ -322,7 +322,7 @@ class Igra():
         """Vrne par - število nasprotnikovih krogcev v smeri premika in
         True oziroma False glede na to, ali je potisk krogcev mogoč. Če ni, vrne (None, None)."""
         (i,j) = p
-        barva = self.plosca[i][j].barva
+        barva = self.plosca[i][j]
         (i_max, i_min) = (max(x for (x,y) in self.izbrani), min(x for (x,y) in self.izbrani))
         (j_max, j_min) = (max(y for (x,y) in self.izbrani), min(y for (x,y) in self.izbrani))
         SLOVAR = {"x" : [(i_max + 1, j, i + 1, j, i + 2, j),(i_min - 1, j, i - 1, j, i - 2, j)],
@@ -332,12 +332,12 @@ class Igra():
             if i == parametri[0] and j == parametri[1]:
                 if self.plosca[parametri[2]][parametri[3]] is None:
                     return (1, True)
-                elif self.plosca[parametri[2]][parametri[3]].barva == self.barva_praznih:
+                elif self.plosca[parametri[2]][parametri[3]] == self.barva_praznih:
                     return (1, False)
-                elif self.plosca[parametri[2]][parametri[3]].barva == barva:
+                elif self.plosca[parametri[2]][parametri[3]] == barva:
                     if self.plosca[parametri[4]][parametri[5]] is None:
                         return (2, True)
-                    elif self.plosca[parametri[4]][parametri[5]].barva == self.barva_praznih:
+                    elif self.plosca[parametri[4]][parametri[5]] == self.barva_praznih:
                         return (2, False)
         return None, None
         
@@ -433,7 +433,7 @@ class Igra():
         for i in range(1,10):
             for j in range(1,10):
                 if self.plosca[i][j] is not None:
-                    if self.plosca[i][j].barva == pripadajoca_barva(self.na_potezi):
+                    if self.plosca[i][j] == pripadajoca_barva(self.na_potezi):
                         seznam.append((i,j))
         return seznam
 
@@ -445,10 +445,10 @@ class Igra():
         dvojice = []
         enice = self.mozne_enice()
         for (i,j) in enice:
-            barva = self.plosca[i][j].barva
+            barva = self.plosca[i][j]
             sosedi = [(i + 1, j), (i - 1, j), (i, j +1), (i, j - 1), (i + 1, j + 1), (i - 1, j - 1)]
             for (x,y) in sosedi:
-                if self.plosca[x][y] is not None and self.plosca[x][y].barva == barva:
+                if self.plosca[x][y] is not None and self.plosca[x][y] == barva:
                     par = ((i,j),(x,y))
                     obratni_par = ((x,y),(i,j))
                     if par not in dvojice and obratni_par not in dvojice:
@@ -470,12 +470,12 @@ class Igra():
             self.izbrani.append(prvi)
             self.izbrani.append(drugi)
             orientacija = self.orientacija_izbranih()
-            barva = self.plosca[I1][J1].barva
+            barva = self.plosca[I1][J1]
             slovarcek = {"x" : [(min(I1,I2) - 1, J1),(max(I1, I2) + 1, J1)],
                          "y" : [(I1, min(J1,J2) - 1),(I1, max(J1,J2) + 1)],
                          "diagonala" : [(min(I1,I2) - 1, min(J1,J2) - 1),(max(I1, I2) + 1, max(J1, J2) + 1)]}
             for (x,y) in slovarcek[orientacija]:
-                if self.plosca[x][y] is not None and self.plosca[x][y].barva == barva:
+                if self.plosca[x][y] is not None and self.plosca[x][y] == barva:
                     tretji = (x,y)
                     seznam = [(prvi,drugi,tretji),(tretji, prvi, drugi),(drugi, prvi, tretji),(tretji,drugi,prvi)]
                     if seznam[0] not in trojice and seznam[1] not in trojice and seznam[2] not in trojice and seznam[3] not in trojice:
@@ -521,10 +521,3 @@ class Igra():
         else:
             return NI_KONEC
 
-class Polje:
-
-    def __init__(self, barva=None):
-        self.barva = barva
-
-    def __repr__(self):
-        return 'Polje({0})'.format(self.barva)

@@ -112,7 +112,7 @@ class Gui():
         for i in range(len(matrika)):
              for j in range(len(matrika[i])):
                  if matrika[i][j] is not None:
-                     id = self.okno.create_oval((i - j*0.5)*d + 2*d, (3**0.5)*0.5*j*d, (i - j*0.5)*d + 3*d, (3**0.5)*0.5*j*d + d, fill=matrika[i][j].barva)
+                     id = self.okno.create_oval((i - j*0.5)*d + 2*d, (3**0.5)*0.5*j*d, (i - j*0.5)*d + 3*d, (3**0.5)*0.5*j*d + d, fill=matrika[i][j])
                      self.matrika_id[i][j] = id
 
     def levi_klik(self, event):
@@ -240,7 +240,7 @@ class Gui():
         print("izbrani so:",self.igra.izbrani)
         for p in self.igra.izbrani:
             (i, j) = p
-            self.okno.itemconfig(self.matrika_id[i][j], fill=self.igra.plosca[i][j].barva)
+            self.okno.itemconfig(self.matrika_id[i][j], fill=self.igra.plosca[i][j])
         self.igra.izbrani = []
 
     def narisi_izpodrinjene(self,barva):
