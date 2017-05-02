@@ -126,7 +126,7 @@ class Igra():
         vrne seznam z dvema elementoma - seznamom premaknjenih krogcev in seznamom izpodrinjenih."""
         if len(self.izbrani) == 0:
             print("Noben krogec ni izbran")
-            return None
+            return (None, None)
         else:
             if self.preveri_potezo(p):
                 self.premakni_krogce(p) # To samo popravi matriko. (Se mi zdi.)
@@ -189,9 +189,9 @@ class Igra():
                             else:
                                 return self.potisni(orientacija, p)
                         elif (i,j) in [(min(I1,I2), min(J1,J2) - 1),(max(I1,I2) + 1, max(J1,J2))]:
-                            return self.plosca[i][j].barva == self.barva_praznih and self.plosca[max(I1,J2)][min(J1,J2)].barva == self.barva_praznih
+                            return self.plosca[i][j].barva == self.barva_praznih and self.plosca[max(I1,I2)][min(J1,J2)].barva == self.barva_praznih
                         elif (i,j) in [(max(I1,I2), max(J1,J2) + 1),(min(I1,I2) - 1, min(J1,J2))]:    
-                            return self.plosca[i][j].barva == self.barva_praznih and self.plosca[min(I1,J2)][max(J1,J2)].barva == self.barva_praznih
+                            return self.plosca[i][j].barva == self.barva_praznih and self.plosca[min(I1,I2)][max(J1,J2)].barva == self.barva_praznih
                         return False
             elif len(self.izbrani) == 3:
                 (I1, J1, B) = (self.izbrani[0].x, self.izbrani[0].y, self.izbrani[0].barva)
@@ -367,12 +367,13 @@ class Igra():
         # igre (kdo je na potezi, kdo je zmagal) medtem, ko bi
         # algoritem vlekel poteze
         k = Igra()
-        k.plosca = [self.plosca[i][:] for i in range(3)]
+        k.plosca = [self.plosca[i][:] for i in range(11)]
         k.na_potezi = self.na_potezi
         return k
 
-    def undo(self):
-        """Razveljavi potezo in se vrni v prejšnje stanje."""
+    def razveljavi(self):
+        """Razveljavi potezo in se vrni v prejšnje stanje."""        
+        print("preden razveljavimo potezo je zgodovina taka:",self.zgodovina)
         (self.plosca, self.na_potezi, self.izpodrinjeni) = self.zgodovina.pop()
         return (self.plosca, self.izpodrinjeni)
 

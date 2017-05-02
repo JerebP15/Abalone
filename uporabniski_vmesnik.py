@@ -3,7 +3,7 @@ import argparse   # za argumente iz ukazne vrstice
 import logging    # za odpravljanje napak
 
 # Privzeta minimax globina, če je nismo podali ob zagonu v ukazni vrstici
-MINIMAX_GLOBINA = 3
+MINIMAX_GLOBINA = 1
 
 from logika_igre import *
 from clovek import *
@@ -46,7 +46,7 @@ class Gui():
         master.config(menu=menu) # Dodamo glavni menu v okno
 
         # Podmenu za izbiro igre
-        menu_igra = tkinter.Menu(menu)
+        menu_igra = tkinter.Menu(menu, tearoff = 0)
         menu.add_cascade(label="Nova igra", menu=menu_igra)
         menu_igra.add_command(label="Rumeni=Človek, Črni=Človek",
                               command=lambda: self.zacni_igro(Clovek(self),
@@ -69,9 +69,9 @@ class Gui():
         # Igralno območje
         self.okno = tkinter.Canvas(master, width=11*Gui.VELIKOST_POLJA, height=11*Gui.VELIKOST_POLJA)
         self.okno.grid(row=1, column=1)
-        self.polje_izpodrinjenih1 = tkinter.Canvas(master, width=2*Gui.VELIKOST_POLJA, height=7*Gui.VELIKOST_POLJA)
+        self.polje_izpodrinjenih1 = tkinter.Canvas(master, width=2*Gui.VELIKOST_POLJA, height=8*Gui.VELIKOST_POLJA)
         self.polje_izpodrinjenih1.grid(row=1, column=0)
-        self.polje_izpodrinjenih2 = tkinter.Canvas(master, width=2*Gui.VELIKOST_POLJA, height=7*Gui.VELIKOST_POLJA)
+        self.polje_izpodrinjenih2 = tkinter.Canvas(master, width=2*Gui.VELIKOST_POLJA, height=8*Gui.VELIKOST_POLJA)
         self.polje_izpodrinjenih2.grid(row=1, column=2)
 
         # Črte na igralnem polju
@@ -106,6 +106,7 @@ class Gui():
         #print('GUI :: levi_klik - zacetek')
         p = self.poisci_polje(event)
         (i,j) = p
+        print(p, self.igra.plosca[i][j])
         # print(self.igra.mozni_izbrani())
         if i is not None and j is not None:
             igralec = self.igra.na_potezi
@@ -137,7 +138,7 @@ class Gui():
     def desni_klik(self, event):
         """Obdelamo desni klik - premikanje krogcev."""
         p = self.poisci_polje(event)
-        print(self.igra.veljavne_poteze(), len(self.igra.veljavne_poteze()))
+        #print(self.igra.veljavne_poteze(), len(self.igra.veljavne_poteze())) #To sem zakomentiral ker drugače ne dela
         (i,j) = p
         if i is not None and j is not None and len(self.igra.izbrani) != 0:
             igralec = self.igra.na_potezi
@@ -151,29 +152,62 @@ class Gui():
     def povleci_potezo(self, p):
         """Povlece potezo in zamenja, kdo je na potezi."""
         igralec = self.igra.na_potezi
-        (premik, izrinjeni) = self.igra.premikanje(p)
-        if premik is not None:
-            for polje in premik:
-                (x,y,barva) = polje
-                self.okno.itemconfig(self.igra.plosca[x][y].id, fill = barva)
-            if len(izrinjeni) != len(self.izpodrinjeni):
-                self.izpodrinjeni.append(izrinjeni[-1])
-                self.narisi_izpodrinjene(izrinjeni[-1])
-        r = self.igra.povleci_potezo(p)
-        if r is None:
-            pass
-        else:
-            if r == NI_KONEC:
-                # Igra se nadaljuje
-                if self.igra.na_potezi == IGRALEC_1:
-                    self.napis.set("Na potezi je {}.".format(prevod_barve(self.igra.barva_igralca_1)))
-                    self.igralec_1.igraj()
-                elif self.igra.na_potezi == IGRALEC_2:
-                    self.napis.set("Na potezi je {}.".format(prevod_barve(self.igra.barva_igralca_2)))
-                    self.igralec_2.igraj()
+        print("gui mora narediti to potezo:",p)
+        if type(p) == tuple:
+            (premik, izrinjeni) = self.igra.premikanje(p)
+            if premik is not None:
+                for polje in premik:
+                    (x,y,barva) = polje
+                    self.okno.itemconfig(self.igra.plosca[x][y].id, fill = barva)
+                if len(izrinjeni) != len(self.izpodrinjeni):
+                    self.izpodrinjeni.append(izrinjeni[-1])
+                    self.narisi_izpodrinjene(izrinjeni[-1])
+            r = self.igra.povleci_potezo(p)
+            if r is None:
+                pass
             else:
-                # Igre je konec, koncaj
-                self.koncaj_igro(r)
+                if r == NI_KONEC:
+                    # Igra se nadaljuje
+                    if self.igra.na_potezi == IGRALEC_1:
+                        self.napis.set("Na potezi je {}.".format(prevod_barve(self.igra.barva_igralca_1)))
+                        self.igralec_1.igraj()
+                    elif self.igra.na_potezi == IGRALEC_2:
+                        self.napis.set("Na potezi je {}.".format(prevod_barve(self.igra.barva_igralca_2)))
+                        self.igralec_2.igraj()
+                else:
+                    # Igre je konec, koncaj
+                    self.koncaj_igro(r)
+        else:
+            if type(p[0][0]) == int:
+                self.igra.izbrani.append(self.igra.plosca[p[0][0]][p[0][1]])
+            else:
+                for polje in p[0]:
+                    self.igra.izbrani.append(self.igra.plosca[polje[0]][polje[1]])
+            print("tik preden gui reče igrni naj naredi potezo",self.igra.izbrani)
+            (premik, izrinjeni) = self.igra.premikanje(p[1])
+            print("gui dobi informacijo o potezi: premik={},izrinjeni={}".format(premik, izrinjeni))
+            if premik is not None:
+                for polje in premik:
+                    (x,y,barva) = polje
+                    self.okno.itemconfig(self.igra.plosca[x][y].id, fill = barva)
+                if len(izrinjeni) != len(self.izpodrinjeni):
+                    self.izpodrinjeni.append(izrinjeni[-1])
+                    self.narisi_izpodrinjene(izrinjeni[-1])
+            r = self.igra.povleci_potezo(p)
+            if r is None:
+                pass
+            else:
+                if r == NI_KONEC:
+                    # Igra se nadaljuje
+                    if self.igra.na_potezi == IGRALEC_1:
+                        self.napis.set("Na potezi je {}.".format(prevod_barve(self.igra.barva_igralca_1)))
+                        self.igralec_1.igraj()
+                    elif self.igra.na_potezi == IGRALEC_2:
+                        self.napis.set("Na potezi je {}.".format(prevod_barve(self.igra.barva_igralca_2)))
+                        self.igralec_2.igraj()
+                else:
+                    # Igre je konec, koncaj
+                    self.koncaj_igro(r)
 
     def razveljavi(self,event):
         (plosca, izpodrinjeni) = self.igra.undo()
@@ -218,10 +252,10 @@ class Gui():
                 stevec += 1
         if barva == self.igra.barva_igralca_1:
             h = stevec - 1
-            self.polje_izpodrinjenih1.create_oval(0.15*d, (5.5 - h)*d, 1.15*d, (6.5 - h)*d, tag=Gui.TAG_FIGURA, fill = barva)
+            self.polje_izpodrinjenih1.create_oval(0.15*d, (6.45 - h)*d - 2 * h, 1.10*d, (7.40 - h)*d - 2 * h, tag=Gui.TAG_FIGURA, fill = barva)
         elif barva == self.igra.barva_igralca_2:
             h = len(self.izpodrinjeni) - stevec - 1
-            self.polje_izpodrinjenih2.create_oval(0.15*d, (5.5 - h)*d, 1.15*d, (6.5 - h)*d, tag=Gui.TAG_FIGURA, fill = barva)
+            self.polje_izpodrinjenih2.create_oval(0.15*d, (6.45 - h)*d - 2 * h, 1.10*d, (7.40 - h)*d - 2 * h, tag=Gui.TAG_FIGURA, fill = barva)
 
 
 
@@ -229,9 +263,11 @@ class Gui():
         """Nastavi stanje igre na zacetek igre.
            Za igralca uporabi dana igralca."""
         # Ustavimo vsa vlakna, ki trenutno razmišljajo
+        self.izpodrinjeni = []
         self.prekini_igralce()
         # Pobrišemo tiste, ki so padli dol in narišemo začetno pozicijo
-        #self.plosca.delete(Gui.TAG_FIGURA)
+        self.polje_izpodrinjenih1.delete(Gui.TAG_FIGURA)
+        self.polje_izpodrinjenih2.delete(Gui.TAG_FIGURA)
         #self.zacetna_pozicija
         self.igra = Igra()
         self.risi_plosco()
@@ -276,14 +312,14 @@ class Gui():
         self.okno.create_line(0.2*d, 4.85*d, 2.5*d, 8.85*d, tag=Gui.TAG_OKVIR)
         self.okno.create_line(2.5*d, 8.85*d, 7.5*d, 8.85*d, tag=Gui.TAG_OKVIR)
         self.okno.create_line(7.5*d, 8.85*d, 9.8*d, 4.85*d, tag=Gui.TAG_OKVIR)
-        self.polje_izpodrinjenih1.create_line(0.1*d, 0.1*d, 1.2*d, 0.1*d, tag=Gui.TAG_OKVIR)
-        self.polje_izpodrinjenih1.create_line(0.1*d, 0.1*d, 0.1*d, 6.5*d, tag=Gui.TAG_OKVIR)
-        self.polje_izpodrinjenih1.create_line(0.1*d, 6.5*d, 1.2*d, 6.5*d, tag=Gui.TAG_OKVIR)
-        self.polje_izpodrinjenih1.create_line(1.2*d, 6.5*d, 1.2*d, 0.1*d, tag=Gui.TAG_OKVIR)
-        self.polje_izpodrinjenih2.create_line(0.1*d, 0.1*d, 1.2*d, 0.1*d, tag=Gui.TAG_OKVIR)
-        self.polje_izpodrinjenih2.create_line(0.1*d, 0.1*d, 0.1*d, 6.5*d, tag=Gui.TAG_OKVIR)
-        self.polje_izpodrinjenih2.create_line(0.1*d, 6.5*d, 1.2*d, 6.5*d, tag=Gui.TAG_OKVIR)
-        self.polje_izpodrinjenih2.create_line(1.2*d, 6.5*d, 1.2*d, 0.1*d, tag=Gui.TAG_OKVIR)
+        self.polje_izpodrinjenih1.create_line(0.1*d, 1.2*d, 1.2*d, 1.2*d, tag=Gui.TAG_OKVIR)
+        self.polje_izpodrinjenih1.create_line(0.1*d, 1*d, 0.1*d, 7.5*d, tag=Gui.TAG_OKVIR)
+        self.polje_izpodrinjenih1.create_line(0.1*d, 7.5*d, 1.2*d, 7.5*d, tag=Gui.TAG_OKVIR)
+        self.polje_izpodrinjenih1.create_line(1.2*d, 7.5*d, 1.2*d, 1*d, tag=Gui.TAG_OKVIR)
+        self.polje_izpodrinjenih2.create_line(0.1*d, 0.85*d, 1.25*d, 0.85*d, tag=Gui.TAG_OKVIR)
+        self.polje_izpodrinjenih2.create_line(0.1*d, 0.85*d, 0.1*d, 7.5*d, tag=Gui.TAG_OKVIR)
+        self.polje_izpodrinjenih2.create_line(0.1*d, 7.5*d, 1.25*d, 7.5*d, tag=Gui.TAG_OKVIR)
+        self.polje_izpodrinjenih2.create_line(1.25*d, 7.5*d, 1.25*d, 0.85*d, tag=Gui.TAG_OKVIR)
 
 
 ######################################################################
