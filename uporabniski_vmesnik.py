@@ -38,6 +38,7 @@ class Gui():
         self.igralec_1 = None # Objekt, ki igra prvi igralec (nastavimo ob začetku igre)
         self.igralec_2 = None # Objekt, ki igra drugi igralec (nastavimo ob začetku igre)
         self.igra = None # Objekt, ki predstavlja logiko igre
+        self.matrika_id = self.ustvari_matriko_id()
         # Če uporabnik zapre okno naj se poklice self.zapri_okno
         master.protocol("WM_DELETE_WINDOW", lambda: self.zapri_okno(master))
 
@@ -87,14 +88,22 @@ class Gui():
         self.okno.bind("<Button-1>", self.levi_klik)
         self.okno.bind("<Button-3>", self.desni_klik)
         self.okno.bind('<Escape>', self.odznaci_krogec)  #Zaradi nekega razloga dela samo, če klikneš tab (ko klikneš tab se polje obrobi in od takrat naprej to dela, prej pa se ne zgodi nič)
-        # self.okno.bind("<Button-2>", self.razveljavi)
+
         #TODO press, release
-        #self.okno.bind("<ButtonPress-1>", self.okno_klik)
-        #self.okno.bind("<ButtonRelease-1>", self.oznacevanje_krogcev)
+
 
         # Prični igro
         self.zacni_igro(Clovek(self), Clovek(self))
 
+
+    def ustvari_matriko_id(self):
+        matrika = []
+        for x in range(11):
+               seznam = []
+               for y in range(11):
+                   seznam.append(None)
+               matrika.append(seznam)
+        return matrika
 
     def risi_plosco(self):
         """Nariše krogce na plošči (v začetni poziciji)."""
@@ -104,7 +113,7 @@ class Gui():
              for j in range(len(matrika[i])):
                  if matrika[i][j] is not None:
                      id = self.okno.create_oval((i - j*0.5)*d + 2*d, (3**0.5)*0.5*j*d, (i - j*0.5)*d + 3*d, (3**0.5)*0.5*j*d + d, fill=matrika[i][j].barva)
-                     matrika[i][j].id = id
+                     self.matrika_id[i][j] = id
 
     def levi_klik(self, event):
         """Obdelamo levi klik - oznacevanje krogcev."""
@@ -157,7 +166,7 @@ class Gui():
             if premik is not None:
                 for polje in premik:
                     (x,y,barva) = polje
-                    self.okno.itemconfig(self.igra.plosca[x][y].id, fill = barva)
+                    self.okno.itemconfig(self.matrika_id[x][y], fill = barva)
                 if len(izrinjeni) != len(self.izpodrinjeni):
                     self.izpodrinjeni.append(izrinjeni[-1])
                     self.narisi_izpodrinjene(izrinjeni[-1])
@@ -186,7 +195,7 @@ class Gui():
             if premik is not None:
                 for polje in premik:
                     (x,y,barva) = polje
-                    self.okno.itemconfig(self.igra.plosca[x][y].id, fill = barva)
+                    self.okno.itemconfig(self.matrika_id[x][y], fill = barva)
                 if len(izrinjeni) != len(self.izpodrinjeni):
                     self.izpodrinjeni.append(izrinjeni[-1])
                     self.narisi_izpodrinjene(izrinjeni[-1])
@@ -223,7 +232,7 @@ class Gui():
     def oznaci_krogec(self, p):
         """Krogec na katerega smo kliknili označi (pobarva rdeče)."""
         (i, j) = p
-        self.okno.itemconfig(self.igra.plosca[i][j].id, fill=self.igra.barva_izbranih)
+        self.okno.itemconfig(self.matrika_id[i][j], fill=self.igra.barva_izbranih)
 
 
     def odznaci_krogec(self, p):
@@ -231,7 +240,7 @@ class Gui():
         print("izbrani so:",self.igra.izbrani)
         for p in self.igra.izbrani:
             (i, j) = p
-            self.okno.itemconfig(self.igra.plosca[i][j].id, fill=self.igra.plosca[i][j].barva)
+            self.okno.itemconfig(self.matrika_id[i][j], fill=self.igra.plosca[i][j].barva)
         self.igra.izbrani = []
 
     def narisi_izpodrinjene(self,barva):
