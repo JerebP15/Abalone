@@ -179,10 +179,10 @@ class Gui():
                     self.koncaj_igro(r)
         else:
             if type(p[0][0]) == int:
-                self.igra.izbrani.append(self.igra.plosca[p[0][0]][p[0][1]])
+                self.igra.izbrani.append(p[0][0],p[0][1])
             else:
                 for polje in p[0]:
-                    self.igra.izbrani.append(self.igra.plosca[polje[0]][polje[1]])
+                    self.igra.izbrani.append(polje[0],polje[1])
             print("tik preden gui reče igrni naj naredi potezo",self.igra.izbrani)
             (premik, izrinjeni) = self.igra.premikanje(p[1])
             print("gui dobi informacijo o potezi: premik={},izrinjeni={}".format(premik, izrinjeni))
