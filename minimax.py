@@ -1,6 +1,6 @@
 import logging
 
-from logika_igre import IGRALEC_1, IGRALEC_2, PRAZNO, NEODLOCENO, NI_KONEC, nasprotnik
+from logika_igre import IGRALEC_1, IGRALEC_2, PRAZNO, NEODLOCENO, NI_KONEC, nasprotnik, pripadajoca_barva
 
 
 ######################################################################
@@ -44,29 +44,60 @@ class Minimax:
     NESKONCNO = ZMAGA + 1 # Več kot zmaga
 
     def vrednost_pozicije(self):
-        """Ocena vrednosti pozicije: sešteje vrednosti vseh trojk na plošči."""
-        # Slovar, ki pove, koliko so vredne posamezne trojke, kjer "(x,y) : v" pomeni:
-        # če imamo v trojki x znakov igralca in y znakov nasprotnika (in 3-x-y praznih polj),
-        # potem je taka trojka za self.jaz vredna v.
-        # Trojke, ki se ne pojavljajo v slovarju, so vredne 0.
-        vrednost_trojke = {
-            (3,0) : Minimax.ZMAGA,
-            (0,3) : -Minimax.ZMAGA//10,
-            (2,0) : Minimax.ZMAGA//100,
-            (0,2) : -Minimax.ZMAGA//1000,
-            (1,0) : Minimax.ZMAGA//10000,
-            (0,1) : -Minimax.ZMAGA//100000
-        }
+        """Ocena vrednosti pozicije na plošči."""
+        notranji_krog = [(4,4),(5,4),(4,5),(6,5),(5,6),(6,6)]
+        srednji_krog = [(3,3),(4,3),(5,3),(6,3),(7,5),(7,6),(7,7),(6,7),(5,7),(4,6),(3,5),(3,4)]
+        predzadnji_krog = [(2,2),(3,2),(4,2),(5,2),(6,3),(7,4),(8,5),(8,6),(8,7),(8,8),(7,8),(6,8),(5,8),(4,7),(3,6),(2,5),(2,4),(2,3)]
+        zunanji_krog = [(1,1),(2,1),(3,1),(4,1),(5,1),(6,2),(7,3),(8,4),(9,5),(9,6),(9,7),(9,8),(9,9),(8,9),(7,9),(6,9),(5,9),(4,8),(3,7),(2,6),(1,5),(1,4),(1,3),(1,2)]
         vrednost = 0
-        for t in self.igra.trojke:
-            x = 0
-            y = 0
-            for (i,j) in t:
-                if self.igra.plosca[i][j] == self.jaz:
-                    x += 1
-                elif self.igra.plosca[i][j] == nasprotnik(self.jaz):
-                    y += 1
-            vrednost += vrednost_trojke.get((x,y), 0)
+        for i in range(1,10):
+            for polje in self.igra.plosca[i]:
+                if polje is not None:
+                    x = polje.x
+                    y = polje.y
+                    stevilo = 0
+                    if x == y == 5: #Sredinsko polje
+                        stevilo = 100
+                    elif (x,y) in notranji_krog:
+                        stevilo = 50
+                    elif (x,y) in srednji_krog:
+                        stevilo = 0
+                    elif (x,y) in [(2,2),(5,8),(4,7),(3,6),(2,5),(2,4),(2,3)]:
+                        if self.igra.plosca[x+1][y].barva == pripadajoca_barva(self.jaz) and self.igra.plosca[x-1][y].barva != pripadajoca_barva(self.jaz):
+                            stevilo = Minimax.ZMAGA / 10
+                        else:
+                            stevilo = -10
+                    elif (x,y) in [(2,5),(2,4),(2,3),(2,2),(3,2),(4,2),(5,2)]:
+                        if self.igra.plosca[x+1][y+1].barva == pripadajoca_barva(self.jaz) and self.igra.plosca[x-1][y-1].barva != pripadajoca_barva(self.jaz):
+                            stevilo = Minimax.ZMAGA / 10
+                        else:
+                            stevilo = -10
+                    elif (x,y) in [(2,2),(3,2),(4,2),(5,2),(6,3),(7,4),(8,5)]:
+                        if self.igra.plosca[x][y-1].barva == pripadajoca_barva(self.jaz) and self.igra.plosca[x][y+1].barva != pripadajoca_barva(self.jaz):
+                            stevilo = Minimax.ZMAGA / 10
+                        else:
+                            stevilo = -10
+                    elif (x,y) in [(5,2),(6,3),(7,4),(8,5),(8,6),(8,7),(8,8)]:
+                        if self.igra.plosca[x-1][y].barva == pripadajoca_barva(self.jaz) and self.igra.plosca[x+1][y].barva != pripadajoca_barva(self.jaz):
+                            stevilo = Minimax.ZMAGA / 10
+                        else:
+                            stevilo = -10
+                    elif (x,y) in [(5,8),(6,8),(7,8),(8,8),(8,7),(8,6),(8,6)]:
+                        if self.igra.plosca[x+1][y+1].barva == pripadajoca_barva(self.jaz) and self.igra.plosca[x-1][y-1].barva != pripadajoca_barva(self.jaz):
+                            stevilo = Minimax.ZMAGA / 10
+                        else:
+                            stevilo = -10
+                    elif (x,y) in [(8,8),(7,8),(6,8),(5,8),(4,7),(3,6),(2,5)]:
+                        if self.igra.plosca[x+1][y+1].barva == pripadajoca_barva(self.jaz) and self.igra.plosca[x-1][y-1].barva != pripadajoca_barva(self.jaz):
+                            stevilo = Minimax.ZMAGA / 10
+                        else:
+                            stevilo = -10
+                    elif (x,y) in zunanji_krog:
+                        stevilo = -20
+                    if polje.barva == pripadajoca_barva(self.jaz):
+                        vrednost += stevilo
+                    else:
+                        vrednost -= stevilo
         return vrednost
 
     def minimax(self, globina, maksimiziramo):
@@ -75,8 +106,8 @@ class Minimax:
             # Sporočili so nam, da moramo prekiniti
             logging.debug ("Minimax prekinja, globina = {0}".format(globina))
             return (None, 0)
-        (zmagovalec, lst) = self.igra.stanje_igre()
-        if zmagovalec in (IGRALEC_X, IGRALEC_O, NEODLOCENO):
+        zmagovalec = self.igra.stanje_igre()
+        if zmagovalec in (IGRALEC_1, IGRALEC_2):
             # Igre je konec, vrnemo njeno vrednost
             if zmagovalec == self.jaz:
                 return (None, Minimax.ZMAGA)
@@ -94,24 +125,40 @@ class Minimax:
                     # Maksimiziramo
                     najboljsa_poteza = None
                     vrednost_najboljse = -Minimax.NESKONCNO
-                    for p in self.igra.veljavne_poteze():
-                        self.igra.povleci_potezo(p)
+                    for poteza in self.igra.veljavne_poteze():
+                        if type(poteza[0][0]) == int:
+                                (x,y) = poteza[0]
+                                self.igra.izbrani.append(self.igra.plosca[x][y])
+                        else:
+                            for polje in poteza[0]:
+                                (x,y) = polje
+                                self.igra.izbrani.append(self.igra.plosca[x][y])
+                        self.igra.povleci_potezo(poteza[1])
                         vrednost = self.minimax(globina-1, not maksimiziramo)[1]
                         self.igra.razveljavi()
                         if vrednost > vrednost_najboljse:
                             vrednost_najboljse = vrednost
-                            najboljsa_poteza = p
+                            najboljsa_poteza = poteza                        
+                        self.igra.izbrani = []
                 else:
                     # Minimiziramo
                     najboljsa_poteza = None
                     vrednost_najboljse = Minimax.NESKONCNO
-                    for p in self.igra.veljavne_poteze():
-                        self.igra.povleci_potezo(p)
+                    for poteza in self.igra.veljavne_poteze():
+                        if type(poteza[0][0]) == int:
+                                (x,y) = poteza[0]
+                                self.igra.izbrani.append(self.igra.plosca[x][y])
+                        else:
+                            for polje in poteza[0]:
+                                (x,y) = polje
+                                self.igra.izbrani.append(self.igra.plosca[x][y])
+                        self.igra.povleci_potezo(poteza[1])
                         vrednost = self.minimax(globina-1, not maksimiziramo)[1]
                         self.igra.razveljavi()
                         if vrednost < vrednost_najboljse:
                             vrednost_najboljse = vrednost
-                            najboljsa_poteza = p
+                            najboljsa_poteza = poteza
+                        self.igra.izbrani = []
 
                 assert (najboljsa_poteza is not None), "minimax: izračunana poteza je None"
                 return (najboljsa_poteza, vrednost_najboljse)
