@@ -36,7 +36,7 @@ class Igra():
     
     def __init__(self):
         self.plosca = self.ustvari_plosco()
-        self.na_potezi = IGRALEC_1
+        self.na_potezi = IGRALEC_2
         self.zgodovina = []
         self.izbrani = []
         self.spremembe_premik = []

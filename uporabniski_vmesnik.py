@@ -252,10 +252,10 @@ class Gui():
                 stevec += 1
         if barva == self.igra.barva_igralca_1:
             h = stevec - 1
-            self.polje_izpodrinjenih1.create_oval(0.15*d, (6.45 - h)*d - 2 * h, 1.10*d, (7.40 - h)*d - 2 * h, tag=Gui.TAG_FIGURA, fill = barva)
+            self.polje_izpodrinjenih2.create_oval(0.2*d, (6.45 - h)*d - 5 * h, 1.2*d, (7.45 - h)*d - 5 * h, tag=Gui.TAG_FIGURA, fill = barva)
         elif barva == self.igra.barva_igralca_2:
             h = len(self.izpodrinjeni) - stevec - 1
-            self.polje_izpodrinjenih2.create_oval(0.15*d, (6.45 - h)*d - 2 * h, 1.10*d, (7.40 - h)*d - 2 * h, tag=Gui.TAG_FIGURA, fill = barva)
+            self.polje_izpodrinjenih1.create_oval(0.2*d, (6.45 - h)*d - 5 * h, 1.2*d, (7.45 - h)*d - 5 * h, tag=Gui.TAG_FIGURA, fill = barva)
 
 
 
@@ -274,8 +274,8 @@ class Gui():
         # Shranimo igralce
         self.igralec_1 = igralec_1
         self.igralec_2 = igralec_2
-        self.napis.set("Igro začne {} igralec.".format(prevod_barve(self.igra.barva_igralca_1)))
-        self.igralec_1.igraj()
+        self.napis.set("Igro začne {} igralec.".format(prevod_barve(self.igra.barva_igralca_2)))
+        self.igralec_2.igraj()
 
     def koncaj_igro(self, zmagovalec):
         """Nastavi stanje igre na konec igre."""
@@ -312,14 +312,14 @@ class Gui():
         self.okno.create_line(0.2*d, 4.85*d, 2.5*d, 8.85*d, tag=Gui.TAG_OKVIR)
         self.okno.create_line(2.5*d, 8.85*d, 7.5*d, 8.85*d, tag=Gui.TAG_OKVIR)
         self.okno.create_line(7.5*d, 8.85*d, 9.8*d, 4.85*d, tag=Gui.TAG_OKVIR)
-        self.polje_izpodrinjenih1.create_line(0.1*d, 1.2*d, 1.2*d, 1.2*d, tag=Gui.TAG_OKVIR)
-        self.polje_izpodrinjenih1.create_line(0.1*d, 1*d, 0.1*d, 7.5*d, tag=Gui.TAG_OKVIR)
-        self.polje_izpodrinjenih1.create_line(0.1*d, 7.5*d, 1.2*d, 7.5*d, tag=Gui.TAG_OKVIR)
-        self.polje_izpodrinjenih1.create_line(1.2*d, 7.5*d, 1.2*d, 1*d, tag=Gui.TAG_OKVIR)
-        self.polje_izpodrinjenih2.create_line(0.1*d, 0.85*d, 1.25*d, 0.85*d, tag=Gui.TAG_OKVIR)
-        self.polje_izpodrinjenih2.create_line(0.1*d, 0.85*d, 0.1*d, 7.5*d, tag=Gui.TAG_OKVIR)
-        self.polje_izpodrinjenih2.create_line(0.1*d, 7.5*d, 1.25*d, 7.5*d, tag=Gui.TAG_OKVIR)
-        self.polje_izpodrinjenih2.create_line(1.25*d, 7.5*d, 1.25*d, 0.85*d, tag=Gui.TAG_OKVIR)
+        self.polje_izpodrinjenih1.create_line(0.1*d, 0.9*d, 1.3*d, 0.9*d, tag=Gui.TAG_OKVIR)
+        self.polje_izpodrinjenih1.create_line(0.1*d, 0.9*d, 0.1*d, 7.5*d, tag=Gui.TAG_OKVIR)
+        self.polje_izpodrinjenih1.create_line(0.1*d, 7.5*d, 1.3*d, 7.5*d, tag=Gui.TAG_OKVIR)
+        self.polje_izpodrinjenih1.create_line(1.3*d, 7.5*d, 1.3*d, 0.9*d, tag=Gui.TAG_OKVIR)
+        self.polje_izpodrinjenih2.create_line(0.1*d, 0.9*d, 1.3*d, 0.9*d, tag=Gui.TAG_OKVIR)
+        self.polje_izpodrinjenih2.create_line(0.1*d, 0.9*d, 0.1*d, 7.5*d, tag=Gui.TAG_OKVIR)
+        self.polje_izpodrinjenih2.create_line(0.1*d, 7.5*d, 1.3*d, 7.5*d, tag=Gui.TAG_OKVIR)
+        self.polje_izpodrinjenih2.create_line(1.3*d, 7.5*d, 1.3*d, 0.9*d, tag=Gui.TAG_OKVIR)
 
 
 ######################################################################
