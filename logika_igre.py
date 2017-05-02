@@ -448,7 +448,7 @@ class Igra():
             for j in range(1,10):
                 if self.plosca[i][j] is not None:
                     if self.plosca[i][j].barva == pripadajoca_barva(self.na_potezi):
-                        seznam.append((self.plosca[i][j].x, self.plosca[i][j].y))
+                        seznam.append((i,j))
         return seznam
 
     def mozne_dvojice(self):
@@ -477,7 +477,7 @@ class Igra():
         trojice = []
         dvojice = self.mozne_dvojice()
         enice = self.mozne_enice()
-        for [prvi,drugi] in dvojice:
+        for (prvi,drugi) in dvojice:
             self.izbrani = []
             (I1, J1) = prvi
             (I2, J2) = drugi

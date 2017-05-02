@@ -128,11 +128,11 @@ class Minimax:
                     for poteza in self.igra.veljavne_poteze():
                         if type(poteza[0][0]) == int:
                                 (x,y) = poteza[0]
-                                self.igra.izbrani.append(self.igra.plosca[x][y])
+                                self.igra.izbrani.append((x,y))
                         else:
                             for polje in poteza[0]:
                                 (x,y) = polje
-                                self.igra.izbrani.append(self.igra.plosca[x][y])
+                                self.igra.izbrani.append((x,y))
                         self.igra.povleci_potezo(poteza[1])
                         vrednost = self.minimax(globina-1, not maksimiziramo)[1]
                         self.igra.razveljavi()
@@ -147,11 +147,11 @@ class Minimax:
                     for poteza in self.igra.veljavne_poteze():
                         if type(poteza[0][0]) == int:
                                 (x,y) = poteza[0]
-                                self.igra.izbrani.append(self.igra.plosca[x][y])
+                                self.igra.izbrani.append((x,y))
                         else:
                             for polje in poteza[0]:
                                 (x,y) = polje
-                                self.igra.izbrani.append(self.igra.plosca[x][y])
+                                self.igra.izbrani.append((x,y))
                         self.igra.povleci_potezo(poteza[1])
                         vrednost = self.minimax(globina-1, not maksimiziramo)[1]
                         self.igra.razveljavi()

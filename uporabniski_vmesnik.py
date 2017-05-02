@@ -179,7 +179,7 @@ class Gui():
                     self.koncaj_igro(r)
         else:
             if type(p[0][0]) == int:
-                self.igra.izbrani.append(p[0][0],p[0][1])
+                self.igra.izbrani.append((p[0][0],p[0][1]))
             else:
                 for polje in p[0]:
                     self.igra.izbrani.append(polje[0],polje[1])
