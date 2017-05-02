@@ -51,10 +51,10 @@ class Minimax:
         zunanji_krog = [(1,1),(2,1),(3,1),(4,1),(5,1),(6,2),(7,3),(8,4),(9,5),(9,6),(9,7),(9,8),(9,9),(8,9),(7,9),(6,9),(5,9),(4,8),(3,7),(2,6),(1,5),(1,4),(1,3),(1,2)]
         vrednost = 0
         for i in range(1,10):
-            for polje in self.igra.plosca[i]:
-                if polje is not None:
-                    x = polje.x
-                    y = polje.y
+            for j in range(1,10):
+                if self.igra.plosca[i][j] is not None:
+                    x = i
+                    y = j
                     stevilo = 0
                     if x == y == 5: #Sredinsko polje
                         stevilo = 100
@@ -94,7 +94,7 @@ class Minimax:
                             stevilo = -10
                     elif (x,y) in zunanji_krog:
                         stevilo = -20
-                    if polje.barva == pripadajoca_barva(self.jaz):
+                    if self.igra.plosca[i][j].barva == pripadajoca_barva(self.jaz):
                         vrednost += stevilo
                     else:
                         vrednost -= stevilo
