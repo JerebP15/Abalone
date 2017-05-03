@@ -88,7 +88,7 @@ class Gui():
         # Naročimo se na dogodke
         self.okno.bind("<Button-1>", self.levi_klik)
         self.okno.bind("<Button-3>", self.desni_klik)
-        self.okno.bind('<Escape>', self.odznaci_krogec)  #Zaradi nekega razloga dela samo, če klikneš tab (ko klikneš tab se polje obrobi in od takrat naprej to dela, prej pa se ne zgodi nič)
+        self.okno.bind('<Escape>', self.odznaci_vse_krogce)  #Zaradi nekega razloga dela samo, če klikneš tab (ko klikneš tab se polje obrobi in od takrat naprej to dela, prej pa se ne zgodi nič)
 
         #TODO press, release
 
@@ -136,10 +136,10 @@ class Gui():
            Če smo izbrali že označene krogce, se odznačijo in spet postanejo barvni."""
         igralec = self.igra.na_potezi
         odziv = self.igra.oznacevanje(p, igralec)
-        if odziv:
+        if odziv == "oznaci":
             self.oznaci_krogec(p)
-##        elif odziv == "odznaci":
-##            self.odznaci_krogec(p)
+        elif odziv == "odznaci":
+            self.odznaci_krogec(p)
         else:
             pass
 
@@ -192,7 +192,7 @@ class Gui():
                 self.igra.izbrani.append((p[0][0],p[0][1]))
             else:
                 for polje in p[0]:
-                    self.igra.izbrani.append(polje[0],polje[1])
+                    self.igra.izbrani.append((polje[0],polje[1]))
             (premik, izrinjeni) = self.igra.premikanje(p[1])
             if premik is not None:
                 for polje in premik:
@@ -235,9 +235,13 @@ class Gui():
         """Krogec na katerega smo kliknili označi (pobarva rdeče)."""
         (i, j) = p
         self.okno.itemconfig(self.matrika_id[i][j], fill=self.igra.barva_izbranih)
-
-
+        
     def odznaci_krogec(self, p):
+        """Odznači krogec na katerega smo kliknili."""
+        (i, j) = p
+        self.okno.itemconfig(self.matrika_id[i][j], fill=self.igra.plosca[i][j])
+        
+    def odznaci_vse_krogce(self, p):
         """Odznači vse izbrane krogce."""
         print("izbrani so:",self.igra.izbrani)
         for p in self.igra.izbrani:

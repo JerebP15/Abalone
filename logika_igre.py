@@ -69,13 +69,13 @@ class Igra():
         """Doda oznacen krogec v seznam izbranih self.izbrani. Vrne True, če je krogec možno izbrati in False sicer."""
         (i,j) = p
         if i is not None and j is not None and self.plosca[i][j] == pripadajoca_barva(igralec):
-##            if p in self.izbrani:
-##                self.izbrani.remove(p)
-##                return "odznaci"
+            if p in self.izbrani:
+                self.izbrani.remove(p)
+                return "odznaci"
             if p not in self.izbrani and self.preveri_polje(p):
                 self.izbrani.append(p)
-                return True
-        return False
+                return "oznaci"
+        #return False
            
     def preveri_polje(self, p):
         """Pogleda, ali lahko izberemo krogec na mestu p. Vrne True, če je to mogoče, in False, če ni."""
