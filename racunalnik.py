@@ -14,7 +14,7 @@ class Racunalnik():
     def igraj(self):
         """Igraj potezo, ki jo vrne algoritem."""
         # Tu sprožimo vzporedno vlakno, ki računa potezo.
-        
+
         # Naredimo vlakno, ki mu podamo *kopijo* igre (da ne bo zmedel GUIja):
         self.mislec = threading.Thread(
             target=lambda: self.algoritem.izracunaj_potezo(self.gui.igra.kopija()))

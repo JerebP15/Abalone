@@ -9,15 +9,13 @@ from logika_igre import *
 from clovek import *
 from racunalnik import *
 
-
 ######################################################################
 
 # Nujno UNDO. Shranimo matriko. Potrebujemo tudi seznam izbranih?
 
-def prevod_barve(barva): 
-    prevodi = {"yellow" : "rumeni", "black" : "črni"}
+def prevod_barve(barva):
+    prevodi = {"yellow" : "rumeni", "black" : "črni", "green" : "zeleni", "red" : "rdeči", "blue" : "modri", "cyan" : "svetlo modri" , "magenta" : "rozni"}
     return prevodi[barva] if barva in prevodi else "vesoljski"
-
 
 ## Uporabniški vmesnik
 
@@ -31,8 +29,6 @@ class Gui():
 
     # Velikost polja
     VELIKOST_POLJA = 50
-
-
 
     def __init__(self, master):
         self.igralec_1 = None # Objekt, ki igra prvi igralec (nastavimo ob začetku igre)
@@ -62,8 +58,30 @@ class Gui():
         menu_igra.add_command(label="Črni=Računalnik, Rumeni=Računalnik",
                               command=lambda: self.zacni_igro(Racunalnik(self, Minimax(MINIMAX_GLOBINA)),
                                                               Racunalnik(self, Minimax(MINIMAX_GLOBINA))))
-        menu.add_cascade(label="Navodila")
+        # Podmenu z navodili igre
+        menu_navodila = tkinter.Menu(menu, tearoff = 0)
+        menu.add_cascade(label="Navodila", menu = menu_navodila)
 
+        # Podmenu za izbiro barve igalcev
+        menu_barve1 = tkinter.Menu(menu, tearoff = 0)
+        menu.add_cascade(label="Barva prvega igralce", menu = menu_barve1)
+        menu_barve1.add_command(label="Črna", command = lambda: self.spremeni_barvo2("black"))
+        menu_barve1.add_command(label="Rumena", command = lambda: self.spremeni_barvo2("yellow"))
+        menu_barve1.add_command(label="Rdeča", command = lambda: self.spremeni_barvo2("red"))
+        menu_barve1.add_command(label="Zelena", command = lambda: self.spremeni_barvo2("green"))
+        menu_barve1.add_command(label="Modra", command = lambda: self.spremeni_barvo2("blue"))
+        menu_barve1.add_command(label="Svetlo modra", command = lambda: self.spremeni_barvo2("cyan"))
+        menu_barve1.add_command(label="Rozna", command = lambda: self.spremeni_barvo2("magenta"))
+
+        menu_barve2 = tkinter.Menu(menu, tearoff = 0)
+        menu.add_cascade(label="Barva drugega igralca", menu = menu_barve2)
+        menu_barve2.add_command(label="Črna", command = lambda: self.spremeni_barvo1("black"))
+        menu_barve2.add_command(label="Rumena", command = lambda: self.spremeni_barvo1("yellow"))
+        menu_barve2.add_command(label="Rdeča", command = lambda: self.spremeni_barvo1("red"))
+        menu_barve2.add_command(label="Zelena", command = lambda: self.spremeni_barvo1("green"))
+        menu_barve2.add_command(label="Modra", command = lambda: self.spremeni_barvo1("blue"))
+        menu_barve2.add_command(label="Svetlo modra", command = lambda: self.spremeni_barvo1("cyan"))
+        menu_barve2.add_command(label="Rozna", command = lambda: self.spremeni_barvo1("magenta"))
 
         # Napis, ki prikazuje stanje igre
         self.napis = tkinter.StringVar(master, value="Dobrodošli v Abalone!")
@@ -81,22 +99,21 @@ class Gui():
 
         # Črte na igralnem polju
         self.narisi_crte()
-        
+
         # Seznam izpodrinjenih krogcev
         self.izpodrinjeni = []
 
         # Naročimo se na dogodke
         self.okno.bind("<Button-1>", self.levi_klik)
         self.okno.bind("<Button-3>", self.desni_klik)
-        self.okno.bind('<Escape>', self.odznaci_krogec)  #Zaradi nekega razloga dela samo, če klikneš tab (ko klikneš tab se polje obrobi in od takrat naprej to dela, prej pa se ne zgodi nič)
+        self.okno.bind("<Button-2>", self.desni_klik) #Da dela tudi na Mac-u
+        self.okno.bind('<Escape>', self.odznaci_vse_krogce)  #Zaradi nekega razloga dela samo, če klikneš tab (ko klikneš tab se polje obrobi in od takrat naprej to dela, prej pa se ne zgodi nič)
+        self.okno.bind('<Control-z>', self.undo)
 
         #TODO press, release
 
-
         # Prični igro
         self.zacni_igro(Clovek(self), Clovek(self))
-
-
 
     def ustvari_matriko_id(self):
         matrika = []
@@ -117,6 +134,41 @@ class Gui():
                      id = self.okno.create_oval((i - j*0.5)*d + 2*d, (3**0.5)*0.5*j*d, (i - j*0.5)*d + 3*d, (3**0.5)*0.5*j*d + d, fill=matrika[i][j])
                      self.matrika_id[i][j] = id
 
+    def prebarvaj_krogce(self):
+        """Prebarva krogce, ta metoda se pokliče če zamenjamo barvo igralca."""
+        for i in range(len(self.igra.plosca)):
+             for j in range(len(self.igra.plosca[i])):
+                 if self.igra.plosca[i][j] is not None:
+                     self.okno.itemconfig(self.matrika_id[i][j], fill = self.igra.plosca[i][j])
+
+    def spremeni_barvo1(self, barva):
+        if barva == self.igra.barva_igralca_2:
+            print("Ni moreta biti oba igralca iste barve!")
+            pass
+        else:
+            if barva == "red":
+                if self.igra.barva_igralca_2 == "yellow":
+                    self.igra.barva_izbranih = "green"
+                else:
+                    self.igra.barva_izbranih = "yellow"
+            self.igra.prebarvaj_krogce(IGRALEC_1, barva)
+            self.igra.barva_igralca_1 = barva
+            self.prebarvaj_krogce()
+
+    def spremeni_barvo2(self, barva):
+        if barva == self.igra.barva_igralca_1:
+            print("Ni moreta biti oba igralca iste barve!")
+            pass
+        else:
+            if barva == "red":
+                if self.igra.barva_igralca_1 == "yellow":
+                    self.igra.barva_izbranih = "green"
+                else:
+                    self.igra.barva_izbranih = "yellow"
+            self.igra.prebarvaj_krogce(IGRALEC_2, barva)
+            self.igra.barva_igralca_2 = barva
+            self.prebarvaj_krogce()
+
     def levi_klik(self, event):
         """Obdelamo levi klik - oznacevanje krogcev."""
         p = self.poisci_polje(event)
@@ -136,16 +188,32 @@ class Gui():
            Če smo izbrali že označene krogce, se odznačijo in spet postanejo barvni."""
         igralec = self.igra.na_potezi
         odziv = self.igra.oznacevanje(p, igralec)
-        if odziv:
+        if odziv == "oznaci":
             self.oznaci_krogec(p)
-##        elif odziv == "odznaci":
-##            self.odznaci_krogec(p)
+        elif odziv == "odznaci":
+            self.odznaci_krogec(p)
         else:
             pass
 
-##    def razveljavi(self,event):
-##        (plosca, izpodrinjeni) = self.igra.undo()
-        #TODO Dokončati to metodo
+    def undo(self,event):
+        if self.igra.plosca != self.igra.ustvari_plosco():
+            if type(self.igralec_1) == type(self.igralec_2):
+                (plosca, izpodrinjeni) = self.igra.razveljavi()
+                for i in range(len(plosca)):
+                    for j in range(len(plosca[i])):
+                        print(self.matrika_id[i][j], plosca[i][j])
+                        self.okno.itemconfig(self.matrika_id[i][j], fill = plosca[i][j])                    
+                self.polje_izpodrinjenih1.delete(Gui.TAG_FIGURA)
+                self.polje_izpodrinjenih2.delete(Gui.TAG_FIGURA)
+                stevec = 0
+                for krogec in izpodrinjeni:
+                    if krogec == self.igra.barva_igralca_1:
+                        prvi += 1
+                        h = stevec - 1
+                        self.polje_izpodrinjenih2.create_oval(0.2*d, (6.45 - h)*d - 5 * h, 1.2*d, (7.45 - h)*d - 5 * h, tag=Gui.TAG_FIGURA, fill = barva)
+                    elif krogec == self.igra.barva_igralca_2:
+                        h = len(self.izpodrinjeni) - stevec - 1
+                        self.polje_izpodrinjenih2.create_oval(0.2*d, (6.45 - h)*d - 5 * h, 1.2*d, (7.45 - h)*d - 5 * h, tag=Gui.TAG_FIGURA, fill = barva)
 
     def desni_klik(self, event):
         """Obdelamo desni klik - premikanje krogcev."""
@@ -192,7 +260,7 @@ class Gui():
                 self.igra.izbrani.append((p[0][0],p[0][1]))
             else:
                 for polje in p[0]:
-                    self.igra.izbrani.append(polje[0],polje[1])
+                    self.igra.izbrani.append((polje[0],polje[1]))
             (premik, izrinjeni) = self.igra.premikanje(p[1])
             if premik is not None:
                 for polje in premik:
@@ -236,10 +304,13 @@ class Gui():
         (i, j) = p
         self.okno.itemconfig(self.matrika_id[i][j], fill=self.igra.barva_izbranih)
 
-
     def odznaci_krogec(self, p):
+        """Odznači krogec na katerega smo kliknili."""
+        (i, j) = p
+        self.okno.itemconfig(self.matrika_id[i][j], fill=self.igra.plosca[i][j])
+
+    def odznaci_vse_krogce(self, p):
         """Odznači vse izbrane krogce."""
-        print("izbrani so:",self.igra.izbrani)
         for p in self.igra.izbrani:
             (i, j) = p
             self.okno.itemconfig(self.matrika_id[i][j], fill=self.igra.plosca[i][j])
@@ -251,8 +322,8 @@ class Gui():
         stevec = 0
         # Prešteje krogce prvega igralca, ki so že izrinjeni.
         # Ker poznamo skupno število izrinjenih, iz tega lahko dobimo tudi število izrinjenih krogcev druge barve.
-        for barva in self.izpodrinjeni:
-            if barva == self.igra.barva_igralca_1:
+        for polje in self.izpodrinjeni:
+            if polje == self.igra.barva_igralca_1:
                 stevec += 1
         if barva == self.igra.barva_igralca_1:
             h = stevec - 1
@@ -260,8 +331,6 @@ class Gui():
         elif barva == self.igra.barva_igralca_2:
             h = len(self.izpodrinjeni) - stevec - 1
             self.polje_izpodrinjenih1.create_oval(0.2*d, (6.45 - h)*d - 5 * h, 1.2*d, (7.45 - h)*d - 5 * h, tag=Gui.TAG_FIGURA, fill = barva)
-
-
 
     def zacni_igro(self, igralec_1, igralec_2):
         """Nastavi stanje igre na zacetek igre.
@@ -298,7 +367,6 @@ class Gui():
         if self.igralec_1: self.igralec_1.prekini()
         if self.igralec_2: self.igralec_2.prekini()
 
-
     def zapri_okno(self, master):
         """Ta metoda se pokliče, ko uporabnik zapre aplikacijo."""
         self.prekini_igralce()
@@ -323,7 +391,6 @@ class Gui():
         self.polje_izpodrinjenih2.create_line(0.1*d, 0.9*d, 0.1*d, 7.5*d, tag=Gui.TAG_OKVIR)
         self.polje_izpodrinjenih2.create_line(0.1*d, 7.5*d, 1.3*d, 7.5*d, tag=Gui.TAG_OKVIR)
         self.polje_izpodrinjenih2.create_line(1.3*d, 7.5*d, 1.3*d, 0.9*d, tag=Gui.TAG_OKVIR)
-
 
 ######################################################################
 ## Glavni program
