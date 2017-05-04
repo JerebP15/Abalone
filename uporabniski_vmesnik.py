@@ -45,7 +45,7 @@ class Gui():
         # Podmenu za izbiro igre
         menu_igra = tkinter.Menu(menu, tearoff = 0)
         menu.add_cascade(label="Nova igra", menu=menu_igra)
-        menu_igra.add_command(label="Črni=Človek, Rumeni=Človek",
+        menu_igra.add_command(label="{0}=Človek, Rumeni=Človek".format("blblblb"), #TODO
                               command=lambda: self.zacni_igro(Clovek(self),
                                                               Clovek(self)))
         menu_igra.add_command(label="Črni=Človek, Rumeni=Računalnik",
