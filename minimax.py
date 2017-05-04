@@ -1,7 +1,7 @@
 import logging
 
-from logika_igre import IGRALEC_1, IGRALEC_2, NI_KONEC, nasprotnik, pripadajoca_barva
-
+#from logika_igre import IGRALEC_1, IGRALEC_2, NI_KONEC, nasprotnik
+from logika_igre import *
 
 ######################################################################
 ## Algoritem minimax
@@ -54,45 +54,44 @@ class Minimax:
             for y in range(1,10):
                 if self.igra.plosca[x][y] is not None:
                     barva = self.igra.plosca[x][y]
-                    if barva == pripadajoca_barva(self.jaz):
+                    if barva == self.igra.pripadajoca_barva(self.jaz):
                         predznak = 1
-                    elif barva == pripadajoca_barva(nasprotnik(self.jaz)):
+                    elif barva == self.igra.pripadajoca_barva(nasprotnik(self.jaz)):
                         predznak = -1
                     if x ==5 and y == 5:
                         vrednost += predznak * 100
                     elif (x,y) in notranji_krog:
                         vrednost += predznak * 50
                     elif (x,y) in [(2,2),(5,8),(4,7),(3,6),(2,5),(2,4),(2,3)]:
-                        if self.igra.plosca[x+1][y] == pripadajoca_barva(self.jaz) and self.igra.plosca[x-1][y] == pripadajoca_barva(nasprotnik(self.jaz)):
+                        if self.igra.plosca[x+1][y] == self.igra.pripadajoca_barva(self.jaz) and self.igra.plosca[x-1][y] == self.igra.pripadajoca_barva(nasprotnik(self.jaz)):
                             vrednost += predznak * Minimax.ZMAGA / 100
                         else:
                             vrednost -= predznak * 10
                     elif (x,y) in [(2,5),(2,4),(2,3),(2,2),(3,2),(4,2),(5,2)]:
-                        if self.igra.plosca[x+1][y+1] == pripadajoca_barva(self.jaz) and self.igra.plosca[x-1][y-1] == pripadajoca_barva(nasprotnik(self.jaz)):
+                        if self.igra.plosca[x+1][y+1] == self.igra.pripadajoca_barva(self.jaz) and self.igra.plosca[x-1][y-1] == self.igra.pripadajoca_barva(nasprotnik(self.jaz)):
                             vrednost += predznak * Minimax.ZMAGA / 100
                         else:
                             vrednost -= predznak * 10
                     elif (x,y) in [(2,2),(3,2),(4,2),(5,2),(6,3),(7,4),(8,5)]:
-                        if self.igra.plosca[x][y+1] == pripadajoca_barva(self.jaz) and self.igra.plosca[x][y-1] == pripadajoca_barva(nasprotnik(self.jaz)):
+                        if self.igra.plosca[x][y+1] == self.igra.pripadajoca_barva(self.jaz) and self.igra.plosca[x][y-1] == self.igra.pripadajoca_barva(nasprotnik(self.jaz)):
                             vrednost += predznak * Minimax.ZMAGA / 100
                         else:
                             vrednost -= predznak * 10
                     elif (x,y) in [(5,2),(6,3),(7,4),(8,5),(8,6),(8,7),(8,8)]:
-                        if self.igra.plosca[x-1][y] == pripadajoca_barva(self.jaz) and self.igra.plosca[x+1][y] == pripadajoca_barva(nasprotnik(self.jaz)):
+                        if self.igra.plosca[x-1][y] == self.igra.pripadajoca_barva(self.jaz) and self.igra.plosca[x+1][y] == self.igra.pripadajoca_barva(nasprotnik(self.jaz)):
                             vrednost += predznak * Minimax.ZMAGA / 100
                         else:
                             vrednost -= predznak * 10
                     elif (x,y) in [(5,8),(6,8),(7,8),(8,8),(8,7),(8,6),(8,5)]:
-                        if self.igra.plosca[x-1][y-1] == pripadajoca_barva(self.jaz) and self.igra.plosca[x+1][y+1] == pripadajoca_barva(nasprotnik(self.jaz)):
+                        if self.igra.plosca[x-1][y-1] == self.igra.pripadajoca_barva(self.jaz) and self.igra.plosca[x+1][y+1] == self.igra.pripadajoca_barva(nasprotnik(self.jaz)):
                             vrednost += predznak * Minimax.ZMAGA / 100
                         else:
                             vrednost -= predznak * 10
                     elif (x,y) in [(8,8),(7,8),(6,8),(5,8),(4,7),(3,6),(2,5)]:
-                        if self.igra.plosca[x][y-1] == pripadajoca_barva(self.jaz) and self.igra.plosca[x][y+1] == pripadajoca_barva(nasprotnik(self.jaz)):
+                        if self.igra.plosca[x][y-1] == self.igra.pripadajoca_barva(self.jaz) and self.igra.plosca[x][y+1] == self.igra.pripadajoca_barva(nasprotnik(self.jaz)):
                             vrednost += predznak * Minimax.ZMAGA / 100
                         else:
                             vrednost -= predznak * 10
-        print("na potezi je",self.jaz,", minimax je izračunal vrednost",vrednost)            
         return vrednost
 
     def minimax(self, globina, maksimiziramo):
@@ -133,7 +132,7 @@ class Minimax:
                         self.igra.razveljavi()
                         if vrednost > vrednost_najboljse:
                             vrednost_najboljse = vrednost
-                            najboljsa_poteza = poteza                        
+                            najboljsa_poteza = poteza
                         self.igra.izbrani = []
                 else:
                     # Minimiziramo
