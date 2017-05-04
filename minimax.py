@@ -1,4 +1,5 @@
 import logging
+import random
 
 #from logika_igre import IGRALEC_1, IGRALEC_2, NI_KONEC, nasprotnik
 from logika_igre import *
@@ -119,40 +120,47 @@ class Minimax:
                     # Maksimiziramo
                     najboljsa_poteza = None
                     vrednost_najboljse = -Minimax.NESKONCNO
+                    najboljse_poteze = []
                     for poteza in self.igra.veljavne_poteze():
-                        if type(poteza[0][0]) == int:
-                                (x,y) = poteza[0]
+                        [izbrani, p] = poteza
+                        if type(izbrani[0]) == int:
+                                (x,y) = izbrani
                                 self.igra.izbrani.append((x,y))
                         else:
-                            for polje in poteza[0]:
-                                (x,y) = polje
+                            for (x,y) in izbrani:
                                 self.igra.izbrani.append((x,y))
-                        self.igra.povleci_potezo(poteza[1])
+                        self.igra.povleci_potezo(p)
                         vrednost = self.minimax(globina-1, not maksimiziramo)[1]
                         self.igra.razveljavi()
-                        if vrednost > vrednost_najboljse:
+                        if vrednost == vrednost_najboljse:
+                            najboljse_poteze.append(poteza)
+                        elif vrednost > vrednost_najboljse:
                             vrednost_najboljse = vrednost
-                            najboljsa_poteza = poteza
+                            najboljse_poteze = [poteza]
                         self.igra.izbrani = []
+                    najboljsa_poteza = random.choice(najboljse_poteze)
                 else:
                     # Minimiziramo
                     najboljsa_poteza = None
                     vrednost_najboljse = Minimax.NESKONCNO
                     for poteza in self.igra.veljavne_poteze():
-                        if type(poteza[0][0]) == int:
-                                (x,y) = poteza[0]
+                        [izbrani, p] = poteza
+                        if type(izbrani[0]) == int:
+                                (x,y) = izbrani
                                 self.igra.izbrani.append((x,y))
                         else:
-                            for polje in poteza[0]:
-                                (x,y) = polje
+                            for (x,y) in izbrani:
                                 self.igra.izbrani.append((x,y))
-                        self.igra.povleci_potezo(poteza[1])
+                        self.igra.povleci_potezo(p)
                         vrednost = self.minimax(globina-1, not maksimiziramo)[1]
                         self.igra.razveljavi()
-                        if vrednost < vrednost_najboljse:
+                        if vrednost == vrednost_najboljse:
+                            najboljse_poteze.append(poteza)
+                        elif vrednost < vrednost_najboljse:
                             vrednost_najboljse = vrednost
-                            najboljsa_poteza = poteza
+                            najboljse_poteze = [poteza]
                         self.igra.izbrani = []
+                    najboljsa_poteza = random.choice(najboljse_poteze)
 
                 assert (najboljsa_poteza is not None), "minimax: izračunana poteza je None"
                 return (najboljsa_poteza, vrednost_najboljse)
