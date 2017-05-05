@@ -83,6 +83,9 @@ class Igra():
             for j in range(len(self.plosca[i])):
                 if self.plosca[i][j] == self.pripadajoca_barva(igralec):
                     self.plosca[i][j] = barva
+        for x in range(len(self.izpodrinjeni)):
+            if self.izpodrinjeni[x] == self.pripadajoca_barva(igralec):
+                self.izpodrinjeni[x] = barva
 
     def oznacevanje(self, p, igralec):
         """Doda oznacen krogec v seznam izbranih self.izbrani. Vrne True, če je krogec možno izbrati in False sicer."""
@@ -143,6 +146,7 @@ class Igra():
             return (None, None)
         else:
             if self.preveri_potezo(p):
+                self.shrani_pozicijo()
                 self.premakni_krogce(p) # To samo popravi matriko. (Se mi zdi.)
                 spremembe = [self.spremembe_premik[:],self.izpodrinjeni[:]]
                 self.izbrani = []
@@ -366,6 +370,7 @@ class Igra():
 
     def razveljavi(self):
         """Razveljavi potezo in se vrni v prejšnje stanje."""
+        print(self.zgodovina)
         (self.plosca, self.na_potezi, self.izpodrinjeni) = self.zgodovina.pop()
         return (self.plosca, self.izpodrinjeni)
 
@@ -434,8 +439,7 @@ class Igra():
                     # V tem primeru dodamo v slovar pod ključ 'moznost' vrednost 'sosed'.
                     # Kasneje bomo preverili, ali je poteza veljavna (None moramo vseeno izločiti,
                     # ker metoda preveri_potezo ne deluje za None).
-                    print(nepreverjeni_sosedje)
-                    if moznost not in nepreverjeni_sosedje.keys():
+                    if moznost not in nepreverjeni_sosedje:
                         nepreverjeni_sosedje[moznost] = [sosed]
                     else:
                         nepreverjeni_sosedje[moznost] += [sosed]
