@@ -423,8 +423,9 @@ class Igra():
                 if sosed is not None:
                     # V tem primeru dodamo v slovar pod ključ 'moznost' vrednost 'sosed'.
                     # Kasneje bomo preverili, ali je poteza veljavna (None moramo vseeno izločiti,
-                    # ker metoda preveri_potezo ne deluje za None.
-                    if moznost not in nepreverjeni_sosedje:
+                    # ker metoda preveri_potezo ne deluje za None).
+                    print(nepreverjeni_sosedje)
+                    if moznost not in nepreverjeni_sosedje.keys():
                         nepreverjeni_sosedje[moznost] = [sosed]
                     else:
                         nepreverjeni_sosedje[moznost] += [sosed]
