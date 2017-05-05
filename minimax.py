@@ -102,6 +102,7 @@ class Minimax:
         izpodrinjeni = self.igra.izpodrinjeni
         moja_barva = self.igra.pripadajoca_barva(self.jaz)
         nasprotnikova_barva = self.igra.pripadajoca_barva(nasprotnik(self.jaz))
+        prazno = self.igra.barva_praznih
         # Najprej preštejemo svoje in nasprotnikove izpodrinjene krogce (s tem spodbujamo agresivno igro)
         moji_izpodrinjeni = izpodrinjeni.count(moja_barva)
         nasprotnikovi_izpodrinjeni = izpodrinjeni.count(nasprotnikova_barva)
@@ -127,25 +128,30 @@ class Minimax:
             [None, moja_barva, nasprotnikova_barva, nasprotnikova_barva, nasprotnikova_barva],
             [None, moja_barva, moja_barva, nasprotnikova_barva, nasprotnikova_barva, nasprotnikova_barva],
             ]
+        # Seznam pozicij, kjer nas lahko v naslednji potezi potisnejo do roba - slabo, ampak ne nerešljivo.
+        slabe_pozicije = [
+            [None, prazno, moja_barva, nasprotnikova_barva, nasprotnikova_barva],
+            [None, prazno, moja_barva, nasprotnikova_barva, nasprotnikova_barva, nasprotnikova_barva],
+            [None, prazno, moja_barva, moja_barva, nasprotnikova_barva, nasprotnikova_barva, nasprotnikova_barva],
+            ]
         # Podobno napišemo seznam ugodnih pozicij, ki pa mora imeti manjši učinek na vrednost pozicije
-        # (recimo vrednost += 300?), ker se nasprotnik izmakne in ni ziher, da ga bomo res izrinili.
+        # (recimo vrednost += 300?), ker se nasprotnik lahko izmakne in ni ziher, da ga bomo res izrinili.
         ugodne_pozicije = [
             ]
         # Predlagam še seznam slabe_pozicije, ki bo podoben usodnim, samo da je med mojio barvo in
         # nasprotnikovo barvo eno prazno polje - torej da se nasprotnik nevarno približuje.
         for smer in smeri:
-##            # Nežno spodbujamo premike proti sredini ?
-##            if smer[1] == self.igra.barva_praznih and smer[-2] != self.igra.barva_praznih: 
-##                vrednost += 50
-##            elif smer[1] != self.igra.barva_praznih and smer[-2] == self.igra.barva_praznih: 
-##                vrednost += 50
-##            elif smer[1] == self.igra.barva_praznih and smer[-2] == self.igra.barva_praznih:
-##                vrednost += 30
             for usodna in usodne_pozicije:
-                # Pozicija se lahko pojavi na koncu ali pa na začetku smeri, zato jo še obrnemo
-                if len(usodna) <= len(smer) and (smer[:len(usodna)] == usodna or smer[len(smer)-len(usodna):] == usodna[::-1]):
+                # Pozicija se lahko pojavi na koncu ali pa na začetku smeri.
+                usodni_zacetek = len(usodna)
+                usodni_konec = len(usodna)
+                for i in range(len(usodna)):
+                    if smer[i] == usodna[i]:
+                        usodni_zacetek -= 1
+                    if smer[-1-i] == usodna[i]:
+                        usodni_konec -= 1
+                if usodni_zacetek == 0 or usodni_konec == 0:
                     vrednost -= 500
-                    break
         #print(plosca)
         print(88888888888888888888888888888888888888)
         print(000, 0, vrednost, 0, 000)

@@ -14,14 +14,14 @@ from tkinter import messagebox
 
 # Nujno UNDO. Shranimo matriko. Potrebujemo tudi seznam izbranih?
 
-pravila_igre = """Deska je sestavljena iz 61 krogcev, ki so razporejeni v šestkotnik.
-Vsak igralec ima 14 frnikul, ki so na začetku razporejeni kot je prikazano
-spodaj. Ugro začne spodnji igralec. V vsaki potezi igralec premakne eno,
-dve ali tri svoje frnikole na katero koli prazno sosednje polje. V primeru,
-da igralec premika dve ali tri frnikole naravnost (naprej ali nazaj) in so
-na polju, kamor se želi premakniti nasprotnikove frnikole jih ta lahko
-potisne eno polje nazaj, če je v tej smeri nasprotnikovih frnikol manj
-kot igralčevih. Cilj igre je potisniti 6 nasprotnikovih frnikol iz plošče.
+pravila_igre = """Deska je sestavljena iz 61 polj, ki so razporejena v šestkotnik.
+Vsak igralec ima 14 kroglic, ki so na začetku razporejene, kot je prikazano spodaj. Igro začne spodnji igralec.
+
+V vsaki potezi igralec premakne eno, dve ali tri svoje kroglice.
+Premik je mogoč v katerokoli od šestih smeri, če nas pri tem ne ovirajo druge kroglice.
+Potisk nasprotnikovih kroglic je mogoč le naravnost (torej v smeri, ki jo določa premica skozi središča izbranih kroglic) in še to samo, če je nasprotnikovih kroglic strogo manj od naših.
+
+Cilj igre je potisniti 6 nasprotnikovih krogclic s plošče.
 """
 tipke = """levi klik miške = označi/odznači krogec
 
@@ -32,12 +32,12 @@ Escape = odznači vse izbrane krogce
 Ctrl + z = razveljavi potezo
 """
 
+prevodi = {"yellow" : "rumeni", "black" : "črni", "green" : "zeleni", "red" : "rdeči", "blue" : "modri", "cyan" : "svetlo modri" , "magenta" : "roza"}
+
 def prevod_barve(barva):
-    prevodi = {"yellow" : "rumeni", "black" : "črni", "green" : "zeleni", "red" : "rdeči", "blue" : "modri", "cyan" : "svetlo modri" , "magenta" : "rozni"}
     return prevodi[barva] if barva in prevodi else "vesoljski"
 
 def prevod_barve_menu(barva):
-    prevodi = {"yellow" : "Rumeni", "black" : "Črni", "green" : "Zeleni", "red" : "Rdeči", "blue" : "Modri", "cyan" : "Svetlo modri" , "magenta" : "Rozni"}
     return prevodi[barva] if barva in prevodi else "Vesoljski"
 
 ## Uporabniški vmesnik
@@ -104,7 +104,7 @@ class Gui():
         # Podmenu za izbiro igre
         menu_igra = tkinter.Menu(menu, tearoff = 0)
         menu.add_cascade(label="Nova igra", menu=menu_igra)
-        menu_igra.add_command(label="{}=Človek, {}=Človek".format(prevod_barve_menu(self.igra.barva_igralca_2),prevod_barve_menu(self.igra.barva_igralca_1)),
+        menu_igra.add_command(label="{}=Človek, {}=Človek".format(prevod_barve(self.igra.barva_igralca_2),prevod_barve_menu(self.igra.barva_igralca_1)),
                               command=lambda: self.zacni_igro(Clovek(self),
                                                               Clovek(self)))
         menu_igra.add_command(label="{}=Človek, {}=Računalnik".format(prevod_barve_menu(self.igra.barva_igralca_2),prevod_barve_menu(self.igra.barva_igralca_1)),
@@ -132,7 +132,7 @@ class Gui():
         menu_barve1.add_command(label="Zelena", command = lambda: self.spremeni_barvo2("green"))
         menu_barve1.add_command(label="Modra", command = lambda: self.spremeni_barvo2("blue"))
         menu_barve1.add_command(label="Svetlo modra", command = lambda: self.spremeni_barvo2("cyan"))
-        menu_barve1.add_command(label="Rozna", command = lambda: self.spremeni_barvo2("magenta"))
+        menu_barve1.add_command(label="Roza", command = lambda: self.spremeni_barvo2("magenta"))
 
         menu_barve2 = tkinter.Menu(menu, tearoff = 0)
         menu.add_cascade(label="Barva drugega igralca", menu = menu_barve2)
@@ -142,7 +142,7 @@ class Gui():
         menu_barve2.add_command(label="Zelena", command = lambda: self.spremeni_barvo1("green"))
         menu_barve2.add_command(label="Modra", command = lambda: self.spremeni_barvo1("blue"))
         menu_barve2.add_command(label="Svetlo modra", command = lambda: self.spremeni_barvo1("cyan"))
-        menu_barve2.add_command(label="Rozna", command = lambda: self.spremeni_barvo1("magenta"))
+        menu_barve2.add_command(label="Roza", command = lambda: self.spremeni_barvo1("magenta"))
 
     def razveljavi(self,event):
         self.igra.razveljavi()
@@ -167,7 +167,7 @@ class Gui():
                      self.matrika_id[i][j] = id
 
     def prebarvaj_krogce(self):
-        """Prebarva krogce, ta metoda se pokliče če zamenjamo barvo igralca."""
+        """Prebarva krogce, ta metoda se pokliče, če zamenjamo barvo igralca."""
         for i in range(len(self.igra.plosca)):
              for j in range(len(self.igra.plosca[i])):
                  if self.igra.plosca[i][j] is not None:
@@ -263,6 +263,8 @@ class Gui():
                     elif krogec == self.igra.barva_igralca_2:
                         h = len(self.izpodrinjeni) - stevec - 1
                         self.polje_izpodrinjenih2.create_oval(0.2*d, (6.45 - h)*d - 5 * h, 1.2*d, (7.45 - h)*d - 5 * h, tag=Gui.TAG_FIGURA, fill = barva)
+        else:
+            pass # TODO Je to prav?
 
     def desni_klik(self, event):
         """Obdelamo desni klik - premikanje krogcev."""
