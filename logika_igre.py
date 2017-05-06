@@ -58,6 +58,7 @@ class Igra():
         """Ustvari matriko z elementi iz razreda Polje (na mestih, kjer bodo polja igralne plošče)
         in None (v zgornjem desnem kotu, v spodnjem levem kotu in na robu matrike)."""
         matrika = []
+        print('BARVE V IGRI : ', self.barva_praznih, self.barva_igralca_1, self.barva_igralca_2, self.barva_izbranih)
         for x in range(11):
                seznam = []
                for y in range(11):
