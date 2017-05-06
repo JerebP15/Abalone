@@ -44,117 +44,76 @@ class Minimax:
     ZMAGA = 100000
     NESKONCNO = ZMAGA + 1 # Več kot zmaga
 
-##    def vrednost_pozicije(self):
-##        """Ocena vrednosti pozicije na plošči."""
-##        notranji_krog = [(4,4),(5,4),(4,5),(6,5),(5,6),(6,6)]
-##        srednji_krog = [(3,3),(4,3),(5,3),(6,3),(7,5),(7,6),(7,7),(6,7),(5,7),(4,6),(3,5),(3,4)]
-##        predzadnji_krog = [(2,2),(3,2),(4,2),(5,2),(6,3),(7,4),(8,5),(8,6),(8,7),(8,8),(7,8),(6,8),(5,8),(4,7),(3,6),(2,5),(2,4),(2,3)]
-##        zunanji_krog = [(1,1),(2,1),(3,1),(4,1),(5,1),(6,2),(7,3),(8,4),(9,5),(9,6),(9,7),(9,8),(9,9),(8,9),(7,9),(6,9),(5,9),(4,8),(3,7),(2,6),(1,5),(1,4),(1,3),(1,2)]
-##        vrednost = 0
-##        for x in range(1,10):
-##            for y in range(1,10):
-##                if self.igra.plosca[x][y] is not None:
-##                    barva = self.igra.plosca[x][y]
-##                    if barva == self.igra.pripadajoca_barva(self.jaz):
-##                        predznak = 1
-##                    elif barva == self.igra.pripadajoca_barva(nasprotnik(self.jaz)):
-##                        predznak = -1
-##                    if x ==5 and y == 5:
-##                        vrednost += predznak * 100
-##                    elif (x,y) in notranji_krog:
-##                        vrednost += predznak * 50
-##                    elif (x,y) in [(2,2),(5,8),(4,7),(3,6),(2,5),(2,4),(2,3)]:
-##                        if self.igra.plosca[x+1][y] == self.igra.pripadajoca_barva(self.jaz) and self.igra.plosca[x-1][y] == self.igra.pripadajoca_barva(nasprotnik(self.jaz)):
-##                            vrednost += predznak * Minimax.ZMAGA / 100
-##                        else:
-##                            vrednost -= predznak * 10
-##                    elif (x,y) in [(2,5),(2,4),(2,3),(2,2),(3,2),(4,2),(5,2)]:
-##                        if self.igra.plosca[x+1][y+1] == self.igra.pripadajoca_barva(self.jaz) and self.igra.plosca[x-1][y-1] == self.igra.pripadajoca_barva(nasprotnik(self.jaz)):
-##                            vrednost += predznak * Minimax.ZMAGA / 100
-##                        else:
-##                            vrednost -= predznak * 10
-##                    elif (x,y) in [(2,2),(3,2),(4,2),(5,2),(6,3),(7,4),(8,5)]:
-##                        if self.igra.plosca[x][y+1] == self.igra.pripadajoca_barva(self.jaz) and self.igra.plosca[x][y-1] == self.igra.pripadajoca_barva(nasprotnik(self.jaz)):
-##                            vrednost += predznak * Minimax.ZMAGA / 100
-##                        else:
-##                            vrednost -= predznak * 10
-##                    elif (x,y) in [(5,2),(6,3),(7,4),(8,5),(8,6),(8,7),(8,8)]:
-##                        if self.igra.plosca[x-1][y] == self.igra.pripadajoca_barva(self.jaz) and self.igra.plosca[x+1][y] == self.igra.pripadajoca_barva(nasprotnik(self.jaz)):
-##                            vrednost += predznak * Minimax.ZMAGA / 100
-##                        else:
-##                            vrednost -= predznak * 10
-##                    elif (x,y) in [(5,8),(6,8),(7,8),(8,8),(8,7),(8,6),(8,5)]:
-##                        if self.igra.plosca[x-1][y-1] == self.igra.pripadajoca_barva(self.jaz) and self.igra.plosca[x+1][y+1] == self.igra.pripadajoca_barva(nasprotnik(self.jaz)):
-##                            vrednost += predznak * Minimax.ZMAGA / 100
-##                        else:
-##                            vrednost -= predznak * 10
-##                    elif (x,y) in [(8,8),(7,8),(6,8),(5,8),(4,7),(3,6),(2,5)]:
-##                        if self.igra.plosca[x][y-1] == self.igra.pripadajoca_barva(self.jaz) and self.igra.plosca[x][y+1] == self.igra.pripadajoca_barva(nasprotnik(self.jaz)):
-##                            vrednost += predznak * Minimax.ZMAGA / 100
-##                        else:
-##                            vrednost -= predznak * 10
-##        return vrednost
-
     def vrednost_pozicije(self):
         """Ocena vrednosti pozicije na plošči."""
+        # Nastavimo vrednost na 0 in definiramo, kar bomo potrebovali.
         vrednost = 0
         plosca = self.igra.plosca
         izpodrinjeni = self.igra.izpodrinjeni
         moja_barva = self.igra.pripadajoca_barva(self.jaz)
         nasprotnikova_barva = self.igra.pripadajoca_barva(nasprotnik(self.jaz))
         prazno = self.igra.barva_praznih
-        # Najprej preštejemo svoje in nasprotnikove izpodrinjene krogce (s tem spodbujamo agresivno igro)
+        # Najprej preštejemo svoje in nasprotnikove izpodrinjene krogce (s tem spodbujamo agresivno igro - glej navodila)
         moji_izpodrinjeni = izpodrinjeni.count(moja_barva)
         nasprotnikovi_izpodrinjeni = izpodrinjeni.count(nasprotnikova_barva)
         vrednost += (1000 * moji_izpodrinjeni - 900 * nasprotnikovi_izpodrinjeni)
         # Naredimo seznam "smeri", v katerem bodo vse vrstice, stolpci in diagonale.
         smeri = []
+        glavna_diagonala = []
         for i in range(11):
             x = []
             y = []
-            diagonala = []
+            if plosca[i][i] is not None:
+                glavna_diagonala.append(plosca[i][i])
             for j in range(11):
                 if plosca[i][j] is not None:
                     y.append(plosca[i][j])
                 if plosca[j][i] is not None:
                     x.append(plosca[j][i])
             if len(x) != 0:
-                smeri.append([None] + x + [None])
+                smeri.append(x)
             if len(y) != 0:
-                smeri.append([None] + y + [None])
-        # Seznam pozicij, kjer nas lahko v naslednji potezi izrinejo s plošče - zelo slabo.
-        usodne_pozicije = [
-            [None, moja_barva, nasprotnikova_barva, nasprotnikova_barva],
-            [None, moja_barva, nasprotnikova_barva, nasprotnikova_barva, nasprotnikova_barva],
-            [None, moja_barva, moja_barva, nasprotnikova_barva, nasprotnikova_barva, nasprotnikova_barva],
-            ]
-        # Seznam pozicij, kjer nas lahko v naslednji potezi potisnejo do roba - slabo, ampak ne nerešljivo.
-        slabe_pozicije = [
-            [None, prazno, moja_barva, nasprotnikova_barva, nasprotnikova_barva],
-            [None, prazno, moja_barva, nasprotnikova_barva, nasprotnikova_barva, nasprotnikova_barva],
-            [None, prazno, moja_barva, moja_barva, nasprotnikova_barva, nasprotnikova_barva, nasprotnikova_barva],
-            ]
+                smeri.append(y)
+        smeri.append(glavna_diagonala)
+        zacetki_diagonal = [(1,2),(1,3),(1,4),(1,5)]
+        for (i,j) in zacetki_diagonal:
+            spodnja_diagonala = []
+            zgornja_diagonala = []
+            while plosca[i][j] is not None:
+                spodnja_diagonala.append(plosca[i][j])
+                zgornja_diagonala.append(plosca[j][i])
+                i += 1
+                j += 1
+            smeri.append(spodnja_diagonala)
+            smeri.append(zgornja_diagonala)
+
+        pozicije = {
+            # Pozicije, kjer nas lahko v naslednji potezi izrinejo s plošče - zelo slabo.
+            (moja_barva, nasprotnikova_barva, nasprotnikova_barva) : -500,
+            (moja_barva, nasprotnikova_barva, nasprotnikova_barva, nasprotnikova_barva) : -500,
+            (moja_barva, moja_barva, nasprotnikova_barva, nasprotnikova_barva, nasprotnikova_barva) : -700,
+            # Pozicije, kjer nas lahko v naslednji potezi potisnejo do roba - slabo, ampak ne nerešljivo.
+            (prazno, moja_barva, nasprotnikova_barva, nasprotnikova_barva) : -300,
+            (prazno, moja_barva, nasprotnikova_barva, nasprotnikova_barva, nasprotnikova_barva) : -300,
+            (prazno, moja_barva, moja_barva, nasprotnikova_barva, nasprotnikova_barva, nasprotnikova_barva) : -400}
         # Podobno napišemo seznam ugodnih pozicij, ki pa mora imeti manjši učinek na vrednost pozicije
-        # (recimo vrednost += 300?), ker se nasprotnik lahko izmakne in ni ziher, da ga bomo res izrinili.
-        ugodne_pozicije = [
-            ]
-        # Predlagam še seznam slabe_pozicije, ki bo podoben usodnim, samo da je med mojio barvo in
-        # nasprotnikovo barvo eno prazno polje - torej da se nasprotnik nevarno približuje.
+        # (recimo vrednost += 300?), ker se nasprotnik lahko izmakne in zato ni ziher, da ga bomo res izrinili.
         for smer in smeri:
-            for usodna in usodne_pozicije:
+            for pozicija in pozicije:
                 # Pozicija se lahko pojavi na koncu ali pa na začetku smeri.
-                usodni_zacetek = len(usodna)
-                usodni_konec = len(usodna)
-                for i in range(len(usodna)):
-                    if smer[i] == usodna[i]:
-                        usodni_zacetek -= 1
-                    if smer[-1-i] == usodna[i]:
-                        usodni_konec -= 1
-                if usodni_zacetek == 0 or usodni_konec == 0:
-                    vrednost -= 500
-        #print(plosca)
-        print(88888888888888888888888888888888888888)
-        print(000, 0, vrednost, 0, 000)
+                na_zacetku = len(pozicija)
+                na_koncu = len(pozicija)
+                for i in range(len(pozicija)):
+                    if smer[i] == pozicija[i]:
+                        na_zacetku -= 1
+                    if smer[-1-i] == pozicija[i]:
+                        na_koncu -= 1
+                    else:
+                        break
+                if na_zacetku == 0 and na_koncu == 0:
+                    vrednost += 2 * pozicije[pozicija]
+                elif na_zacetku == 0 or na_koncu == 0:
+                    vrednost += pozicije[pozicija]
         return vrednost
 
     def minimax(self, globina, maksimiziramo):
