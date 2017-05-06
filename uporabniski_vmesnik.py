@@ -56,6 +56,11 @@ class Gui():
     # Velikost polja
     VELIKOST_POLJA = 50
 
+    nastavljena_barva_1 = "yellow"
+    nastavljena_barva_2 = "black"
+    nastavljena_barva_praznih = "white"
+    nastavljena_barva_izbranih = "red"
+
     def __init__(self, master):
         self.igralec_1 = None # Objekt, ki igra prvi igralec (nastavimo ob začetku igre)
         self.igralec_2 = None # Objekt, ki igra drugi igralec (nastavimo ob začetku igre)
@@ -107,19 +112,11 @@ class Gui():
         # Podmenu za izbiro igre
         menu_igra = tkinter.Menu(menu, tearoff = 0)
         menu.add_cascade(label="Nova igra", menu=menu_igra)
-        menu_igra.add_command(label="{}=Človek, {}=Človek".format(prevod_barve(self.igra.barva_igralca_2),prevod_barve_menu(self.igra.barva_igralca_1)),
-                              command=lambda: self.zacni_igro(Clovek(self),
-                                                              Clovek(self)))
-        menu_igra.add_command(label="{}=Človek, {}=Računalnik".format(prevod_barve_menu(self.igra.barva_igralca_2),prevod_barve_menu(self.igra.barva_igralca_1)),
-                              command=lambda: self.zacni_igro(Racunalnik(self, Minimax(MINIMAX_GLOBINA)),
-                                                              Clovek(self)))
-        menu_igra.add_command(label="{}=Računalnik, {}=Človek".format(prevod_barve_menu(self.igra.barva_igralca_2),prevod_barve_menu(self.igra.barva_igralca_1)),
-                              command=lambda: self.zacni_igro(Clovek(self),
-                                                              Racunalnik(self, Minimax(MINIMAX_GLOBINA))))
-
-        menu_igra.add_command(label="{}=Računalnik, {}=Računalnik".format(prevod_barve_menu(self.igra.barva_igralca_2),prevod_barve_menu(self.igra.barva_igralca_1)),
-                              command=lambda: self.zacni_igro(Racunalnik(self, Minimax(MINIMAX_GLOBINA)),
-                                                              Racunalnik(self, Minimax(MINIMAX_GLOBINA))))
+        menu_igra.add_command(label="Človek : Človek", command=lambda: self.zacni_igro(Clovek(self), Clovek(self)))
+        menu_igra.add_command(label="Človek : Računalnik", command=lambda: self.zacni_igro(Racunalnik(self, Minimax(MINIMAX_GLOBINA)), Clovek(self)))
+        menu_igra.add_command(label="Računalnik : Človek", command=lambda: self.zacni_igro(Clovek(self), Racunalnik(self, Minimax(MINIMAX_GLOBINA))))
+        menu_igra.add_command(label="Računalnik : Računalnik",
+                              command=lambda: self.zacni_igro(Racunalnik(self, Minimax(MINIMAX_GLOBINA)), Racunalnik(self, Minimax(MINIMAX_GLOBINA))))
         # Podmenu z navodili igre
         menu_navodila = tkinter.Menu(menu, tearoff = 0)
         menu.add_cascade(label="Informacije", menu = menu_navodila)
@@ -128,7 +125,7 @@ class Gui():
 
         # Podmenu za izbiro barve igalcev
         menu_barve1 = tkinter.Menu(menu, tearoff = 0)
-        menu.add_cascade(label="Barva prvega igralce", menu = menu_barve1)
+        menu.add_cascade(label="Barva prvega igralca", menu = menu_barve1)
         menu_barve1.add_command(label="Črna", command = lambda: self.spremeni_barvo2("black"))
         menu_barve1.add_command(label="Rumena", command = lambda: self.spremeni_barvo2("yellow"))
         menu_barve1.add_command(label="Rdeča", command = lambda: self.spremeni_barvo2("red"))
@@ -163,6 +160,7 @@ class Gui():
         """Nariše krogce na plošči (v začetni poziciji)."""
         d = Gui.VELIKOST_POLJA
         matrika = self.igra.plosca
+        print(matrika)
         for i in range(len(matrika)):
              for j in range(len(matrika[i])):
                  if matrika[i][j] is not None:
@@ -398,7 +396,18 @@ class Gui():
         self.polje_izpodrinjenih1.delete(Gui.TAG_FIGURA)
         self.polje_izpodrinjenih2.delete(Gui.TAG_FIGURA)
         #self.zacetna_pozicija
-        self.igra = Igra()
+        if self.igra is not None:
+            B1 = self.igra.barva_igralca_1
+            B2 = self.igra.barva_igralca_2
+            Bi = self.igra.barva_izbranih
+            self.igra = Igra()
+            self.igra.barva_izbranih = Bi
+            self.spremeni_barvo1(B1)
+            self.spremeni_barvo2(B2)
+            print('nove')
+            print((self.igra.barva_igralca_1, self.igra.barva_igralca_2, self.igra.barva_praznih, self.igra.barva_izbranih))
+        else:
+            self.igra = Igra()
         self.risi_plosco()
         # Shranimo igralce
         self.igralec_1 = igralec_1
