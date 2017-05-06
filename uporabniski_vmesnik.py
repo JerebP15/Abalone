@@ -18,10 +18,13 @@ pravila_igre = """Deska je sestavljena iz 61 polj, ki so razporejena v šestkotn
 Vsak igralec ima 14 kroglic, ki so na začetku razporejene, kot je prikazano spodaj. Igro začne spodnji igralec.
 
 V vsaki potezi igralec premakne eno, dve ali tri svoje kroglice.
-Premik je mogoč v katerokoli od šestih smeri, če nas pri tem ne ovirajo druge kroglice.
+Premik je mogoč v katerokoli od šestih smeri, če nas pri tem ne ovirajo druge kroglice. Vedno se premaknemo za eno mesto.
 Potisk nasprotnikovih kroglic je mogoč le naravnost (torej v smeri, ki jo določa premica skozi središča izbranih kroglic) in še to samo, če je nasprotnikovih kroglic strogo manj od naših.
 
 Cilj igre je potisniti 6 nasprotnikovih krogclic s plošče.
+
+OPOMBA:
+Pravila načeloma omogočajo neskončno igro. Če eden od igralcev zavzame defenzivno pozicijo, lahko naprotniku prepreči vsak poskus napada, kar vodi v igro brez izrinjenih kroglic.
 """
 tipke = """levi klik miške = označi/odznači krogec
 
