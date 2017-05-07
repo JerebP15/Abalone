@@ -160,7 +160,6 @@ class Gui():
         """Nariše krogce na plošči (v začetni poziciji)."""
         d = Gui.VELIKOST_POLJA
         matrika = self.igra.plosca
-        print(matrika)
         for i in range(len(matrika)):
              for j in range(len(matrika[i])):
                  if matrika[i][j] is not None:
@@ -404,8 +403,6 @@ class Gui():
             self.igra.barva_izbranih = Bi
             self.spremeni_barvo1(B1)
             self.spremeni_barvo2(B2)
-            print('nove')
-            print((self.igra.barva_igralca_1, self.igra.barva_igralca_2, self.igra.barva_praznih, self.igra.barva_izbranih))
         else:
             self.igra = Igra()
         self.risi_plosco()
