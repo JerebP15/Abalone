@@ -89,13 +89,21 @@ class Minimax:
 
         pozicije = {
             # Pozicije, kjer nas lahko v naslednji potezi izrinejo s plošče - zelo slabo.
-            (moja_barva, nasprotnikova_barva, nasprotnikova_barva) : -500,
-            (moja_barva, nasprotnikova_barva, nasprotnikova_barva, nasprotnikova_barva) : -500,
-            (moja_barva, moja_barva, nasprotnikova_barva, nasprotnikova_barva, nasprotnikova_barva) : -700,
-            # Pozicije, kjer nas lahko v naslednji potezi potisnejo do roba - slabo, ampak ne nerešljivo.
+            (moja_barva, nasprotnikova_barva, nasprotnikova_barva) : -600,
+            (moja_barva, nasprotnikova_barva, nasprotnikova_barva, nasprotnikova_barva) : -600,
+            (moja_barva, moja_barva, nasprotnikova_barva, nasprotnikova_barva, nasprotnikova_barva) : -800,
+            # Pozicije, kjer nas lahko v naslednji potezi potisnejo do roba - slabo.
             (prazno, moja_barva, nasprotnikova_barva, nasprotnikova_barva) : -300,
             (prazno, moja_barva, nasprotnikova_barva, nasprotnikova_barva, nasprotnikova_barva) : -300,
-            (prazno, moja_barva, moja_barva, nasprotnikova_barva, nasprotnikova_barva, nasprotnikova_barva) : -400}
+            (prazno, moja_barva, moja_barva, nasprotnikova_barva, nasprotnikova_barva, nasprotnikova_barva) : -400,
+            # Pozicije, kjer lahko v naslednji potezi mi izrinemo s plošče - zelo dobro.
+            (nasprotnikova_barva, moja_barva, moja_barva) : 700,
+            (nasprotnikova_barva, moja_barva, moja_barva, moja_barva) : 700,
+            (nasprotnikova_barva, nasprotnikova_barva, moja_barva, moja_barva, moja_barva) : 900,
+            # Pozicije, kjer lahko v naslednji potezi potisnemo do roba - dobro.
+            (prazno, nasprotnikova_barva, moja_barva, moja_barva) : 400,
+            (prazno, nasprotnikova_barva, moja_barva, moja_barva, moja_barva) : 400,
+            (prazno, nasprotnikova_barva, nasprotnikova_barva, moja_barva, moja_barva, moja_barva) : 500}
         # Podobno napišemo seznam ugodnih pozicij, ki pa mora imeti manjši učinek na vrednost pozicije
         # (recimo vrednost += 300?), ker se nasprotnik lahko izmakne in zato ni ziher, da ga bomo res izrinili.
         for smer in smeri:
@@ -150,9 +158,11 @@ class Minimax:
                         else:
                             for (x,y) in izbrani:
                                 self.igra.izbrani.append((x,y))
+                        self.igra.shrani_pozicijo()
                         self.igra.povleci_potezo(p)
                         vrednost = self.minimax(globina-1, not maksimiziramo)[1]
-                        self.igra.razveljavi()
+                        if self.igra.povleci_potezo(p) is not None:
+                            self.igra.razveljavi()
                         if vrednost == vrednost_najboljse:
                             najboljse_poteze.append(poteza)
                         elif vrednost > vrednost_najboljse:
@@ -172,9 +182,11 @@ class Minimax:
                         else:
                             for (x,y) in izbrani:
                                 self.igra.izbrani.append((x,y))
+                        self.igra.shrani_pozicijo()
                         self.igra.povleci_potezo(p)
                         vrednost = self.minimax(globina-1, not maksimiziramo)[1]
-                        self.igra.razveljavi()
+                        if self.igra.povleci_potezo(p) is not None:
+                            self.igra.razveljavi()
                         if vrednost == vrednost_najboljse:
                             najboljse_poteze.append(poteza)
                         elif vrednost < vrednost_najboljse:
