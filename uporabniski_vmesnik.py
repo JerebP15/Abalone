@@ -3,7 +3,7 @@ import argparse   # za argumente iz ukazne vrstice
 import logging    # za odpravljanje napak
 
 # Privzeta minimax globina, če je nismo podali ob zagonu v ukazni vrstici
-MINIMAX_GLOBINA = 3
+MINIMAX_GLOBINA = 2
 
 from logika_igre import *
 from clovek import *
@@ -95,7 +95,7 @@ class Gui():
         # Naročimo se na dogodke
         self.okno.bind("<Button-1>", self.levi_klik)
         self.okno.bind("<Button-3>", self.desni_klik)
-        self.okno.bind("<Button-2>", self.desni_klik) #Da dela tudi na Mac-u
+        self.okno.bind("<Button-2>", self.desni_klik) #Da dela tudi na Mac-u 
         self.okno.bind('<Escape>', self.odznaci_vse_krogce)  #Zaradi nekega razloga dela samo, če klikneš tab (ko klikneš tab se polje obrobi in od takrat naprej to dela, prej pa se ne zgodi nič)
         self.okno.bind('<Control-z>', self.undo)
 
@@ -136,6 +136,18 @@ class Gui():
         menu_barve2.add_command(label="Modra", command = lambda: self.spremeni_barvo1("blue"))
         menu_barve2.add_command(label="Svetlo modra", command = lambda: self.spremeni_barvo1("cyan"))
         menu_barve2.add_command(label="Roza", command = lambda: self.spremeni_barvo1("magenta"))
+
+##        #if isinstance(self.igralec_1, Clovek):
+##        self.gumb = tkinter.Button(master, state='normal',width=Gui.VELIKOST_POLJA, text='Začni!', command=lambda: self.izbrisi())
+##        self.gumb.grid(row=2, column=1)
+##     
+##    def izbrisi(self):
+##        self.gumb.config(state='disabled')
+##        if isinstance(self.igralec_1, Clovek):
+##            print('Cloo')
+##        elif isinstance(self.igralec_1, Racunalnik):
+##            print('rrr')
+##        print(isinstance(self.igralec_1, Clovek))
 
     def ustvari_matriko_id(self):
         """Ustvari matriko id-jev, ki se ujema z matriko self.igra.plosca vendar vsebuje id-je."""
@@ -415,7 +427,9 @@ class Gui():
         self.igralec_1 = igralec_1
         self.igralec_2 = igralec_2
         self.napis.set("Igro začne {} igralec.".format(prevod_barve(self.igra.barva_igralca_2)))
+        print('6666666')
         self.igralec_2.igraj()
+        print(9)
 
     def koncaj_igro(self, zmagovalec):
         """Nastavi stanje igre na konec igre."""
