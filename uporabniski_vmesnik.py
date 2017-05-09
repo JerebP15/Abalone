@@ -283,40 +283,27 @@ class Gui():
 
     def desni_klik(self, event):
         """Obdelamo desni klik - premikanje krogcev."""        
-        (i,j) = self.poisci_polje(event)
-        print(self.igra.izbrani)
-        izbrani = self.igra.izbrani[:]
-##        d = len(self.igra.izbrani)
-##        if d == 1:
-##            izbrani = (self.igra.izbrani[0])
-##        elif d == 2:
-##            izbrani = (self.igra.izbrani[0], self.igra.izbrani[1])
-##        elif d == 3:
-##            izbrani = (self.igra.izbrani[0], self.igra.izbrani[1], self.igra.izbrani[2])
-##        else:
-##            pass
-        print(izbrani)
-        self.igra.izbrani = []
-        if i is not None and j is not None and len(izbrani) != 0:
+        p = self.poisci_polje(event)
+        (i,j) = p
+        if i is not None and j is not None and len(self.igra.izbrani) != 0:
             if self.zacni == True:
                 igralec = self.igra.na_potezi
                 if igralec == IGRALEC_1:
-                    self.igralec_1.premakni(izbrani, (i,j))
+                    self.igralec_1.premakni(p)
                 elif igralec == IGRALEC_2:
-                    self.igralec_2.premakni(izbrani, (i,j))
+                    self.igralec_2.premakni(p)
             else:
                 tkinter.messagebox.showwarning("Igra se ni začela", """Igra se še ni začela. Kliknite gumb za začetek igre.
 Če želite, lahko še prej spremenite barve krogcev.""")
         else:
             pass
 
-    def povleci_potezo(self, izbrani, p):
+    def povleci_potezo(self, p):
         """Povlece potezo in zamenja, kdo je na potezi."""
-        print('naredili bomo potezo', izbrani,9, p, self.igra.izbrani)
+        print('naredili bomo potezo', p, type(p), self.igra.izbrani)
         igralec = self.igra.na_potezi
-        print(izbrani, 'izbrani', len(izbrani))
-        (premik, izrinjeni) = self.igra.premikanje(izbrani, p)
-        print('tole je prislo iz igra.premikanje', premik, izrinjeni)
+        #if type(p) == tuple:
+        (premik, izrinjeni) = self.igra.premikanje(p)
         if premik is not None:
             for polje in premik:
                 (x,y,barva) = polje
@@ -324,7 +311,7 @@ class Gui():
             if len(izrinjeni) != len(self.izpodrinjeni):
                 self.izpodrinjeni.append(izrinjeni[-1])
                 self.narisi_izpodrinjene(izrinjeni[-1])
-        r = self.igra.povleci_potezo(izbrani, p)
+        r = self.igra.povleci_potezo(p)
         if r is None:
             pass
         else:
