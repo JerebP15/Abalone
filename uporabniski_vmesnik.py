@@ -149,6 +149,7 @@ class Gui():
 ##            print('rrr')
 ##        print(isinstance(self.igralec_1, Clovek))
 
+
     def ustvari_matriko_id(self):
         """Ustvari matriko id-jev, ki se ujema z matriko self.igra.plosca vendar vsebuje id-je."""
         matrika = []
@@ -200,6 +201,7 @@ class Gui():
                 self.prebarvaj_krogce()
                 if self.igra.na_potezi == IGRALEC_1:
                     self.napis.set("Na potezi je {}.".format(prevod_barve(self.igra.barva_igralca_1)))
+
         else:
             #tkinter.messagebox.showwarning("Menjava barve ni možna", "Menjava barve med igro ni možna!")
             tkinter.messagebox.showwarning("Menjava barve ni možna", "Menjava barve v tej igri ni možna!")

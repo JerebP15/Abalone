@@ -128,7 +128,6 @@ class Igra():
         Če je poteza dovoljena, spremeni matriko, shrani pozicijo in
         vrne seznam z dvema elementoma - seznamom premaknjenih krogcev in seznamom izpodrinjenih."""
         if len(self.izbrani) == 0:
-            #tkinter.messagebox.showwarning("Premik ni možen","Noben krogec ni izbran")
             return (None, None)
         else:
             self.shrani_pozicijo()
@@ -151,7 +150,6 @@ class Igra():
             (I1, J1) = (self.izbrani[0])
             B = self.plosca[I1][J1]
             if self.plosca[i][j] == B:
-                #tkinter.messagebox.showwarning("Premik ni možen","Ni mogoče premakniti izbranih krogcev na svoje polje!")
                 return False
             elif len(self.izbrani) == 1:
                 if (i,j) in [(I1, J1 + 1), (I1, J1 - 1), (I1 + 1, J1), (I1 - 1, J1), (I1 + 1, J1 + 1), (I1 - 1, J1 - 1)]: # En krogec lahko premaknemo na katerokoli sosednje prosto polje.
