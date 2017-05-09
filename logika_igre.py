@@ -13,6 +13,7 @@ def nasprotnik(igralec):
     elif igralec == IGRALEC_2:
         return IGRALEC_1
     else:
+        print("hočem izračunati nasprotnika od",igralec)
         assert False, "neveljaven nasprotnik"
 ######################################################################################################
 
@@ -128,6 +129,7 @@ class Igra():
         Če je poteza dovoljena, spremeni matriko, shrani pozicijo in
         vrne seznam z dvema elementoma - seznamom premaknjenih krogcev in seznamom izpodrinjenih."""
         if len(self.izbrani) == 0:
+            #tkinter.messagebox.showwarning("Premik ni možen","Noben krogec ni izbran")
             return (None, None)
         else:
             self.shrani_pozicijo()
@@ -150,6 +152,7 @@ class Igra():
             (I1, J1) = (self.izbrani[0])
             B = self.plosca[I1][J1]
             if self.plosca[i][j] == B:
+                #tkinter.messagebox.showwarning("Premik ni možen","Ni mogoče premakniti izbranih krogcev na svoje polje!")
                 return False
             elif len(self.izbrani) == 1:
                 if (i,j) in [(I1, J1 + 1), (I1, J1 - 1), (I1 + 1, J1), (I1 - 1, J1), (I1 + 1, J1 + 1), (I1 - 1, J1 - 1)]: # En krogec lahko premaknemo na katerokoli sosednje prosto polje.
@@ -354,12 +357,12 @@ class Igra():
         """Vrni kopijo te igre, brez zgodovine."""
         # Kopijo igre naredimo, ko poženemo na njej algoritem.
         k = Igra()
+        k.plosca = [self.plosca[i][:] for i in range(11)]
+        k.na_potezi = self.na_potezi
         k.barva_praznih = self.barva_praznih
         k.barva_igralca_1 = self.barva_igralca_1
         k.barva_igralca_2 = self.barva_igralca_2
         k.barva_izbranih = self.barva_izbranih
-        k.plosca = [self.plosca[i][:] for i in range(11)]
-        k.na_potezi = self.na_potezi
         return k
 
     def veljavne_poteze(self):

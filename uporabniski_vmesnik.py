@@ -54,12 +54,9 @@ class Gui():
     # Velikost polja
     VELIKOST_POLJA = 50
 
-    nastavljena_barva_1 = "yellow"
-    nastavljena_barva_2 = "black"
-    nastavljena_barva_praznih = "white"
-    nastavljena_barva_izbranih = "red"
-
     def __init__(self, master):
+        master.minsize(width=730, height=610)
+        #master.maxsize(width=730, height=610)
         self.igralec_1 = None # Objekt, ki igra prvi igralec (nastavimo ob začetku igre)
         self.igralec_2 = None # Objekt, ki igra drugi igralec (nastavimo ob začetku igre)
         self.igra = None # Objekt, ki predstavlja logiko igre
@@ -79,15 +76,15 @@ class Gui():
         self.okno = tkinter.Canvas(master, width=11*Gui.VELIKOST_POLJA, height=11*Gui.VELIKOST_POLJA)
         self.okno.grid(row=1, column=1)
 
-                #if isinstance(self.igralec_1, Clovek):
-        self.gumb = tkinter.Button(master, state='normal',width=Gui.VELIKOST_POLJA, text='Začni!', command=lambda: self.izbrisi())
-        self.gumb.grid(row=2, column=1)
-
         # Območje, kjer se rišejo krogci, ki so bili že izpodrinjeni iz plošče
         self.polje_izpodrinjenih1 = tkinter.Canvas(master, width=2*Gui.VELIKOST_POLJA, height=8*Gui.VELIKOST_POLJA)
         self.polje_izpodrinjenih1.grid(row=1, column=0)
         self.polje_izpodrinjenih2 = tkinter.Canvas(master, width=2*Gui.VELIKOST_POLJA, height=8*Gui.VELIKOST_POLJA)
         self.polje_izpodrinjenih2.grid(row=1, column=2)
+
+        #Gumb za začetek igre
+        self.gumb = tkinter.Button(master, bg="white", state='normal',width=Gui.VELIKOST_POLJA, text='Začni!', command=lambda: self.pritisk_gumba())
+        self.gumb.grid(row=2, column=1)
 
         # Črte na igralnem polju
         self.narisi_crte()
@@ -100,7 +97,7 @@ class Gui():
         # Naročimo se na dogodke
         self.okno.bind("<Button-1>", self.levi_klik)
         self.okno.bind("<Button-3>", self.desni_klik)
-        self.okno.bind("<Button-2>", self.desni_klik) #Da dela tudi na Mac-u 
+        self.okno.bind("<Button-2>", self.desni_klik) #Da dela tudi na Mac-u
         self.okno.bind('<Escape>', self.odznaci_vse_krogce)  #Zaradi nekega razloga dela samo, če klikneš tab (ko klikneš tab se polje obrobi in od takrat naprej to dela, prej pa se ne zgodi nič)
         self.okno.bind('<Control-z>', self.undo)
 
@@ -142,20 +139,10 @@ class Gui():
         menu_barve2.add_command(label="Svetlo modra", command = lambda: self.spremeni_barvo1("cyan"))
         menu_barve2.add_command(label="Roza", command = lambda: self.spremeni_barvo1("magenta"))
 
-##        #if isinstance(self.igralec_1, Clovek):
-##        self.gumb = tkinter.Button(master, state='normal',width=Gui.VELIKOST_POLJA, text='Začni!', command=lambda: self.izbrisi())
-##        self.gumb.grid(row=2, column=1)
-     
-    def izbrisi(self):
+    def pritisk_gumba(self):
         #self.gumb.config(state='disabled')
         self.gumb.grid_remove()
-##        if isinstance(self.igralec_1, Clovek):
-##            print('Cloo')
-##        elif isinstance(self.igralec_1, Racunalnik):
-##            print('rrr')
-##        print(isinstance(self.igralec_1, Clovek))
         self.zacni = True
-
 
     def ustvari_matriko_id(self):
         """Ustvari matriko id-jev, ki se ujema z matriko self.igra.plosca vendar vsebuje id-je."""
@@ -190,42 +177,40 @@ class Gui():
                 self.polje_izpodrinjenih2.itemconfig(id, fill = self.igra.izpodrinjeni[x])
             else:
                 self.polje_izpodrinjenih1.itemconfig(id, fill = self.igra.izpodrinjeni[x])
-
+mozne_barve = ["yellow", "black", "green", "red", "blue", "cyan", "magenta"]
+                mozne_barve.remove(self.igra.barva_igralca_2)
+                mozne_barve.remove(barva)
+                self.igra.barva_izbranih = random.choice(mozne_barve)
     def spremeni_barvo1(self, barva):
-        #if self.igra.plosca == self.igra.ustvari_plosco():
-        if type(self.igralec_1) == type(self.igralec_2):
+        if self.igra.plosca == self.igra.ustvari_plosco():
+        #if isinstance(self.igralec_1, Clovek) and isinstance(self.igralec_2, Clovek):
             if barva == self.igra.barva_igralca_2:
                 tkinter.messagebox.showwarning("Menjava barve ni možna", "Ne moreta biti oba igralca iste barve!")
                 pass
             else:
-                if barva == "red":
-                    if self.igra.barva_igralca_2 == "yellow":
-                        self.igra.barva_izbranih = "green"
-                    else:
-                        self.igra.barva_izbranih = "yellow"
+                mozne_barve = ["yellow", "black", "green", "red", "blue", "cyan", "magenta"]
+                mozne_barve.remove(self.igra.barva_igralca_2)
+                mozne_barve.remove(barva)
+                self.igra.barva_izbranih = random.choice(mozne_barve)
                 self.igra.prebarvaj_krogce(IGRALEC_1, barva)
                 self.igra.barva_igralca_1 = barva
                 self.prebarvaj_krogce()
                 if self.igra.na_potezi == IGRALEC_1:
                     self.napis.set("Na potezi je {}.".format(prevod_barve(self.igra.barva_igralca_1)))
-
         else:
-            #tkinter.messagebox.showwarning("Menjava barve ni možna", "Menjava barve med igro ni možna!")
-            tkinter.messagebox.showwarning("Menjava barve ni možna", "Menjava barve v tej igri ni možna!")
-            #TODO V navodila napisati, da je menjava barve možna le v igri Igralec proti Igralec
-            
+            tkinter.messagebox.showwarning("Menjava barve ni možna", "Menjava barve med igro ni možna!")
 
     def spremeni_barvo2(self, barva):
-        if type(self.igralec_1) == type(self.igralec_2):
+        if self.igra.plosca == self.igra.ustvari_plosco():
+        #if isinstance(self.igralec_1, Clovek) and isinstance(self.igralec_2, Clovek):
             if barva == self.igra.barva_igralca_1:
                 tkinter.messagebox.showwarning("Menjava barve ni možna", "Ne moreta biti oba igralca iste barve!")
                 pass
             else:
-                if barva == "red":
-                    if self.igra.barva_igralca_1 == "yellow":
-                        self.igra.barva_izbranih = "green"
-                    else:
-                        self.igra.barva_izbranih = "yellow"
+                mozne_barve = ["yellow", "black", "green", "red", "blue", "cyan", "magenta"]
+                mozne_barve.remove(self.igra.barva_igralca_1)
+                mozne_barve.remove(barva)
+                self.igra.barva_izbranih = random.choice(mozne_barve)
                 self.igra.prebarvaj_krogce(IGRALEC_2, barva)
                 self.igra.barva_igralca_2 = barva
                 self.prebarvaj_krogce()
@@ -238,18 +223,22 @@ class Gui():
             tkinter.messagebox.showwarning("Menjava barve ni možna", "Menjava barve med igro ni možna!")
 
     def levi_klik(self, event):
-        """Obdelamo levi klik - oznacevanje krogcev."""
+        """Obdelamo levi klik - oznacevanje krogcev."""        
         p = self.poisci_polje(event)
         (i,j) = p
         print(p)
         if i is not None and j is not None:
-            igralec = self.igra.na_potezi
-            if igralec == IGRALEC_1:
-                self.igralec_1.oznaci(p)
-            elif igralec == IGRALEC_2:
-                self.igralec_2.oznaci(p)
+            if self.zacni == True:
+                igralec = self.igra.na_potezi
+                if igralec == IGRALEC_1:
+                    self.igralec_1.oznaci(p)
+                elif igralec == IGRALEC_2:
+                    self.igralec_2.oznaci(p)
             else:
-                pass
+                tkinter.messagebox.showwarning("Igra se ni začela", """Igra se še ni začela. Kliknite gumb za začetek igre.
+Če želite, lahko še prej spremenite barve krogcev.""")
+        else:
+            pass
 
     def oznacevanje(self, p):
         """Če smo izbrali (svoje) neoznačene krogce, se označijo.
@@ -264,7 +253,6 @@ class Gui():
             pass
 
     def undo(self,event):
-        print(1000000000000000000000000000,len(self.igra.zgodovina))
         if self.igra.plosca != self.igra.ustvari_plosco():
             if type(self.igralec_1) == type(self.igralec_2):
                 (plosca, na_potezi, izpodrinjeni) = self.igra.razveljavi()
@@ -290,23 +278,25 @@ class Gui():
                 else:
                     self.igra.na_potezi = IGRALEC_2
                     self.napis.set("Na potezi je {}.".format(prevod_barve(self.igra.barva_igralca_2)))
-            print(2000000000000000000000000000,len(self.igra.zgodovina))
         else:
             pass
 
     def desni_klik(self, event):
-        """Obdelamo desni klik - premikanje krogcev."""
-        print("dei klik", len(self.igra.zgodovina))
+        """Obdelamo desni klik - premikanje krogcev."""        
         p = self.poisci_polje(event)
         (i,j) = p
         if i is not None and j is not None and len(self.igra.izbrani) != 0:
-            igralec = self.igra.na_potezi
-            if igralec == IGRALEC_1:
-                self.igralec_1.premakni(p)
-            elif igralec == IGRALEC_2:
-                self.igralec_2.premakni(p)
+            if self.zacni == True:
+                igralec = self.igra.na_potezi
+                if igralec == IGRALEC_1:
+                    self.igralec_1.premakni(p)
+                elif igralec == IGRALEC_2:
+                    self.igralec_2.premakni(p)
             else:
-                pass
+                tkinter.messagebox.showwarning("Igra se ni začela", """Igra se še ni začela. Kliknite gumb za začetek igre.
+Če želite lahko še prej spremenite barve krogcev.""")
+        else:
+            pass
 
     def povleci_potezo(self, p):
         """Povlece potezo in zamenja, kdo je na potezi."""
@@ -418,6 +408,7 @@ class Gui():
         """Nastavi stanje igre na zacetek igre.
            Za igralca uporabi dana igralca."""
         # Ustavimo vsa vlakna, ki trenutno razmišljajo
+        self.zacni = False
         self.izpodrinjeni = []
         self.prekini_igralce()
         self.gumb.grid()
@@ -426,13 +417,13 @@ class Gui():
         self.polje_izpodrinjenih2.delete(Gui.TAG_FIGURA)
         #self.zacetna_pozicija
         if self.igra is not None:
-            B1 = self.igra.barva_igralca_1
-            B2 = self.igra.barva_igralca_2
-            Bi = self.igra.barva_izbranih
+            barva_1 = self.igra.barva_igralca_1
+            barva_2 = self.igra.barva_igralca_2
+            barva_izbranih = self.igra.barva_izbranih
             self.igra = Igra()
-            self.igra.barva_izbranih = Bi
-            self.spremeni_barvo1(B1)
-            self.spremeni_barvo2(B2)
+            self.igra.barva_izbranih = barva_izbranih
+            self.spremeni_barvo1(barva_1)
+            self.spremeni_barvo2(barva_2)
         else:
             self.igra = Igra()
         self.risi_plosco()
@@ -440,17 +431,17 @@ class Gui():
         self.igralec_1 = igralec_1
         self.igralec_2 = igralec_2
         self.napis.set("Igro začne {} igralec.".format(prevod_barve(self.igra.barva_igralca_2)))
-        print(self.zacni)
-        if self.zacni_potezo():
+        if self.zacni:
             self.igralec_2.igraj()
-            print(9)
+        else:
+            self.gumb.after(1000, self.zacni_potezo)
 
     def zacni_potezo(self):
-        """Vsakih 100ms preveri, ali je algoritem že izračunal potezo."""
+        """Vsakih 100ms preveri, ali je lahko računalnik že začne razmišljati."""
         if self.zacni == True:
-            return True
+            self.igralec_2.igraj()
         else:
-            self.gumb.after(100, self.zacni_potezo)
+            self.gumb.after(1000, self.zacni_potezo)        
 
     def koncaj_igro(self, zmagovalec):
         """Nastavi stanje igre na konec igre."""
@@ -463,6 +454,7 @@ class Gui():
         else:
             assert False # Nekdo mora zmagati, sicer je šlo nekaj narobe in se sesujemo.
         self.izpodrinjeni = []
+        self.zacni = False
 
     def prekini_igralce(self):
         """Sporoči igralcem, da morajo nehati razmišljati."""
@@ -502,6 +494,7 @@ if __name__ == "__main__":
     # Naredimo glavno okno in nastavimo ime
     root = tkinter.Tk()
     root.title("Abalone - Bajc in Jereb")
+    #root.resizable(0,0)
 
     # Naredimo objekt razreda Gui in ga spravimo v spremenljivko,
     # sicer bo Python mislil, da je objekt neuporabljen in ga bo pobrisal
