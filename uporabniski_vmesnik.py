@@ -145,7 +145,7 @@ class Gui():
         self.zacni = True
 
     def ustvari_matriko_id(self):
-        """Ustvari matriko id-jev, ki se ujema z matriko self.igra.plosca vendar vsebuje id-je."""
+        """Ustvari matriko id-jev, ki se ujema z matriko self.igra.plosca, vendar vsebuje id-je."""
         matrika = []
         for x in range(11):
                seznam = []
@@ -199,6 +199,7 @@ class Gui():
             tkinter.messagebox.showwarning("Menjava barve ni možna", "Menjava barve med igro ni možna!")
 
     def spremeni_barvo2(self, barva):
+        """Spremeni barvo drugega igralca. Če to ni mogoče, se pojavi okno z opozorilom."""
         if self.igra.plosca == self.igra.ustvari_plosco():
         #if isinstance(self.igralec_1, Clovek) and isinstance(self.igralec_2, Clovek):
             if barva == self.igra.barva_igralca_1:
@@ -234,7 +235,7 @@ class Gui():
                     self.igralec_2.oznaci(p)
             else:
                 tkinter.messagebox.showwarning("Igra se ni začela", """Igra se še ni začela. Kliknite gumb za začetek igre.
-Če želite lahko še prej spremenite barve krogcev.""")
+Če želite, lahko še prej spremenite barve krogcev.""")
         else:
             pass
 
@@ -251,6 +252,7 @@ class Gui():
             pass
 
     def undo(self,event):
+        """Razveljavi zadnjo potezo."""
         if self.igra.plosca != self.igra.ustvari_plosco():
             if type(self.igralec_1) == type(self.igralec_2):
                 (plosca, na_potezi, izpodrinjeni) = self.igra.razveljavi()
@@ -292,7 +294,7 @@ class Gui():
                     self.igralec_2.premakni(p)
             else:
                 tkinter.messagebox.showwarning("Igra se ni začela", """Igra se še ni začela. Kliknite gumb za začetek igre.
-Če želite lahko še prej spremenite barve krogcev.""")
+Če želite, lahko še prej spremenite barve krogcev.""")
         else:
             pass
 
@@ -436,7 +438,7 @@ class Gui():
             self.gumb.after(1000, self.zacni_potezo)
 
     def zacni_potezo(self):
-        """Vsakih 100ms preveri, ali je lahko računalnik že začne razmišljati."""
+        """Vsakih 100ms preveri, ali lahko računalnik že začne razmišljati."""
         if self.zacni == True:
             self.igralec_2.igraj()
         else:
@@ -445,10 +447,10 @@ class Gui():
     def koncaj_igro(self, zmagovalec):
         """Nastavi stanje igre na konec igre."""
         if zmagovalec == IGRALEC_2:
-            self.napis.set("Zmagal je {} igralec.".format(prevod_barve(self.igra.barva_igralca_1)))
+            self.napis.set("Zmagal je {} igralec.".format(prevod_barve(self.igra.barva_igralca_2)))
             tkinter.messagebox.showinfo("Konec igre", "Igre je konec. Zmagal je {} igralec.".format(prevod_barve(self.igra.barva_igralca_1)))
         elif zmagovalec == IGRALEC_1:
-            self.napis.set("Zmagal je {} igralec.".format(prevod_barve(self.igra.barva_igralca_2)))
+            self.napis.set("Zmagal je {} igralec.".format(prevod_barve(self.igra.barva_igralca_1)))
             tkinter.messagebox.showinfo("Konec igre", "Igre je konec. Zmagal je {} igralec.".format(prevod_barve(self.igra.barva_igralca_2)))
         else:
             assert False # Nekdo mora zmagati, sicer je šlo nekaj narobe in se sesujemo.
