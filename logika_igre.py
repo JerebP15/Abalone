@@ -44,6 +44,7 @@ class Igra():
         """Ustvari matriko z elementi iz razreda Polje (na mestih, kjer bodo polja igralne plošče)
         in None (v zgornjem desnem kotu, v spodnjem levem kotu in na robu matrike)."""
         matrika = []
+        # print('BARVE V IGRI : ', self.barva_praznih, self.barva_igralca_1, self.barva_igralca_2, self.barva_izbranih)
         for x in range(11):
                seznam = []
                for y in range(11):
@@ -136,7 +137,6 @@ class Igra():
                 self.premakni_krogce(p)
                 spremembe = [self.spremembe_premik[:],self.izpodrinjeni[:]] 
                 self.izbrani = []
-                # self.shrani_pozicijo()
             else:
                 spremembe = (None, None)
             self.spremembe_premik = []
@@ -246,11 +246,11 @@ class Igra():
             orientacija = self.orientacija_izbranih()
             izbrani = []
             barva = self.plosca[self.izbrani[0][0]][self.izbrani[0][1]]
-            for (x,y) in self.izbrani:
-                izbrani.append((x,y))
-            for (xx,yy) in izbrani:
-                self.plosca[xx][yy] = self.barva_praznih
-                self.spremembe_premik.append((xx,yy,self.barva_praznih))
+            for krogec in self.izbrani:
+                izbrani.append(krogec)
+            for (x,y) in izbrani:
+                self.plosca[x][y] = self.barva_praznih
+                self.spremembe_premik.append((x,y,self.barva_praznih))
             (i_max, i_min) = (max(x for (x,y) in self.izbrani), min(x for (x,y) in self.izbrani))
             (j_max, j_min) = (max(y for (x,y) in self.izbrani), min(y for (x,y) in self.izbrani))
             (I,J) = self.izbrani[0]
@@ -260,14 +260,14 @@ class Igra():
                       "diagonala" : [(i_max, 1, j_max, 1), (i_max, 0, j_max, 1), (i_max, 1, j_max, 0), (i_min, -1, j_min, -1), (i_min, 0, j_min, -1), (i_min, -1, j_min, 0)]}
             for parametri in SLOVAR[orientacija]:
                 if i == parametri[0] + parametri[1] and j == parametri[2] + parametri[3]:
-                    for (xx,yy) in izbrani:
-                        x = xx + parametri[1]
-                        y = yy + parametri[3]
-                        novi_izbrani.append((x,y))
+                    for (x,y) in izbrani:
+                        novi_x = x + parametri[1]
+                        novi_y = y + parametri[3]
+                        novi_izbrani.append((novi_x,novi_y))
                     break
-            for (xxx,yyy) in novi_izbrani:
-                self.plosca[xxx][yyy] = barva
-                self.spremembe_premik.append((xxx,yyy,barva))
+            for (novi_x,novi_y) in novi_izbrani:
+                self.plosca[novi_x][novi_y] = barva
+                self.spremembe_premik.append((novi_x,novi_y,barva))
         self.izbrani = []
 
     def orientacija_izbranih(self):
@@ -489,9 +489,10 @@ class Igra():
         if self.preveri_potezo(p) == False: # Neveljavna poteza
             return None
         else:
-            self.shrani_pozicijo()
+            #self.shrani_pozicijo()
             zmagovalec = self.stanje_igre()
             if zmagovalec == NI_KONEC:
+                self.shrani_pozicijo()
                 self.na_potezi = nasprotnik(self.na_potezi)
             else:
                 self.na_potezi = None
