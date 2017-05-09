@@ -44,10 +44,6 @@ class Minimax:
     ZMAGA = 100000
     NESKONCNO = ZMAGA + 1 # Več kot zmaga
 
-    def sosed(self,x,y):
-        "Vrne seznam parov (i,j), kjer je polje (i,j) sosedno polje polja (x,y)."
-        pass
-
     def vrednost_pozicije(self):
         """Ocena vrednosti pozicije na plošči."""
         # Nastavimo vrednost na 0 in definiramo, kar bomo potrebovali.
