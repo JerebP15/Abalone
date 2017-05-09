@@ -33,6 +33,7 @@ class Minimax:
         self.poteza = None # Sem napišemo potezo, ko jo najdemo
         # Poženemo minimax
         (poteza, vrednost) = self.minimax(self.globina, True)
+        print("=================", poteza, vrednost, len(self.igra.zgodovina))
         self.jaz = None
         self.igra = None
         if not self.prekinitev:
@@ -117,8 +118,6 @@ class Minimax:
                 vrednost += 10
             if moja_barva not in smer or nasprotnikova_barva not in smer:
                 continue
-            if False:
-                pass
             else:
                 for pozicija in pozicije:
                     # Pozicija se lahko pojavi na koncu ali pa na začetku smeri.
@@ -136,11 +135,11 @@ class Minimax:
                         else:
                             break
                     if na_zacetku == 0 and na_koncu == 0:
-                        print('oboje')
-                        vrednost += 2 * pozicije[pozicija]
+                        #print('oboje')
+                        vrednost -= 2 * pozicije[pozicija]
                     elif na_zacetku == 0 or na_koncu == 0:
-                        vrednost += pozicije[pozicija]
-                        print('ena')
+                        vrednost -= pozicije[pozicija]
+                        #print('ena')
         #print(vrednost,'(vmesna!)')
         return vrednost
 
@@ -194,6 +193,7 @@ class Minimax:
                     # Minimiziramo
                     najboljsa_poteza = None
                     vrednost_najboljse = Minimax.NESKONCNO
+                    najboljse_poteze = []
                     for poteza in self.igra.veljavne_poteze():
                         [izbrani, p] = poteza
                         if type(izbrani[0]) == int:
@@ -216,7 +216,6 @@ class Minimax:
                     najboljsa_poteza = random.choice(najboljse_poteze)
 
                 assert (najboljsa_poteza is not None), "minimax: izračunana poteza je None"
-                print(najboljsa_poteza, vrednost_najboljse)
                 return (najboljsa_poteza, vrednost_najboljse)
         else:
             assert False, "minimax: nedefinirano stanje igre"

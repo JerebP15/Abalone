@@ -354,6 +354,10 @@ class Igra():
         """Vrni kopijo te igre, brez zgodovine."""
         # Kopijo igre naredimo, ko poženemo na njej algoritem.
         k = Igra()
+        k.barva_praznih = self.barva_praznih
+        k.barva_igralca_1 = self.barva_igralca_1
+        k.barva_igralca_2 = self.barva_igralca_2
+        k.barva_izbranih = self.barva_izbranih
         k.plosca = [self.plosca[i][:] for i in range(11)]
         k.na_potezi = self.na_potezi
         return k
