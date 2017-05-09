@@ -12,6 +12,10 @@ class Clovek():
         # klik.
         pass
 
+    def preveri_potezo(self):
+        # Človek ne uporablja minimaxa
+        pass
+
     def prekini(self):
         # To metodo kliče GUI, če je treba prekiniti razmišljanje.
         # Človek jo lahko ignorira.
@@ -21,6 +25,6 @@ class Clovek():
         # Označimo krogce. Če to označevanje ni veljavno, se ne bo zgodilo nič.
         self.gui.oznacevanje(p)
 
-    def premakni(self, p):
+    def premakni(self, izbrani, p):
         # Povlečemo potezo. Če ni veljavna, se ne bo zgodilo nič.
-        self.gui.povleci_potezo(p)
+        self.gui.povleci_potezo(izbrani, p)

@@ -83,7 +83,7 @@ class Gui():
         self.polje_izpodrinjenih2.grid(row=1, column=2)
 
         #Gumb za začetek igre
-        self.gumb = tkinter.Button(master, bg="white", state='normal',width=Gui.VELIKOST_POLJA, text='Začni!', command=lambda: self.pritisk_gumba())
+        self.gumb = tkinter.Button(master, bg="white",width=Gui.VELIKOST_POLJA, text='Začni!', command=lambda: self.pritisk_gumba())
         self.gumb.grid(row=2, column=1)
 
         # Črte na igralnem polju
@@ -145,7 +145,7 @@ class Gui():
         self.zacni = True
 
     def ustvari_matriko_id(self):
-        """Ustvari matriko id-jev, ki se ujema z matriko self.igra.plosca vendar vsebuje id-je."""
+        """Ustvari matriko id-jev, ki se ujema z matriko self.igra.plosca, vendar vsebuje id-je."""
         matrika = []
         for x in range(11):
                seznam = []
@@ -199,6 +199,7 @@ class Gui():
             tkinter.messagebox.showwarning("Menjava barve ni možna", "Menjava barve med igro ni možna!")
 
     def spremeni_barvo2(self, barva):
+        """Spremeni barvo drugega igralca. Če to ni mogoče, se pojavi okno z opozorilom."""
         if self.igra.plosca == self.igra.ustvari_plosco():
         #if isinstance(self.igralec_1, Clovek) and isinstance(self.igralec_2, Clovek):
             if barva == self.igra.barva_igralca_1:
@@ -234,7 +235,7 @@ class Gui():
                     self.igralec_2.oznaci(p)
             else:
                 tkinter.messagebox.showwarning("Igra se ni začela", """Igra se še ni začela. Kliknite gumb za začetek igre.
-Če želite lahko še prej spremenite barve krogcev.""")
+Če želite, lahko še prej spremenite barve krogcev.""")
         else:
             pass
 
@@ -251,6 +252,7 @@ class Gui():
             pass
 
     def undo(self,event):
+        """Razveljavi zadnjo potezo."""
         if self.igra.plosca != self.igra.ustvari_plosco():
             if type(self.igralec_1) == type(self.igralec_2):
                 (plosca, na_potezi, izpodrinjeni) = self.igra.razveljavi()
@@ -281,78 +283,91 @@ class Gui():
 
     def desni_klik(self, event):
         """Obdelamo desni klik - premikanje krogcev."""        
-        p = self.poisci_polje(event)
-        (i,j) = p
-        if i is not None and j is not None and len(self.igra.izbrani) != 0:
+        (i,j) = self.poisci_polje(event)
+        print(self.igra.izbrani)
+        izbrani = self.igra.izbrani[:]
+##        d = len(self.igra.izbrani)
+##        if d == 1:
+##            izbrani = (self.igra.izbrani[0])
+##        elif d == 2:
+##            izbrani = (self.igra.izbrani[0], self.igra.izbrani[1])
+##        elif d == 3:
+##            izbrani = (self.igra.izbrani[0], self.igra.izbrani[1], self.igra.izbrani[2])
+##        else:
+##            pass
+        print(izbrani)
+        self.igra.izbrani = []
+        if i is not None and j is not None and len(izbrani) != 0:
             if self.zacni == True:
                 igralec = self.igra.na_potezi
                 if igralec == IGRALEC_1:
-                    self.igralec_1.premakni(p)
+                    self.igralec_1.premakni(izbrani, (i,j))
                 elif igralec == IGRALEC_2:
-                    self.igralec_2.premakni(p)
+                    self.igralec_2.premakni(izbrani, (i,j))
             else:
                 tkinter.messagebox.showwarning("Igra se ni začela", """Igra se še ni začela. Kliknite gumb za začetek igre.
-Če želite lahko še prej spremenite barve krogcev.""")
+Če želite, lahko še prej spremenite barve krogcev.""")
         else:
             pass
 
-    def povleci_potezo(self, p):
+    def povleci_potezo(self, izbrani, p):
         """Povlece potezo in zamenja, kdo je na potezi."""
-        print('naredili bomo potezo', p, type(p), self.igra.izbrani)
+        print('naredili bomo potezo', izbrani,9, p, self.igra.izbrani)
         igralec = self.igra.na_potezi
-        if type(p) == tuple:
-            (premik, izrinjeni) = self.igra.premikanje(p)
-            if premik is not None:
-                for polje in premik:
-                    (x,y,barva) = polje
-                    self.okno.itemconfig(self.matrika_id[x][y], fill = barva)
-                if len(izrinjeni) != len(self.izpodrinjeni):
-                    self.izpodrinjeni.append(izrinjeni[-1])
-                    self.narisi_izpodrinjene(izrinjeni[-1])
-            r = self.igra.povleci_potezo(p)
-            if r is None:
-                pass
-            else:
-                if r == NI_KONEC:
-                    # Igra se nadaljuje
-                    if self.igra.na_potezi == IGRALEC_1:
-                        self.napis.set("Na potezi je {}.".format(prevod_barve(self.igra.barva_igralca_1)))
-                        self.igralec_1.igraj()
-                    elif self.igra.na_potezi == IGRALEC_2:
-                        self.napis.set("Na potezi je {}.".format(prevod_barve(self.igra.barva_igralca_2)))
-                        self.igralec_2.igraj()
-                else:
-                    # Igre je konec, koncaj
-                    self.koncaj_igro(r)
+        print(izbrani, 'izbrani', len(izbrani))
+        (premik, izrinjeni) = self.igra.premikanje(izbrani, p)
+        print('tole je prislo iz igra.premikanje', premik, izrinjeni)
+        if premik is not None:
+            for polje in premik:
+                (x,y,barva) = polje
+                self.okno.itemconfig(self.matrika_id[x][y], fill = barva)
+            if len(izrinjeni) != len(self.izpodrinjeni):
+                self.izpodrinjeni.append(izrinjeni[-1])
+                self.narisi_izpodrinjene(izrinjeni[-1])
+        r = self.igra.povleci_potezo(izbrani, p)
+        if r is None:
+            pass
         else:
-            if type(p[0][0]) == int:
-                self.igra.izbrani.append((p[0][0],p[0][1]))
+            if r == NI_KONEC:
+                # Igra se nadaljuje
+                if self.igra.na_potezi == IGRALEC_1:
+                    self.napis.set("Na potezi je {}.".format(prevod_barve(self.igra.barva_igralca_1)))
+                    self.igralec_1.igraj()
+                elif self.igra.na_potezi == IGRALEC_2:
+                    self.napis.set("Na potezi je {}.".format(prevod_barve(self.igra.barva_igralca_2)))
+                    self.igralec_2.igraj()
             else:
-                for polje in p[0]:
-                    self.igra.izbrani.append((polje[0],polje[1]))
-            (premik, izrinjeni) = self.igra.premikanje(p[1])
-            if premik is not None:
-                for polje in premik:
-                    (x,y,barva) = polje
-                    self.okno.itemconfig(self.matrika_id[x][y], fill = barva)
-                if len(izrinjeni) != len(self.izpodrinjeni):
-                    self.izpodrinjeni.append(izrinjeni[-1])
-                    self.narisi_izpodrinjene(izrinjeni[-1])
-            r = self.igra.povleci_potezo(p)
-            if r is None:
-                pass
-            else:
-                if r == NI_KONEC:
-                    # Igra se nadaljuje
-                    if self.igra.na_potezi == IGRALEC_1:
-                        self.napis.set("Na potezi je {}.".format(prevod_barve(self.igra.barva_igralca_1)))
-                        self.igralec_1.igraj()
-                    elif self.igra.na_potezi == IGRALEC_2:
-                        self.napis.set("Na potezi je {}.".format(prevod_barve(self.igra.barva_igralca_2)))
-                        self.igralec_2.igraj()
-                else:
-                    # Igre je konec, koncaj
-                    self.koncaj_igro(r)
+                # Igre je konec, koncaj
+                self.koncaj_igro(r)
+##        else:
+##            if type(p[0][0]) == int:
+##                self.igra.izbrani.append((p[0][0],p[0][1]))
+##            else:
+##                for polje in p[0]:
+##                    self.igra.izbrani.append((polje[0],polje[1]))
+##            (premik, izrinjeni) = self.igra.premikanje(p[1])
+##            if premik is not None:
+##                for polje in premik:
+##                    (x,y,barva) = polje
+##                    self.okno.itemconfig(self.matrika_id[x][y], fill = barva)
+##                if len(izrinjeni) != len(self.izpodrinjeni):
+##                    self.izpodrinjeni.append(izrinjeni[-1])
+##                    self.narisi_izpodrinjene(izrinjeni[-1])
+##            r = self.igra.povleci_potezo(p)
+##            if r is None:
+##                pass
+##            else:
+##                if r == NI_KONEC:
+##                    # Igra se nadaljuje
+##                    if self.igra.na_potezi == IGRALEC_1:
+##                        self.napis.set("Na potezi je {}.".format(prevod_barve(self.igra.barva_igralca_1)))
+##                        self.igralec_1.igraj()
+##                    elif self.igra.na_potezi == IGRALEC_2:
+##                        self.napis.set("Na potezi je {}.".format(prevod_barve(self.igra.barva_igralca_2)))
+##                        self.igralec_2.igraj()
+##                else:
+##                    # Igre je konec, koncaj
+##                    self.koncaj_igro(r)
 
     def poisci_polje(self, event):
         """Vrne polje, na katero smo kliknili, ali (None, None), če smo kliknili izven plošče."""
@@ -436,7 +451,7 @@ class Gui():
             self.gumb.after(1000, self.zacni_potezo)
 
     def zacni_potezo(self):
-        """Vsakih 100ms preveri, ali je lahko računalnik že začne razmišljati."""
+        """Vsakih 100ms preveri, ali lahko računalnik že začne razmišljati."""
         if self.zacni == True:
             self.igralec_2.igraj()
         else:
@@ -445,10 +460,10 @@ class Gui():
     def koncaj_igro(self, zmagovalec):
         """Nastavi stanje igre na konec igre."""
         if zmagovalec == IGRALEC_2:
-            self.napis.set("Zmagal je {} igralec.".format(prevod_barve(self.igra.barva_igralca_1)))
+            self.napis.set("Zmagal je {} igralec.".format(prevod_barve(self.igra.barva_igralca_2)))
             tkinter.messagebox.showinfo("Konec igre", "Igre je konec. Zmagal je {} igralec.".format(prevod_barve(self.igra.barva_igralca_1)))
         elif zmagovalec == IGRALEC_1:
-            self.napis.set("Zmagal je {} igralec.".format(prevod_barve(self.igra.barva_igralca_2)))
+            self.napis.set("Zmagal je {} igralec.".format(prevod_barve(self.igra.barva_igralca_1)))
             tkinter.messagebox.showinfo("Konec igre", "Igre je konec. Zmagal je {} igralec.".format(prevod_barve(self.igra.barva_igralca_2)))
         else:
             assert False # Nekdo mora zmagati, sicer je šlo nekaj narobe in se sesujemo.
