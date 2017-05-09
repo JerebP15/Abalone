@@ -29,7 +29,12 @@ class Racunalnik():
         """Vsakih 100ms preveri, ali je algoritem že izračunal potezo."""
         if self.algoritem.poteza is not None:
             # Algoritem je našel potezo, povleci jo, če ni bilo prekinitve
-            self.gui.povleci_potezo(self.algoritem.poteza)
+            (izbrani, p) = self.algoritem.poteza
+            if type(izbrani[0]) == int:
+                self.gui.igra.izbrani = [izbrani]
+            else:
+                self.gui.igra.izbrani = izbrani
+            self.gui.povleci_potezo(p)
             # Vzporedno vlakno ni več aktivno, zato ga "pozabimo"
             self.mislec = None
         else:

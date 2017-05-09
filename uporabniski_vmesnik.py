@@ -300,59 +300,59 @@ class Gui():
         """Povlece potezo in zamenja, kdo je na potezi."""
         print('naredili bomo potezo', p, type(p), self.igra.izbrani)
         igralec = self.igra.na_potezi
-        if type(p) == tuple:
-            (premik, izrinjeni) = self.igra.premikanje(p)
-            if premik is not None:
-                for polje in premik:
-                    (x,y,barva) = polje
-                    self.okno.itemconfig(self.matrika_id[x][y], fill = barva)
-                if len(izrinjeni) != len(self.izpodrinjeni):
-                    self.izpodrinjeni.append(izrinjeni[-1])
-                    self.narisi_izpodrinjene(izrinjeni[-1])
-            r = self.igra.povleci_potezo(p)
-            if r is None:
-                pass
-            else:
-                if r == NI_KONEC:
-                    # Igra se nadaljuje
-                    if self.igra.na_potezi == IGRALEC_1:
-                        self.napis.set("Na potezi je {}.".format(prevod_barve(self.igra.barva_igralca_1)))
-                        self.igralec_1.igraj()
-                    elif self.igra.na_potezi == IGRALEC_2:
-                        self.napis.set("Na potezi je {}.".format(prevod_barve(self.igra.barva_igralca_2)))
-                        self.igralec_2.igraj()
-                else:
-                    # Igre je konec, koncaj
-                    self.koncaj_igro(r)
+        #if type(p) == tuple:
+        (premik, izrinjeni) = self.igra.premikanje(p)
+        if premik is not None:
+            for polje in premik:
+                (x,y,barva) = polje
+                self.okno.itemconfig(self.matrika_id[x][y], fill = barva)
+            if len(izrinjeni) != len(self.izpodrinjeni):
+                self.izpodrinjeni.append(izrinjeni[-1])
+                self.narisi_izpodrinjene(izrinjeni[-1])
+        r = self.igra.povleci_potezo(p)
+        if r is None:
+            pass
         else:
-            if type(p[0][0]) == int:
-                self.igra.izbrani.append((p[0][0],p[0][1]))
+            if r == NI_KONEC:
+                # Igra se nadaljuje
+                if self.igra.na_potezi == IGRALEC_1:
+                    self.napis.set("Na potezi je {}.".format(prevod_barve(self.igra.barva_igralca_1)))
+                    self.igralec_1.igraj()
+                elif self.igra.na_potezi == IGRALEC_2:
+                    self.napis.set("Na potezi je {}.".format(prevod_barve(self.igra.barva_igralca_2)))
+                    self.igralec_2.igraj()
             else:
-                for polje in p[0]:
-                    self.igra.izbrani.append((polje[0],polje[1]))
-            (premik, izrinjeni) = self.igra.premikanje(p[1])
-            if premik is not None:
-                for polje in premik:
-                    (x,y,barva) = polje
-                    self.okno.itemconfig(self.matrika_id[x][y], fill = barva)
-                if len(izrinjeni) != len(self.izpodrinjeni):
-                    self.izpodrinjeni.append(izrinjeni[-1])
-                    self.narisi_izpodrinjene(izrinjeni[-1])
-            r = self.igra.povleci_potezo(p)
-            if r is None:
-                pass
-            else:
-                if r == NI_KONEC:
-                    # Igra se nadaljuje
-                    if self.igra.na_potezi == IGRALEC_1:
-                        self.napis.set("Na potezi je {}.".format(prevod_barve(self.igra.barva_igralca_1)))
-                        self.igralec_1.igraj()
-                    elif self.igra.na_potezi == IGRALEC_2:
-                        self.napis.set("Na potezi je {}.".format(prevod_barve(self.igra.barva_igralca_2)))
-                        self.igralec_2.igraj()
-                else:
-                    # Igre je konec, koncaj
-                    self.koncaj_igro(r)
+                # Igre je konec, koncaj
+                self.koncaj_igro(r)
+##        else:
+##            if type(p[0][0]) == int:
+##                self.igra.izbrani.append((p[0][0],p[0][1]))
+##            else:
+##                for polje in p[0]:
+##                    self.igra.izbrani.append((polje[0],polje[1]))
+##            (premik, izrinjeni) = self.igra.premikanje(p[1])
+##            if premik is not None:
+##                for polje in premik:
+##                    (x,y,barva) = polje
+##                    self.okno.itemconfig(self.matrika_id[x][y], fill = barva)
+##                if len(izrinjeni) != len(self.izpodrinjeni):
+##                    self.izpodrinjeni.append(izrinjeni[-1])
+##                    self.narisi_izpodrinjene(izrinjeni[-1])
+##            r = self.igra.povleci_potezo(p)
+##            if r is None:
+##                pass
+##            else:
+##                if r == NI_KONEC:
+##                    # Igra se nadaljuje
+##                    if self.igra.na_potezi == IGRALEC_1:
+##                        self.napis.set("Na potezi je {}.".format(prevod_barve(self.igra.barva_igralca_1)))
+##                        self.igralec_1.igraj()
+##                    elif self.igra.na_potezi == IGRALEC_2:
+##                        self.napis.set("Na potezi je {}.".format(prevod_barve(self.igra.barva_igralca_2)))
+##                        self.igralec_2.igraj()
+##                else:
+##                    # Igre je konec, koncaj
+##                    self.koncaj_igro(r)
 
     def poisci_polje(self, event):
         """Vrne polje, na katero smo kliknili, ali (None, None), če smo kliknili izven plošče."""
