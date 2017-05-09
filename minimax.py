@@ -88,9 +88,9 @@ class Minimax:
             smeri.append([None] + zgornja_diagonala + [None])
         pozicije = {
             # Pozicije, kjer smo nasprotnika izrinili s plošče - zelo zelo dobro.
-            (nasprotnikova_barva, moja_barva, moja_barva) : 3700,
-            (nasprotnikova_barva, moja_barva, moja_barva, moja_barva) : 3700,
-            (nasprotnikova_barva, nasprotnikova_barva, moja_barva, moja_barva, moja_barva) : 3900,
+            (None, nasprotnikova_barva, moja_barva, moja_barva) : 3700,
+            (None, nasprotnikova_barva, moja_barva, moja_barva, moja_barva) : 3700,
+            (None, nasprotnikova_barva, nasprotnikova_barva, moja_barva, moja_barva, moja_barva) : 3900,
             # Pozicije, kjer lahko v naslednji potezi mi izrinemo s plošče - zelo dobro.
             (None, nasprotnikova_barva, moja_barva, moja_barva) : 1700,
             (None, nasprotnikova_barva, moja_barva, moja_barva, moja_barva) : 1700,
@@ -103,9 +103,9 @@ class Minimax:
             (None, nasprotnikova_barva, prazno, moja_barva, moja_barva, moja_barva) : 1400,
             (None, nasprotnikova_barva, prazno, nasprotnikova_barva, moja_barva, moja_barva, moja_barva) : 1500,
             # Pozicije, kjer so nas izrinili s plošče - zelo zelo slabo.
-            (moja_barva, nasprotnikova_barva, nasprotnikova_barva) : -3600,
-            (moja_barva, nasprotnikova_barva, nasprotnikova_barva, nasprotnikova_barva) : -3600,
-            (moja_barva, moja_barva, nasprotnikova_barva, nasprotnikova_barva, nasprotnikova_barva) : -3800,
+            (None, moja_barva, nasprotnikova_barva, nasprotnikova_barva) : -3600,
+            (None, moja_barva, nasprotnikova_barva, nasprotnikova_barva, nasprotnikova_barva) : -3600,
+            (None, moja_barva, moja_barva, nasprotnikova_barva, nasprotnikova_barva, nasprotnikova_barva) : -3800,
            # Pozicije, kjer nas lahko v naslednji potezi izrinejo s plošče - zelo slabo.
             (None, moja_barva, nasprotnikova_barva, nasprotnikova_barva) : -1600,
             (None, moja_barva, nasprotnikova_barva, nasprotnikova_barva, nasprotnikova_barva) : -1600,
@@ -142,9 +142,9 @@ class Minimax:
                         else:
                             break
                     if na_zacetku == 0 and na_koncu == 0:
-                        vrednost -= 2 * pozicije[pozicija]
+                        vrednost += 2 * pozicije[pozicija]
                     elif na_zacetku == 0 or na_koncu == 0:
-                        vrednost -= pozicije[pozicija]
+                        vrednost += pozicije[pozicija]
         return vrednost
 
     def minimax(self, globina, maksimiziramo):
@@ -169,11 +169,14 @@ class Minimax:
             else:
                 # Naredimo eno stopnjo minimax
                 if maksimiziramo:
+                    print('MAX')
                     # Maksimiziramo
                     najboljsa_poteza = None
                     vrednost_najboljse = -Minimax.NESKONCNO
                     najboljse_poteze = []
+                    s = 0
                     for poteza in self.igra.veljavne_poteze():
+                        s += 1
                         [izbrani, p] = poteza
                         if type(izbrani[0]) == int:
                                 (x,y) = izbrani
@@ -181,23 +184,30 @@ class Minimax:
                         else:
                             for (x,y) in izbrani:
                                 self.igra.izbrani.append((x,y))
-                        self.igra.shrani_pozicijo()
+                        #self.igra.shrani_pozicijo()
                         self.igra.povleci_potezo(p)
                         vrednost = self.minimax(globina-1, not maksimiziramo)[1]
-                        if self.igra.povleci_potezo(p) is not None:
-                            self.igra.razveljavi()
+                        #if self.igra.povleci_potezo(p) is not None:
+                        self.igra.razveljavi()
                         if vrednost == vrednost_najboljse:
                             najboljse_poteze.append(poteza)
                         elif vrednost > vrednost_najboljse:
+                            print('boljse!', vrednost)
+                            print('max',s)
                             vrednost_najboljse = vrednost
                             najboljse_poteze = [poteza]
                         self.igra.izbrani = []
                     najboljsa_poteza = random.choice(najboljse_poteze)
+                    print('NAJmax:', vrednost)
                 else:
                     # Minimiziramo
+                    print('MIN')
                     najboljsa_poteza = None
                     vrednost_najboljse = Minimax.NESKONCNO
+                    najboljse_poteze = []
+                    s = 0
                     for poteza in self.igra.veljavne_poteze():
+                        s += 1
                         [izbrani, p] = poteza
                         if type(izbrani[0]) == int:
                                 (x,y) = izbrani
@@ -213,11 +223,13 @@ class Minimax:
                         if vrednost == vrednost_najboljse:
                             najboljse_poteze.append(poteza)
                         elif vrednost < vrednost_najboljse:
+                            print('slabse!', vrednost)
+                            print('min',s)
                             vrednost_najboljse = vrednost
                             najboljse_poteze = [poteza]
                         self.igra.izbrani = []
                     najboljsa_poteza = random.choice(najboljse_poteze)
-
+                    print('NAJmin:', vrednost)
                 assert (najboljsa_poteza is not None), "minimax: izračunana poteza je None"
                 return (najboljsa_poteza, vrednost_najboljse)
         else:
