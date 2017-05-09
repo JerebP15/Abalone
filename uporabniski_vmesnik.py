@@ -298,6 +298,7 @@ class Gui():
 
     def povleci_potezo(self, p):
         """Povlece potezo in zamenja, kdo je na potezi."""
+        print('naredili bomo potezo', p, type(p), self.igra.izbrani)
         igralec = self.igra.na_potezi
         if type(p) == tuple:
             (premik, izrinjeni) = self.igra.premikanje(p)

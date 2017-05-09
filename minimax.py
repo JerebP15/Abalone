@@ -209,7 +209,6 @@ class Minimax:
                         self.igra.povleci_potezo(p)
                         vrednost = self.minimax(globina-1, not maksimiziramo)[1]
                         if self.igra.povleci_potezo(p) is not None:
-                            print('prišli smo do sem')
                             self.igra.razveljavi()
                         if vrednost == vrednost_najboljse:
                             najboljse_poteze.append(poteza)
