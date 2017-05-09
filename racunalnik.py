@@ -54,3 +54,7 @@ class Racunalnik():
     def oznaci(self, p):
         # Računalnik ignorira klike
         pass
+
+    def premakni(self, p):
+        # Računalnik ignorira klike
+        pass
