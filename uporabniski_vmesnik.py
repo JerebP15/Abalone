@@ -54,11 +54,6 @@ class Gui():
     # Velikost polja
     VELIKOST_POLJA = 50
 
-    nastavljena_barva_1 = "yellow"
-    nastavljena_barva_2 = "black"
-    nastavljena_barva_praznih = "white"
-    nastavljena_barva_izbranih = "red"
-
     def __init__(self, master):
         master.minsize(width=730, height=610)
         #master.maxsize(width=730, height=610)
@@ -88,7 +83,7 @@ class Gui():
         self.polje_izpodrinjenih2.grid(row=1, column=2)
 
         #Gumb za začetek igre
-        self.gumb = tkinter.Button(master, state='normal',width=Gui.VELIKOST_POLJA, text='Začni!', command=lambda: self.pritisk_gumba())
+        self.gumb = tkinter.Button(master, bg="white", state='normal',width=Gui.VELIKOST_POLJA, text='Začni!', command=lambda: self.pritisk_gumba())
         self.gumb.grid(row=2, column=1)
 
         # Črte na igralnem polju
@@ -182,7 +177,10 @@ class Gui():
                 self.polje_izpodrinjenih2.itemconfig(id, fill = self.igra.izpodrinjeni[x])
             else:
                 self.polje_izpodrinjenih1.itemconfig(id, fill = self.igra.izpodrinjeni[x])
-
+mozne_barve = ["yellow", "black", "green", "red", "blue", "cyan", "magenta"]
+                mozne_barve.remove(self.igra.barva_igralca_2)
+                mozne_barve.remove(barva)
+                self.igra.barva_izbranih = random.choice(mozne_barve)
     def spremeni_barvo1(self, barva):
         if self.igra.plosca == self.igra.ustvari_plosco():
         #if isinstance(self.igralec_1, Clovek) and isinstance(self.igralec_2, Clovek):
@@ -190,11 +188,10 @@ class Gui():
                 tkinter.messagebox.showwarning("Menjava barve ni možna", "Ne moreta biti oba igralca iste barve!")
                 pass
             else:
-                if barva == "red":
-                    if self.igra.barva_igralca_2 == "yellow":
-                        self.igra.barva_izbranih = "green"
-                    else:
-                        self.igra.barva_izbranih = "yellow"
+                mozne_barve = ["yellow", "black", "green", "red", "blue", "cyan", "magenta"]
+                mozne_barve.remove(self.igra.barva_igralca_2)
+                mozne_barve.remove(barva)
+                self.igra.barva_izbranih = random.choice(mozne_barve)
                 self.igra.prebarvaj_krogce(IGRALEC_1, barva)
                 self.igra.barva_igralca_1 = barva
                 self.prebarvaj_krogce()
@@ -202,9 +199,6 @@ class Gui():
                     self.napis.set("Na potezi je {}.".format(prevod_barve(self.igra.barva_igralca_1)))
         else:
             tkinter.messagebox.showwarning("Menjava barve ni možna", "Menjava barve med igro ni možna!")
-            #tkinter.messagebox.showwarning("Menjava barve ni možna", "Menjava barve v tej igri ni možna!")
-            #TODO V navodila napisati, da je menjava barve možna le v igri Igralec proti Igralec
-            
 
     def spremeni_barvo2(self, barva):
         if self.igra.plosca == self.igra.ustvari_plosco():
@@ -213,11 +207,10 @@ class Gui():
                 tkinter.messagebox.showwarning("Menjava barve ni možna", "Ne moreta biti oba igralca iste barve!")
                 pass
             else:
-                if barva == "red":
-                    if self.igra.barva_igralca_1 == "yellow":
-                        self.igra.barva_izbranih = "green"
-                    else:
-                        self.igra.barva_izbranih = "yellow"
+                mozne_barve = ["yellow", "black", "green", "red", "blue", "cyan", "magenta"]
+                mozne_barve.remove(self.igra.barva_igralca_1)
+                mozne_barve.remove(barva)
+                self.igra.barva_izbranih = random.choice(mozne_barve)
                 self.igra.prebarvaj_krogce(IGRALEC_2, barva)
                 self.igra.barva_igralca_2 = barva
                 self.prebarvaj_krogce()
@@ -243,7 +236,7 @@ class Gui():
                     self.igralec_2.oznaci(p)
             else:
                 tkinter.messagebox.showwarning("Igra se ni začela", """Igra se še ni začela. Kliknite gumb za začetek igre.
-Če želite lahko še prej spremenite barve krogcev.""")
+Če želite, lahko še prej spremenite barve krogcev.""")
         else:
             pass
 
@@ -424,13 +417,13 @@ class Gui():
         self.polje_izpodrinjenih2.delete(Gui.TAG_FIGURA)
         #self.zacetna_pozicija
         if self.igra is not None:
-            B1 = self.igra.barva_igralca_1
-            B2 = self.igra.barva_igralca_2
-            Bi = self.igra.barva_izbranih
+            barva_1 = self.igra.barva_igralca_1
+            barva_2 = self.igra.barva_igralca_2
+            barva_izbranih = self.igra.barva_izbranih
             self.igra = Igra()
-            self.igra.barva_izbranih = Bi
-            self.spremeni_barvo1(B1)
-            self.spremeni_barvo2(B2)
+            self.igra.barva_izbranih = barva_izbranih
+            self.spremeni_barvo1(barva_1)
+            self.spremeni_barvo2(barva_2)
         else:
             self.igra = Igra()
         self.risi_plosco()
