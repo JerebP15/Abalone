@@ -163,6 +163,7 @@ class Gui():
                  if matrika[i][j] is not None:
                      id = self.okno.create_oval((i - j*0.5)*d + 2*d, (3**0.5)*0.5*j*d, (i - j*0.5)*d + 3*d, (3**0.5)*0.5*j*d + d, fill=matrika[i][j])
                      self.matrika_id[i][j] = id
+        print(9000000009)
 
     def prebarvaj_krogce(self):
         """Prebarva krogce, ta metoda se pokliče, če zamenjamo barvo igralca."""
@@ -177,10 +178,7 @@ class Gui():
                 self.polje_izpodrinjenih2.itemconfig(id, fill = self.igra.izpodrinjeni[x])
             else:
                 self.polje_izpodrinjenih1.itemconfig(id, fill = self.igra.izpodrinjeni[x])
-mozne_barve = ["yellow", "black", "green", "red", "blue", "cyan", "magenta"]
-                mozne_barve.remove(self.igra.barva_igralca_2)
-                mozne_barve.remove(barva)
-                self.igra.barva_izbranih = random.choice(mozne_barve)
+
     def spremeni_barvo1(self, barva):
         if self.igra.plosca == self.igra.ustvari_plosco():
         #if isinstance(self.igralec_1, Clovek) and isinstance(self.igralec_2, Clovek):
@@ -236,7 +234,7 @@ mozne_barve = ["yellow", "black", "green", "red", "blue", "cyan", "magenta"]
                     self.igralec_2.oznaci(p)
             else:
                 tkinter.messagebox.showwarning("Igra se ni začela", """Igra se še ni začela. Kliknite gumb za začetek igre.
-Če želite, lahko še prej spremenite barve krogcev.""")
+Če želite lahko še prej spremenite barve krogcev.""")
         else:
             pass
 

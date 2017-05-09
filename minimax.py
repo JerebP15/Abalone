@@ -44,10 +44,6 @@ class Minimax:
     ZMAGA = 100000
     NESKONCNO = ZMAGA + 1 # Več kot zmaga
 
-    def sosed(self,x,y):
-        "Vrne seznam parov (i,j), kjer je polje (i,j) sosedno polje polja (x,y)."
-        pass
-
     def vrednost_pozicije(self):
         """Ocena vrednosti pozicije na plošči."""
         # Nastavimo vrednost na 0 in definiramo, kar bomo potrebovali.
@@ -213,6 +209,7 @@ class Minimax:
                         self.igra.povleci_potezo(p)
                         vrednost = self.minimax(globina-1, not maksimiziramo)[1]
                         if self.igra.povleci_potezo(p) is not None:
+                            print('prišli smo do sem')
                             self.igra.razveljavi()
                         if vrednost == vrednost_najboljse:
                             najboljse_poteze.append(poteza)
