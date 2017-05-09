@@ -89,31 +89,59 @@ class Minimax:
 
         pozicije = {
             # Pozicije, kjer nas lahko v naslednji potezi izrinejo s plošče - zelo slabo.
-            (moja_barva, nasprotnikova_barva, nasprotnikova_barva) : -500,
-            (moja_barva, nasprotnikova_barva, nasprotnikova_barva, nasprotnikova_barva) : -500,
-            (moja_barva, moja_barva, nasprotnikova_barva, nasprotnikova_barva, nasprotnikova_barva) : -700,
-            # Pozicije, kjer nas lahko v naslednji potezi potisnejo do roba - slabo, ampak ne nerešljivo.
+            (moja_barva, nasprotnikova_barva, nasprotnikova_barva) : -600,
+            (moja_barva, nasprotnikova_barva, nasprotnikova_barva, nasprotnikova_barva) : -600,
+            (moja_barva, moja_barva, nasprotnikova_barva, nasprotnikova_barva, nasprotnikova_barva) : -800,
+            # Pozicije, kjer nas lahko v naslednji potezi potisnejo do roba - slabo.
             (prazno, moja_barva, nasprotnikova_barva, nasprotnikova_barva) : -300,
             (prazno, moja_barva, nasprotnikova_barva, nasprotnikova_barva, nasprotnikova_barva) : -300,
-            (prazno, moja_barva, moja_barva, nasprotnikova_barva, nasprotnikova_barva, nasprotnikova_barva) : -400}
-        # Podobno napišemo seznam ugodnih pozicij, ki pa mora imeti manjši učinek na vrednost pozicije
-        # (recimo vrednost += 300?), ker se nasprotnik lahko izmakne in zato ni ziher, da ga bomo res izrinili.
+            (prazno, moja_barva, moja_barva, nasprotnikova_barva, nasprotnikova_barva, nasprotnikova_barva) : -400,
+            (moja_barva, prazno, nasprotnikova_barva, nasprotnikova_barva) : -300,
+            (moja_barva, prazno, nasprotnikova_barva, nasprotnikova_barva, nasprotnikova_barva) : -300,
+            (moja_barva, prazno, moja_barva, nasprotnikova_barva, nasprotnikova_barva, nasprotnikova_barva) : -400,
+            # Pozicije, kjer lahko v naslednji potezi mi izrinemo s plošče - zelo dobro.
+            (nasprotnikova_barva, moja_barva, moja_barva) : 700,
+            (nasprotnikova_barva, moja_barva, moja_barva, moja_barva) : 700,
+            (nasprotnikova_barva, nasprotnikova_barva, moja_barva, moja_barva, moja_barva) : 900,
+            # Pozicije, kjer lahko v naslednji potezi potisnemo do roba - dobro.
+            (prazno, nasprotnikova_barva, moja_barva, moja_barva) : 400,
+            (prazno, nasprotnikova_barva, moja_barva, moja_barva, moja_barva) : 400,
+            (prazno, nasprotnikova_barva, nasprotnikova_barva, moja_barva, moja_barva, moja_barva) : 500,
+            (nasprotnikova_barva, prazno, moja_barva, moja_barva) : 400,
+            (nasprotnikova_barva, prazno, moja_barva, moja_barva, moja_barva) : 400,
+            (nasprotnikova_barva, prazno, nasprotnikova_barva, moja_barva, moja_barva, moja_barva) : 500}
         for smer in smeri:
-            for pozicija in pozicije:
-                # Pozicija se lahko pojavi na koncu ali pa na začetku smeri.
-                na_zacetku = len(pozicija)
-                na_koncu = len(pozicija)
-                for i in range(len(pozicija)):
-                    if smer[i] == pozicija[i]:
-                        na_zacetku -= 1
-                    if smer[-1-i] == pozicija[i]:
-                        na_koncu -= 1
-                    else:
-                        break
-                if na_zacetku == 0 and na_koncu == 0:
-                    vrednost += 2 * pozicije[pozicija]
-                elif na_zacetku == 0 or na_koncu == 0:
-                    vrednost += pozicije[pozicija]
+            if smer[0] == prazno:
+                vrednost += 10
+            if smer[-1] == prazno:
+                vrednost += 10
+            if moja_barva not in smer or nasprotnikova_barva not in smer:
+                continue
+            if False:
+                pass
+            else:
+                for pozicija in pozicije:
+                    # Pozicija se lahko pojavi na koncu ali pa na začetku smeri.
+                    na_zacetku = len(pozicija)
+                    na_koncu = len(pozicija)
+                    for i in range(len(pozicija)):
+                        if len(pozicija) > len(smer):
+                            break
+                        if smer[i] == pozicija[i] or smer[-1-i] == pozicija[i]:
+                            #print(smer,pozicija, vrednost)
+                            if smer[i] == pozicija[i]:
+                                na_zacetku -= 1
+                            elif smer[-1-i] == pozicija[i]:
+                                na_koncu -= 1
+                        else:
+                            break
+                    if na_zacetku == 0 and na_koncu == 0:
+                        print('oboje')
+                        vrednost += 2 * pozicije[pozicija]
+                    elif na_zacetku == 0 or na_koncu == 0:
+                        vrednost += pozicije[pozicija]
+                        print('ena')
+        #print(vrednost,'(vmesna!)')
         return vrednost
 
     def minimax(self, globina, maksimiziramo):
@@ -150,6 +178,7 @@ class Minimax:
                         else:
                             for (x,y) in izbrani:
                                 self.igra.izbrani.append((x,y))
+                        self.igra.shrani_pozicijo()
                         self.igra.povleci_potezo(p)
                         vrednost = self.minimax(globina-1, not maksimiziramo)[1]
                         if self.igra.povleci_potezo(p) is not None:
@@ -173,9 +202,11 @@ class Minimax:
                         else:
                             for (x,y) in izbrani:
                                 self.igra.izbrani.append((x,y))
+                        self.igra.shrani_pozicijo()
                         self.igra.povleci_potezo(p)
                         vrednost = self.minimax(globina-1, not maksimiziramo)[1]
-                        self.igra.razveljavi()
+                        if self.igra.povleci_potezo(p) is not None:
+                            self.igra.razveljavi()
                         if vrednost == vrednost_najboljse:
                             najboljse_poteze.append(poteza)
                         elif vrednost < vrednost_najboljse:
@@ -185,6 +216,7 @@ class Minimax:
                     najboljsa_poteza = random.choice(najboljse_poteze)
 
                 assert (najboljsa_poteza is not None), "minimax: izračunana poteza je None"
+                print(najboljsa_poteza, vrednost_najboljse)
                 return (najboljsa_poteza, vrednost_najboljse)
         else:
             assert False, "minimax: nedefinirano stanje igre"

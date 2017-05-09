@@ -3,7 +3,7 @@ import argparse   # za argumente iz ukazne vrstice
 import logging    # za odpravljanje napak
 
 # Privzeta minimax globina, če je nismo podali ob zagonu v ukazni vrstici
-MINIMAX_GLOBINA = 1
+MINIMAX_GLOBINA = 2
 
 from logika_igre import *
 from clovek import *
@@ -95,7 +95,7 @@ class Gui():
         # Naročimo se na dogodke
         self.okno.bind("<Button-1>", self.levi_klik)
         self.okno.bind("<Button-3>", self.desni_klik)
-        self.okno.bind("<Button-2>", self.desni_klik) #Da dela tudi na Mac-u
+        self.okno.bind("<Button-2>", self.desni_klik) #Da dela tudi na Mac-u 
         self.okno.bind('<Escape>', self.odznaci_vse_krogce)  #Zaradi nekega razloga dela samo, če klikneš tab (ko klikneš tab se polje obrobi in od takrat naprej to dela, prej pa se ne zgodi nič)
         self.okno.bind('<Control-z>', self.undo)
 
@@ -137,6 +137,19 @@ class Gui():
         menu_barve2.add_command(label="Svetlo modra", command = lambda: self.spremeni_barvo1("cyan"))
         menu_barve2.add_command(label="Roza", command = lambda: self.spremeni_barvo1("magenta"))
 
+##        #if isinstance(self.igralec_1, Clovek):
+##        self.gumb = tkinter.Button(master, state='normal',width=Gui.VELIKOST_POLJA, text='Začni!', command=lambda: self.izbrisi())
+##        self.gumb.grid(row=2, column=1)
+##     
+##    def izbrisi(self):
+##        self.gumb.config(state='disabled')
+##        if isinstance(self.igralec_1, Clovek):
+##            print('Cloo')
+##        elif isinstance(self.igralec_1, Racunalnik):
+##            print('rrr')
+##        print(isinstance(self.igralec_1, Clovek))
+
+
     def ustvari_matriko_id(self):
         """Ustvari matriko id-jev, ki se ujema z matriko self.igra.plosca vendar vsebuje id-je."""
         matrika = []
@@ -172,40 +185,50 @@ class Gui():
                 self.polje_izpodrinjenih1.itemconfig(id, fill = self.igra.izpodrinjeni[x])
 
     def spremeni_barvo1(self, barva):
-        if barva == self.igra.barva_igralca_2:
-            tkinter.messagebox.showwarning("Menjava barve ni možna", "Ne moreta biti oba igralca iste barve!")
-            pass
+        #if self.igra.plosca == self.igra.ustvari_plosco():
+        if type(self.igralec_1) == type(self.igralec_2):
+            if barva == self.igra.barva_igralca_2:
+                tkinter.messagebox.showwarning("Menjava barve ni možna", "Ne moreta biti oba igralca iste barve!")
+                pass
+            else:
+                if barva == "red":
+                    if self.igra.barva_igralca_2 == "yellow":
+                        self.igra.barva_izbranih = "green"
+                    else:
+                        self.igra.barva_izbranih = "yellow"
+                self.igra.prebarvaj_krogce(IGRALEC_1, barva)
+                self.igra.barva_igralca_1 = barva
+                self.prebarvaj_krogce()
+                if self.igra.na_potezi == IGRALEC_1:
+                    self.napis.set("Na potezi je {}.".format(prevod_barve(self.igra.barva_igralca_1)))
+
         else:
-            if barva == "red":
-                if self.igra.barva_igralca_2 == "yellow":
-                    self.igra.barva_izbranih = "green"
-                else:
-                    self.igra.barva_izbranih = "yellow"
-            self.igra.prebarvaj_krogce(IGRALEC_1, barva)
-            self.igra.barva_igralca_1 = barva
-            self.prebarvaj_krogce()
-            if self.igra.na_potezi == IGRALEC_1:
-                self.napis.set("Na potezi je {}.".format(prevod_barve(self.igra.barva_igralca_1)))
+            #tkinter.messagebox.showwarning("Menjava barve ni možna", "Menjava barve med igro ni možna!")
+            tkinter.messagebox.showwarning("Menjava barve ni možna", "Menjava barve v tej igri ni možna!")
+            #TODO V navodila napisati, da je menjava barve možna le v igri Igralec proti Igralec
             
 
     def spremeni_barvo2(self, barva):
-        if barva == self.igra.barva_igralca_1:
-            tkinter.messagebox.showwarning("Menjava barve ni možna", "Ne moreta biti oba igralca iste barve!")
-            pass
+        if type(self.igralec_1) == type(self.igralec_2):
+            if barva == self.igra.barva_igralca_1:
+                tkinter.messagebox.showwarning("Menjava barve ni možna", "Ne moreta biti oba igralca iste barve!")
+                pass
+            else:
+                if barva == "red":
+                    if self.igra.barva_igralca_1 == "yellow":
+                        self.igra.barva_izbranih = "green"
+                    else:
+                        self.igra.barva_izbranih = "yellow"
+                self.igra.prebarvaj_krogce(IGRALEC_2, barva)
+                self.igra.barva_igralca_2 = barva
+                self.prebarvaj_krogce()
+                if self.igra.na_potezi == IGRALEC_2:
+                    if self.igra.plosca == self.igra.ustvari_plosco():
+                        self.napis.set("Igro začne {} igralec.".format(prevod_barve(self.igra.barva_igralca_2)))
+                    else:
+                        self.napis.set("Na potezi je {}.".format(prevod_barve(self.igra.barva_igralca_2)))
         else:
-            if barva == "red":
-                if self.igra.barva_igralca_1 == "yellow":
-                    self.igra.barva_izbranih = "green"
-                else:
-                    self.igra.barva_izbranih = "yellow"
-            self.igra.prebarvaj_krogce(IGRALEC_2, barva)
-            self.igra.barva_igralca_2 = barva
-            self.prebarvaj_krogce()
-            if self.igra.na_potezi == IGRALEC_2:
-                if self.igra.plosca == self.igra.ustvari_plosco():
-                    self.napis.set("Igro začne {} igralec.".format(prevod_barve(self.igra.barva_igralca_2)))
-                else:
-                    self.napis.set("Na potezi je {}.".format(prevod_barve(self.igra.barva_igralca_2)))
+            tkinter.messagebox.showwarning("Menjava barve ni možna", "Menjava barve med igro ni možna!")
 
     def levi_klik(self, event):
         """Obdelamo levi klik - oznacevanje krogcev."""
@@ -406,7 +429,9 @@ class Gui():
         self.igralec_1 = igralec_1
         self.igralec_2 = igralec_2
         self.napis.set("Igro začne {} igralec.".format(prevod_barve(self.igra.barva_igralca_2)))
+        print('6666666')
         self.igralec_2.igraj()
+        print(9)
 
     def koncaj_igro(self, zmagovalec):
         """Nastavi stanje igre na konec igre."""

@@ -12,6 +12,7 @@ class Racunalnik():
         self.mislec = None # Vlakno (thread), ki razmišlja
 
     def igraj(self):
+        print(00)
         """Igraj potezo, ki jo vrne algoritem."""
         # Tu sprožimo vzporedno vlakno, ki računa potezo.
 
@@ -20,6 +21,7 @@ class Racunalnik():
             target=lambda: self.algoritem.izracunaj_potezo(self.gui.igra.kopija()))
 
         # Poženemo vlakno:
+        print('fak')
         self.mislec.start()
 
         # Gremo preverjat, ali je bila najdena poteza:

@@ -44,7 +44,6 @@ class Igra():
         """Ustvari matriko z elementi iz razreda Polje (na mestih, kjer bodo polja igralne plošče)
         in None (v zgornjem desnem kotu, v spodnjem levem kotu in na robu matrike)."""
         matrika = []
-        # print('BARVE V IGRI : ', self.barva_praznih, self.barva_igralca_1, self.barva_igralca_2, self.barva_izbranih)
         for x in range(11):
                seznam = []
                for y in range(11):
@@ -129,7 +128,6 @@ class Igra():
         Če je poteza dovoljena, spremeni matriko, shrani pozicijo in
         vrne seznam z dvema elementoma - seznamom premaknjenih krogcev in seznamom izpodrinjenih."""
         if len(self.izbrani) == 0:
-            tkinter.messagebox.showwarning("Premik ni možen","Noben krogec ni izbran")
             return (None, None)
         else:
             self.shrani_pozicijo()
@@ -137,6 +135,7 @@ class Igra():
                 self.premakni_krogce(p)
                 spremembe = [self.spremembe_premik[:],self.izpodrinjeni[:]] 
                 self.izbrani = []
+                # self.shrani_pozicijo()
             else:
                 spremembe = (None, None)
             self.spremembe_premik = []
@@ -151,7 +150,6 @@ class Igra():
             (I1, J1) = (self.izbrani[0])
             B = self.plosca[I1][J1]
             if self.plosca[i][j] == B:
-                tkinter.messagebox.showwarning("Premik ni možen","Ni mogoče premakniti izbranih krogcev na svoje polje!")
                 return False
             elif len(self.izbrani) == 1:
                 if (i,j) in [(I1, J1 + 1), (I1, J1 - 1), (I1 + 1, J1), (I1 - 1, J1), (I1 + 1, J1 + 1), (I1 - 1, J1 - 1)]: # En krogec lahko premaknemo na katerokoli sosednje prosto polje.
@@ -246,11 +244,11 @@ class Igra():
             orientacija = self.orientacija_izbranih()
             izbrani = []
             barva = self.plosca[self.izbrani[0][0]][self.izbrani[0][1]]
-            for krogec in self.izbrani:
-                izbrani.append(krogec)
-            for (x,y) in izbrani:
-                self.plosca[x][y] = self.barva_praznih
-                self.spremembe_premik.append((x,y,self.barva_praznih))
+            for (x,y) in self.izbrani:
+                izbrani.append((x,y))
+            for (xx,yy) in izbrani:
+                self.plosca[xx][yy] = self.barva_praznih
+                self.spremembe_premik.append((xx,yy,self.barva_praznih))
             (i_max, i_min) = (max(x for (x,y) in self.izbrani), min(x for (x,y) in self.izbrani))
             (j_max, j_min) = (max(y for (x,y) in self.izbrani), min(y for (x,y) in self.izbrani))
             (I,J) = self.izbrani[0]
@@ -260,14 +258,14 @@ class Igra():
                       "diagonala" : [(i_max, 1, j_max, 1), (i_max, 0, j_max, 1), (i_max, 1, j_max, 0), (i_min, -1, j_min, -1), (i_min, 0, j_min, -1), (i_min, -1, j_min, 0)]}
             for parametri in SLOVAR[orientacija]:
                 if i == parametri[0] + parametri[1] and j == parametri[2] + parametri[3]:
-                    for (x,y) in izbrani:
-                        novi_x = x + parametri[1]
-                        novi_y = y + parametri[3]
-                        novi_izbrani.append((novi_x,novi_y))
+                    for (xx,yy) in izbrani:
+                        x = xx + parametri[1]
+                        y = yy + parametri[3]
+                        novi_izbrani.append((x,y))
                     break
-            for (novi_x,novi_y) in novi_izbrani:
-                self.plosca[novi_x][novi_y] = barva
-                self.spremembe_premik.append((novi_x,novi_y,barva))
+            for (xxx,yyy) in novi_izbrani:
+                self.plosca[xxx][yyy] = barva
+                self.spremembe_premik.append((xxx,yyy,barva))
         self.izbrani = []
 
     def orientacija_izbranih(self):
@@ -349,7 +347,6 @@ class Igra():
 
     def razveljavi(self):
         """Razveljavi potezo in se vrni v prejšnje stanje."""
-        (self.plosca1, self.na_potezi1, self.izpodrinjeni1) = self.zgodovina.pop()
         (self.plosca, self.na_potezi, self.izpodrinjeni) = self.zgodovina.pop()
         return (self.plosca, self.na_potezi, self.izpodrinjeni)
 
@@ -492,7 +489,6 @@ class Igra():
             #self.shrani_pozicijo()
             zmagovalec = self.stanje_igre()
             if zmagovalec == NI_KONEC:
-                self.shrani_pozicijo()
                 self.na_potezi = nasprotnik(self.na_potezi)
             else:
                 self.na_potezi = None
