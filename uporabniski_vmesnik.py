@@ -79,6 +79,10 @@ class Gui():
         self.okno = tkinter.Canvas(master, width=11*Gui.VELIKOST_POLJA, height=11*Gui.VELIKOST_POLJA)
         self.okno.grid(row=1, column=1)
 
+                #if isinstance(self.igralec_1, Clovek):
+        self.gumb = tkinter.Button(master, state='normal',width=Gui.VELIKOST_POLJA, text='Začni!', command=lambda: self.izbrisi())
+        self.gumb.grid(row=2, column=1)
+
         # Območje, kjer se rišejo krogci, ki so bili že izpodrinjeni iz plošče
         self.polje_izpodrinjenih1 = tkinter.Canvas(master, width=2*Gui.VELIKOST_POLJA, height=8*Gui.VELIKOST_POLJA)
         self.polje_izpodrinjenih1.grid(row=1, column=0)
@@ -91,6 +95,7 @@ class Gui():
         # Seznam izpodrinjenih krogcev
         self.izpodrinjeni = []
         self.izpodrinjeni_id = []
+        self.zacni = False
 
         # Naročimo se na dogodke
         self.okno.bind("<Button-1>", self.levi_klik)
@@ -140,14 +145,16 @@ class Gui():
 ##        #if isinstance(self.igralec_1, Clovek):
 ##        self.gumb = tkinter.Button(master, state='normal',width=Gui.VELIKOST_POLJA, text='Začni!', command=lambda: self.izbrisi())
 ##        self.gumb.grid(row=2, column=1)
-##     
-##    def izbrisi(self):
-##        self.gumb.config(state='disabled')
+     
+    def izbrisi(self):
+        #self.gumb.config(state='disabled')
+        self.gumb.grid_remove()
 ##        if isinstance(self.igralec_1, Clovek):
 ##            print('Cloo')
 ##        elif isinstance(self.igralec_1, Racunalnik):
 ##            print('rrr')
 ##        print(isinstance(self.igralec_1, Clovek))
+        self.zacni = True
 
 
     def ustvari_matriko_id(self):
@@ -257,6 +264,7 @@ class Gui():
             pass
 
     def undo(self,event):
+        print(1000000000000000000000000000,len(self.igra.zgodovina))
         if self.igra.plosca != self.igra.ustvari_plosco():
             if type(self.igralec_1) == type(self.igralec_2):
                 (plosca, na_potezi, izpodrinjeni) = self.igra.razveljavi()
@@ -282,11 +290,13 @@ class Gui():
                 else:
                     self.igra.na_potezi = IGRALEC_2
                     self.napis.set("Na potezi je {}.".format(prevod_barve(self.igra.barva_igralca_2)))
+            print(2000000000000000000000000000,len(self.igra.zgodovina))
         else:
             pass
 
     def desni_klik(self, event):
         """Obdelamo desni klik - premikanje krogcev."""
+        print("dei klik", len(self.igra.zgodovina))
         p = self.poisci_polje(event)
         (i,j) = p
         if i is not None and j is not None and len(self.igra.izbrani) != 0:
@@ -410,6 +420,7 @@ class Gui():
         # Ustavimo vsa vlakna, ki trenutno razmišljajo
         self.izpodrinjeni = []
         self.prekini_igralce()
+        self.gumb.grid()
         # Pobrišemo tiste, ki so padli dol in narišemo začetno pozicijo
         self.polje_izpodrinjenih1.delete(Gui.TAG_FIGURA)
         self.polje_izpodrinjenih2.delete(Gui.TAG_FIGURA)
@@ -429,9 +440,17 @@ class Gui():
         self.igralec_1 = igralec_1
         self.igralec_2 = igralec_2
         self.napis.set("Igro začne {} igralec.".format(prevod_barve(self.igra.barva_igralca_2)))
-        print('6666666')
-        self.igralec_2.igraj()
-        print(9)
+        print(self.zacni)
+        if self.zacni_potezo():
+            self.igralec_2.igraj()
+            print(9)
+
+    def zacni_potezo(self):
+        """Vsakih 100ms preveri, ali je algoritem že izračunal potezo."""
+        if self.zacni == True:
+            return True
+        else:
+            self.gumb.after(100, self.zacni_potezo)
 
     def koncaj_igro(self, zmagovalec):
         """Nastavi stanje igre na konec igre."""

@@ -1,0 +1,6 @@
+- Raèunalnik : Raèunalnik
+	pojavi se opozorilo o barvah dvakrat!
+- dodajanje v zgodovino
+	èe poteza ni veljavna, je ne dodamo (preveri zadnji element)
+- obdelava gumba
+-zakaj ne izrine, èe ima priložnost?!?!?

@@ -21,7 +21,7 @@ class Racunalnik():
             target=lambda: self.algoritem.izracunaj_potezo(self.gui.igra.kopija()))
 
         # Poženemo vlakno:
-        print('fak')
+        print(self.gui.igra.barva_igralca_1)
         self.mislec.start()
 
         # Gremo preverjat, ali je bila najdena poteza:
