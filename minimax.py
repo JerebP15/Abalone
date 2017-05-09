@@ -86,6 +86,7 @@ class Minimax:
                 j += 1
             smeri.append([None] + spodnja_diagonala + [None])
             smeri.append([None] + zgornja_diagonala + [None])
+            
         pozicije = {
             # Pozicije, kjer smo nasprotnika izrinili s plošče - zelo zelo dobro.
             (None, nasprotnikova_barva, moja_barva, moja_barva) : 3700,
