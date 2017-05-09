@@ -14,23 +14,9 @@ def nasprotnik(igralec):
         return IGRALEC_1
     else:
         assert False, "neveljaven nasprotnik"
-
-##def pripadajoca_barva(igralec):
-##    if igralec == IGRALEC_1:
-##        return Igra.barva_igralca_1
-##    elif igralec == IGRALEC_2:
-##        return Igra.barva_igralca_2
-##    else:
-##        assert False
-
 ######################################################################################################
 
 class Igra():
-    #Barve krogcev
-##    barva_praznih = "white"
-##    barva_igralca_1 = "yellow"
-##    barva_igralca_2 = "black"
-##    barva_izbranih = "red"
 
     def __init__(self):
         #Barve krogcev
@@ -142,13 +128,13 @@ class Igra():
         Če je poteza dovoljena, spremeni matriko, shrani pozicijo in
         vrne seznam z dvema elementoma - seznamom premaknjenih krogcev in seznamom izpodrinjenih."""
         if len(self.izbrani) == 0:
-            print("Noben krogec ni izbran")
+            tkinter.messagebox.showwarning("Premik ni možen","Noben krogec ni izbran")
             return (None, None)
         else:
-            if self.preveri_potezo(p):
-                self.shrani_pozicijo()
-                self.premakni_krogce(p) # To samo popravi matriko. (Se mi zdi.)
-                spremembe = [self.spremembe_premik[:],self.izpodrinjeni[:]]
+            self.shrani_pozicijo()
+            if self.preveri_potezo(p):                
+                self.premakni_krogce(p)
+                spremembe = [self.spremembe_premik[:],self.izpodrinjeni[:]] 
                 self.izbrani = []
                 # self.shrani_pozicijo()
             else:
@@ -165,7 +151,7 @@ class Igra():
             (I1, J1) = (self.izbrani[0])
             B = self.plosca[I1][J1]
             if self.plosca[i][j] == B:
-                print("Ni mogoče premakniti izbranih krogcev na svoje polje!")
+                tkinter.messagebox.showwarning("Premik ni možen","Ni mogoče premakniti izbranih krogcev na svoje polje!")
                 return False
             elif len(self.izbrani) == 1:
                 if (i,j) in [(I1, J1 + 1), (I1, J1 - 1), (I1 + 1, J1), (I1 - 1, J1), (I1 + 1, J1 + 1), (I1 - 1, J1 - 1)]: # En krogec lahko premaknemo na katerokoli sosednje prosto polje.
@@ -278,13 +264,6 @@ class Igra():
                         x = xx + parametri[1]
                         y = yy + parametri[3]
                         novi_izbrani.append((x,y))
-##                    # # # #
-##                    for krogec in izbrani:
-##                        id = krogec.id
-##                        x = krogec.x + parametri[1]
-##                        y = krogec.y + parametri[3]
-##                        barva = krogec.barva
-##                        novi_izbrani.append(Polje(id, x, y, barva))
                     break
             for (xxx,yyy) in novi_izbrani:
                 self.plosca[xxx][yyy] = barva
@@ -365,14 +344,14 @@ class Igra():
     def shrani_pozicijo(self):
         """Shrani trenutno pozicijo, da se bomo lahko kasneje vrnili vanjo
            z metodo razveljavi."""
-        p = self.plosca[:]
-        self.zgodovina.append((p, self.na_potezi, self.izpodrinjeni))
+        p = [self.plosca[i][:] for i in range(11)]
+        self.zgodovina.append((p, self.na_potezi, self.izpodrinjeni[:]))
 
     def razveljavi(self):
         """Razveljavi potezo in se vrni v prejšnje stanje."""
-        print(self.zgodovina)
+        (self.plosca1, self.na_potezi1, self.izpodrinjeni1) = self.zgodovina.pop()
         (self.plosca, self.na_potezi, self.izpodrinjeni) = self.zgodovina.pop()
-        return (self.plosca, self.izpodrinjeni)
+        return (self.plosca, self.na_potezi, self.izpodrinjeni)
 
     def kopija(self):
         """Vrni kopijo te igre, brez zgodovine."""
@@ -500,7 +479,7 @@ class Igra():
                     seznam = [(prvi,drugi,tretji),(tretji, prvi, drugi),(drugi, prvi, tretji),(tretji,drugi,prvi)]
                     if seznam[0] not in trojice and seznam[1] not in trojice and seznam[2] not in trojice and seznam[3] not in trojice:
                         trojice.append(seznam[0])
-        self.izbrani = [] # Saj je to prav?
+        self.izbrani = []
         return enice + dvojice + trojice
 
     def povleci_potezo(self, p):
