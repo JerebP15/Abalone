@@ -32,7 +32,7 @@ Spodaj so napisana navodila za delo z igrico in pregled datotek in njihove vsebi
 
 ### Navodila
 
-Odpremo datoteko `uporabniski_vmesnik.py`. Privzeti način igranja je človek proti človeku, privzete barve pa so rumena, črna (za igralca) in rdeča (za izbiranje krogcev, ki jih bomo premaknili). Če želimo spremeniti barve igralcev, lahko to storimo s pomočjo menija (izbire dveh enakih barv ne dovolimo iz očitnih razlogov). Ob izbiri barv se bo naključno izbrala barva za označevanje krogcev, tako da je igra vsakič malo drugačna. V meniju `Nova igra` lahko spremenimo tip igralcev (računalnik, človek).
+Odpremo datoteko `uporabniski_vmesnik.py`. Privzeti način igranja je človek proti človeku, privzete barve pa so rumena, črna (za igralca) in rdeča (za izbiranje krogcev, ki jih bomo premaknili). Če želimo spremeniti barve igralcev, lahko to storimo s pomočjo menija (izbire dveh enakih barv ne dovolimo iz očitnih razlogov). Ob izbiri barv se bo naključno izbrala barva za označevanje krogcev, tako da je igra vsakič malo drugačna. V meniju `Način igre` lahko spremenimo tip igralcev (računalnik, človek).
 
 Ko smo izbrali igralca in/ali spremenili barve, s klikom na gumb `Začni!` začnemo igro. Tedaj računalnik prične izbirati potezo (če je prvi na vrsti), človeškemu igralcu dovolimo izbiranje krogcev (leva miškina tipka) in premikanje (desna miškina tipka), onemogočimo pa spreminjanje barv. Napis nad ploščo pove, kdo je trenutno na potezi. Krogci, ki so bili med igro izrinjeni s plošče, se pojavijo v stranskih okvirčkih. Ko je izrinjen šesti krogec določene barve, se prikaže obvestilo o zmagovalcu.
 
