@@ -1,7 +1,6 @@
 import logging
 import random
 
-#from logika_igre import IGRALEC_1, IGRALEC_2, NI_KONEC, nasprotnik
 from logika_igre import *
 
 ######################################################################
@@ -110,11 +109,11 @@ class Minimax:
             (moja_barva, prazno, nasprotnikova_barva, nasprotnikova_barva, nasprotnikova_barva) : -1300,
             (moja_barva, prazno, moja_barva, nasprotnikova_barva, nasprotnikova_barva, nasprotnikova_barva) : -1400}
         for smer in smeri:
-##            #Nočemo biti na robu
-##            if smer[1] == prazno:
-##                vrednost += 10
-##            if smer[-2] == prazno:
-##                vrednost += 10
+            #Nočemo biti na robu
+            if smer[1] == prazno:
+                vrednost += 10
+            if smer[-2] == prazno:
+                vrednost += 10
             if moja_barva not in smer or nasprotnikova_barva not in smer:
                 continue
             else:
@@ -173,9 +172,14 @@ class Minimax:
                             for (x,y) in izbrani:
                                 self.igra.izbrani.append((x,y))
                         self.igra.shrani_pozicijo()
-                        self.igra.povleci_potezo(p)
+                        if self.igra.preveri_potezo(p):
+                            zmagovalec = self.igra.stanje_igre()
+                            if zmagovalec == NI_KONEC:
+                                self.igra.na_potezi = nasprotnik(self.igra.na_potezi)
+                            else:
+                                self.igra.na_potezi = None
                         vrednost = self.minimax(globina-1, not maksimiziramo)[1]
-                        if self.igra.povleci_potezo(p) is not None:
+                        if self.igra.preveri_potezo(p) and self.igra.na_potezi is not None:
                             self.igra.razveljavi()
                         if vrednost == vrednost_najboljse:
                             najboljse_poteze.append(poteza)
@@ -197,9 +201,14 @@ class Minimax:
                             for (x,y) in izbrani:
                                 self.igra.izbrani.append((x,y))
                         self.igra.shrani_pozicijo()
-                        self.igra.povleci_potezo(p)
+                        if self.igra.preveri_potezo(p):
+                            zmagovalec = self.igra.stanje_igre()
+                            if zmagovalec == NI_KONEC:
+                                self.igra.na_potezi = nasprotnik(self.igra.na_potezi)
+                            else:
+                                self.igra.na_potezi = None
                         vrednost = self.minimax(globina-1, not maksimiziramo)[1]
-                        if self.igra.povleci_potezo(p) is not None:
+                        if self.igra.preveri_potezo(p) and self.igra.na_potezi is not None:
                             self.igra.razveljavi()
                         if vrednost == vrednost_najboljse:
                             najboljse_poteze.append(poteza)
