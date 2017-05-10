@@ -3,7 +3,7 @@ import argparse   # za argumente iz ukazne vrstice
 import logging    # za odpravljanje napak
 
 # Privzeta minimax globina, če je nismo podali ob zagonu v ukazni vrstici
-MINIMAX_GLOBINA = 1
+MINIMAX_GLOBINA = 2
 
 from logika_igre import *
 from clovek import *
@@ -55,8 +55,7 @@ class Gui():
     VELIKOST_POLJA = 50
 
     def __init__(self, master):
-        master.minsize(width=730, height=610)
-        #master.maxsize(width=730, height=610)
+        master.minsize(width=730, height=630)
         self.igralec_1 = None # Objekt, ki igra prvi igralec (nastavimo ob začetku igre)
         self.igralec_2 = None # Objekt, ki igra drugi igralec (nastavimo ob začetku igre)
         self.igra = None # Objekt, ki predstavlja logiko igre
@@ -74,7 +73,7 @@ class Gui():
 
         # Napis, ki prikazuje stanje igre
         self.napis = tkinter.StringVar(master, value="Dobrodošli v Abalone!")
-        tkinter.Label(master, textvariable=self.napis).grid(row=0, column=1)
+        tkinter.Label(master, textvariable=self.napis, font = ('Times', '15', 'bold')).grid(row=0, column=1)
 
         # Igralno območje
         self.okno = tkinter.Canvas(master, width=11*Gui.VELIKOST_POLJA, height=11*Gui.VELIKOST_POLJA)
@@ -87,7 +86,7 @@ class Gui():
         self.polje_izpodrinjenih2.grid(row=1, column=2)
 
         #Gumb za začetek igre
-        self.gumb = tkinter.Button(master, bg="white", state='normal',width=Gui.VELIKOST_POLJA, text='Začni!', command=lambda: self.pritisk_gumba())
+        self.gumb = tkinter.Button(master, bg="cyan", state='normal',  width=int(0.8 * Gui.VELIKOST_POLJA) ,font = ('Times', '15', 'bold'), text='Začni!', command=lambda: self.pritisk_gumba())
         self.gumb.grid(row=2, column=1)
 
         # Črte na igralnem polju
@@ -105,7 +104,7 @@ class Gui():
 
         # Podmenu za izbiro igre
         menu_igra = tkinter.Menu(menu, tearoff = 0)
-        menu.add_cascade(label="Nova igra", menu=menu_igra)
+        menu.add_cascade(label="Način igre", menu=menu_igra)
         menu_igra.add_command(label="Človek : Človek", command=lambda: self.zacni_igro(Clovek(self), Clovek(self)))
         menu_igra.add_command(label="Človek : Računalnik", command=lambda: self.zacni_igro(Racunalnik(self, Minimax(MINIMAX_GLOBINA)), Clovek(self)))
         menu_igra.add_command(label="Računalnik : Človek", command=lambda: self.zacni_igro(Clovek(self), Racunalnik(self, Minimax(MINIMAX_GLOBINA))))
@@ -119,7 +118,7 @@ class Gui():
 
         # Podmenu za izbiro barve igalcev
         menu_barve1 = tkinter.Menu(menu, tearoff = 0)
-        menu.add_cascade(label="Barva prvega igralca", menu = menu_barve1)
+        menu.add_cascade(label="Barva spodnjega igralca", menu = menu_barve1)
         menu_barve1.add_command(label="Črna", command = lambda: self.spremeni_barvo2("black"))
         menu_barve1.add_command(label="Rumena", command = lambda: self.spremeni_barvo2("yellow"))
         menu_barve1.add_command(label="Rdeča", command = lambda: self.spremeni_barvo2("red"))
@@ -129,7 +128,7 @@ class Gui():
         menu_barve1.add_command(label="Roza", command = lambda: self.spremeni_barvo2("magenta"))
 
         menu_barve2 = tkinter.Menu(menu, tearoff = 0)
-        menu.add_cascade(label="Barva drugega igralca", menu = menu_barve2)
+        menu.add_cascade(label="Barva zgornjega igralca", menu = menu_barve2)
         menu_barve2.add_command(label="Črna", command = lambda: self.spremeni_barvo1("black"))
         menu_barve2.add_command(label="Rumena", command = lambda: self.spremeni_barvo1("yellow"))
         menu_barve2.add_command(label="Rdeča", command = lambda: self.spremeni_barvo1("red"))
@@ -219,7 +218,7 @@ class Gui():
             self.igralec_2.igraj()
         else:
             self.gumb.after(1000, self.zacni_potezo)
-            
+
     def zacni_potezo(self):
         """Vsakih 100ms preveri, ali je lahko računalnik že začne razmišljati."""
         if self.zacni == True:
@@ -249,7 +248,6 @@ class Gui():
         """Obdelamo levi klik - oznacevanje krogcev."""
         p = self.poisci_polje(event)
         (i,j) = p
-        print(p)
         if i is not None and j is not None:
             if self.zacni == True:
                 igralec = self.igra.na_potezi
@@ -326,7 +324,7 @@ class Gui():
     def povleci_potezo(self, p):
         """Povlece potezo in zamenja, kdo je na potezi."""
         igralec = self.igra.na_potezi
-        (premik, izrinjeni) = self.igra.premikanje(p)
+        (premik, izrinjeni,r) = self.igra.premikanje(p)
         if premik is not None:
             for polje in premik:
                 (x,y,barva) = polje
@@ -334,7 +332,6 @@ class Gui():
             if len(izrinjeni) != len(self.izpodrinjeni):
                 self.izpodrinjeni.append(izrinjeni[-1])
                 self.narisi_izpodrinjene(izrinjeni[-1])
-        r = self.igra.povleci_potezo(p)
         if r is None:
             pass
         else:
@@ -384,7 +381,6 @@ class Gui():
 
     def spremeni_barvo1(self, barva):
         if self.igra.plosca == self.igra.ustvari_plosco():
-        #if isinstance(self.igralec_1, Clovek) and isinstance(self.igralec_2, Clovek):
             if barva == self.igra.barva_igralca_2:
                 tkinter.messagebox.showwarning("Menjava barve ni možna", "Ne moreta biti oba igralca iste barve!")
                 pass
@@ -393,6 +389,13 @@ class Gui():
                 mozne_barve.remove(self.igra.barva_igralca_2)
                 mozne_barve.remove(barva)
                 self.igra.barva_izbranih = random.choice(mozne_barve)
+                if "blue" in mozne_barve:
+                    mozne_barve.remove("blue")
+                if "black" in mozne_barve:
+                    mozne_barve.remove("black")
+                if "yellow" in mozne_barve:
+                    mozne_barve.remove("yellow")
+                self.gumb.config(bg=random.choice(mozne_barve))
                 self.igra.prebarvaj_krogce(IGRALEC_1, barva)
                 self.igra.barva_igralca_1 = barva
                 self.prebarvaj_krogce()
@@ -403,7 +406,6 @@ class Gui():
 
     def spremeni_barvo2(self, barva):
         if self.igra.plosca == self.igra.ustvari_plosco():
-        #if isinstance(self.igralec_1, Clovek) and isinstance(self.igralec_2, Clovek):
             if barva == self.igra.barva_igralca_1:
                 tkinter.messagebox.showwarning("Menjava barve ni možna", "Ne moreta biti oba igralca iste barve!")
                 pass
@@ -412,6 +414,13 @@ class Gui():
                 mozne_barve.remove(self.igra.barva_igralca_1)
                 mozne_barve.remove(barva)
                 self.igra.barva_izbranih = random.choice(mozne_barve)
+                if "blue" in mozne_barve:
+                    mozne_barve.remove("blue")
+                if "black" in mozne_barve:
+                    mozne_barve.remove("black")
+                if "yellow" in mozne_barve:
+                    mozne_barve.remove("yellow")
+                self.gumb.config(bg=random.choice(mozne_barve))
                 self.igra.prebarvaj_krogce(IGRALEC_2, barva)
                 self.igra.barva_igralca_2 = barva
                 self.prebarvaj_krogce()
