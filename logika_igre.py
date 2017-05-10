@@ -140,6 +140,7 @@ class Igra():
             (I1, J1) = (self.izbrani[0])
             B = self.plosca[I1][J1]
             if self.plosca[i][j] == B:
+
                 #tkinter.messagebox.showwarning("Premik ni možen","Ni mogoče premakniti izbranih krogcev na svoje polje!")
                 return False
             elif len(self.izbrani) == 1:
@@ -148,6 +149,7 @@ class Igra():
             elif len(self.izbrani) == 2:
                 (I2, J2) = (self.izbrani[1])
                 orientacija = self.orientacija_izbranih()
+
                 if abs(I1 - I2) == 1 or abs(J1 - J2) == 1 or (abs(I1 - I2) == 1 and abs(J1 - J2) == 1):
                     if orientacija == "y":
                         if (i,j) in [(I1, max(J1, J2) + 1),(I1, min(J1, J2) - 1)]:
@@ -163,12 +165,15 @@ class Igra():
                     elif orientacija == "x":
                         if (i,j) in [(max(I1, I2) + 1, J1),(min(I1, I2) - 1, J1)]:
                             if self.plosca[i][j] == self.barva_praznih:
+                                print('gremo na prazne')
                                 return True
                             else:
                                 return self.potisni(orientacija, p)
                         elif (i,j) in [(max(I1, I2), J1 - 1),(min(I1, I2) - 1, J1 - 1)]:
+                            print('prva', self.plosca[i][j] == self.barva_praznih, self.plosca[max(I1,I2)][J1 - 1] == self.barva_praznih)
                             return self.plosca[i][j] == self.barva_praznih and self.plosca[min(I1,I2)][J1 - 1] == self.barva_praznih
                         elif (i,j) in [(max(I1, I2) + 1, J1 + 1),(min(I1, I2), J1 + 1)]:
+                            print('druga', self.plosca[i][j], self.barva_praznih, self.plosca[max(I1,I2)][J1 + 1], self.barva_praznih)
                             return self.plosca[i][j] == self.barva_praznih and self.plosca[max(I1,I2)][J1 + 1] == self.barva_praznih
                         return False
                     elif orientacija == "diagonala":
@@ -186,6 +191,7 @@ class Igra():
                 (I2, J2) = (self.izbrani[1])
                 (I3, J3) = (self.izbrani[2])
                 orientacija = self.orientacija_izbranih()
+
                 if orientacija == "y":
                     if (i,j) in [(I1, max(J1, J2, J3) +1),(I1, min(J1, J2, J3) - 1)]:
                         if self.plosca[i][j] == self.barva_praznih:
@@ -481,6 +487,7 @@ class Igra():
            Vrne stanje_igre() po potezi ali None, če je poteza neveljavna."""
         (i,j) = p
         if self.preveri_potezo(p) == False: # Neveljavna poteza
+
             return None
         else:
             #self.shrani_pozicijo()
