@@ -147,10 +147,11 @@ class Igra():
             return spremembe
 
     def preveri_potezo(self, izbrani, p):
-        """Pogleda, ali označene krogce (iz self.izbrani) lahko premaknemo na željeno polje (p).
+        """Pogleda, ali izbrane krogce lahko premaknemo na željeno polje (p).
         Vrne True ali False glede na to, ali je premik mogoč.
         V primeru, da so na polju p nasprotnikovi krogci, kliče metodo potisni."""
         (i,j) = p
+        print('preverjamo', izbrani, 7, p)
         if i is not None and j is not None and len(izbrani) != 0:     # Zagotovimo, da smo na plošči.
             print(155555, len(izbrani))
             #(I1, J1) = izbrani[0]
@@ -164,8 +165,11 @@ class Igra():
                 if (i,j) in [(I1, J1 + 1), (I1, J1 - 1), (I1 + 1, J1), (I1 - 1, J1), (I1 + 1, J1 + 1), (I1 - 1, J1 - 1)]: # En krogec lahko premaknemo na katerokoli sosednje prosto polje.
                     return self.plosca[i][j] == self.barva_praznih
             elif len(izbrani) == 2:
+                print('2 izbrana')
                 [(I1,J1),(I2, J2)] = izbrani
                 orientacija = self.orientacija(izbrani)
+                print(orientacija)
+                print(self.plosca[i][j])
                 if abs(I1 - I2) == 1 or abs(J1 - J2) == 1 or (abs(I1 - I2) == 1 and abs(J1 - J2) == 1):
                     if orientacija == "y":
                         if (i,j) in [(I1, max(J1, J2) + 1),(I1, min(J1, J2) - 1)]:
@@ -181,12 +185,15 @@ class Igra():
                     elif orientacija == "x":
                         if (i,j) in [(max(I1, I2) + 1, J1),(min(I1, I2) - 1, J1)]:
                             if self.plosca[i][j] == self.barva_praznih:
+                                print('gremo na prazne')
                                 return True
                             else:
                                 return self.potisni(orientacija, izbrani, p)
                         elif (i,j) in [(max(I1, I2), J1 - 1),(min(I1, I2) - 1, J1 - 1)]:
+                            print('prva', self.plosca[i][j] == self.barva_praznih, self.plosca[max(I1,I2)][J1 - 1] == self.barva_praznih)
                             return self.plosca[i][j] == self.barva_praznih and self.plosca[min(I1,I2)][J1 - 1] == self.barva_praznih
                         elif (i,j) in [(max(I1, I2) + 1, J1 + 1),(min(I1, I2), J1 + 1)]:
+                            print('druga', self.plosca[i][j], self.barva_praznih, self.plosca[max(I1,I2)][J1 + 1], self.barva_praznih)
                             return self.plosca[i][j] == self.barva_praznih and self.plosca[max(I1,I2)][J1 + 1] == self.barva_praznih
                         return False
                     elif orientacija == "diagonala":
@@ -201,8 +208,11 @@ class Igra():
                             return self.plosca[i][j] == self.barva_praznih and self.plosca[min(I1,I2)][max(J1,J2)] == self.barva_praznih
                         return False
             elif len(izbrani) == 3:
+                print('3 izbrani')
                 [(I1,J1),(I2, J2),(I3,J3)] = izbrani
                 orientacija = self.orientacija(izbrani)
+                print(orientacija)
+                print(self.plosca[i][j])
                 if orientacija == "y":
                     if (i,j) in [(I1, max(J1, J2, J3) +1),(I1, min(J1, J2, J3) - 1)]:
                         if self.plosca[i][j] == self.barva_praznih:
@@ -289,6 +299,7 @@ class Igra():
         """Kliče self.stevilo_nasprotnih in preveri, ali nasprotnikove krogce lahko potisnemo s premikom na p.
         Vrne False, če potisk ni mogoč. V nasprotnem primeru vrne True in popravi matriko tako, da ustreza potezi.
         Če nasprotnikov krogec izrinemo iz plošče, ga doda v seznam izrinjenih."""
+        print('smo v potisni')
         stevilo_izbranih = len(izbrani)
         (stevilo_nasprotnih, ali_izrinemo) = self.stevilo_nasprotnih(orientacija, izbrani, p)
         if stevilo_nasprotnih is None:
@@ -322,6 +333,7 @@ class Igra():
     def stevilo_nasprotnih(self, orientacija, izbrani, p):
         """Vrne par - število nasprotnikovih krogcev v smeri premika in
         True oziroma False glede na to, ali je potisk krogcev mogoč. Če ni, vrne (None, None)."""
+        (i,j) = p
         barva = self.plosca[i][j]
         (i_max, i_min) = (max(x for (x,y) in izbrani), min(x for (x,y) in izbrani))
         (j_max, j_min) = (max(y for (x,y) in izbrani), min(y for (x,y) in izbrani))
@@ -488,8 +500,8 @@ class Igra():
     def povleci_potezo(self, izbrani, p):
         """Povleci potezo p, ne naredi nič, če je neveljavna.
            Vrne stanje_igre() po potezi ali None, če je poteza neveljavna."""
-        if self.preveri_potezo(izbrani, p) == False: # Neveljavna poteza
-            print('povleci potezo neveljavna')
+        if self.preveri_potezo(izbrani, p) == None: # Neveljavna poteza # KVA??????? ČE daš na False (kot je bilo prej), ne dela.
+            print(izbrani, 7, p, 'preveri potezo neveljavna', self.preveri_potezo(izbrani, p))
             return None
         else:
             print('povleci_potezo : veljavna')
